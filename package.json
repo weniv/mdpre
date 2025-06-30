@@ -1,0 +1,32 @@
+{
+  "name": "github-markdown-presenter",
+  "version": "1.0.0",
+  "description": "GitHub Pages 기반 마크다운 프레젠테이션 웹 서비스",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 8080 --bind localhost",
+    "start": "python -m http.server 8080 --bind localhost",
+    "build": "echo 'Static site - no build process required'",
+    "deploy": "gh-pages -d ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/username/github-markdown-presenter"
+  },
+  "keywords": [
+    "markdown",
+    "presentation",
+    "github-pages",
+    "slides",
+    "marp-alternative"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "gh-pages": "^6.1.0"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

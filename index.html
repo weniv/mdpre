@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Markdown Presenter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" rel="stylesheet">
+    <link href="./assets/css/style.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-xl font-bold text-gray-900 dark:text-white">GitHub Markdown Presenter</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="theme-toggle" class="p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                        </svg>
+                    </button>
+                    <button id="settings-btn" class="p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1">
+        <!-- Repository Input Section -->
+        <section id="repo-input-section" class="py-12">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">GitHub 리포지토리에서 프레젠테이션 불러오기</h2>
+                    
+                    <!-- Repository Source Selection -->
+                    <div class="mb-6">
+                        <div class="flex space-x-4 mb-4">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="repo-source" value="current" id="current-repo" class="mr-2 text-blue-600" checked>
+                                <span class="text-gray-700 dark:text-gray-300">현재 배포 리포지토리에서 찾기</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="repo-source" value="custom" id="custom-repo" class="mr-2 text-blue-600">
+                                <span class="text-gray-700 dark:text-gray-300">다른 리포지토리에서 찾기</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Repository History -->
+                    <div id="repo-history" class="mb-6 hidden">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-3">최근 사용한 리포지토리</h3>
+                        <div id="history-list" class="space-y-2 mb-4">
+                            <!-- History items will be inserted here -->
+                        </div>
+                    </div>
+
+                    <!-- Repository Form -->
+                    <form id="repo-form" class="space-y-4">
+                        <div id="custom-repo-fields">
+                            <div>
+                                <label for="repo-url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    GitHub 리포지토리 URL
+                                </label>
+                                <input type="url" id="repo-url" placeholder="https://github.com/username/repository" 
+                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" disabled>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="folder-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                폴더명 (선택사항)
+                            </label>
+                            <input type="text" id="folder-name" placeholder="slides, presentations, docs 등" 
+                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                            프레젠테이션 로드
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Presentation Section -->
+        <section id="presentation-section" class="hidden">
+            <!-- Slide Navigation -->
+            <div id="slide-nav" class="fixed top-20 right-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2">
+                <div class="flex items-center space-x-2">
+                    <button id="prev-slide" class="p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white disabled:opacity-50">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <span id="slide-counter" class="text-sm font-medium text-gray-700 dark:text-gray-300 min-w-12 text-center">1 / 1</span>
+                    <button id="next-slide" class="p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white disabled:opacity-50">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Fullscreen Toggle -->
+            <button id="fullscreen-toggle" class="fixed top-20 left-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                </svg>
+            </button>
+
+            <!-- Slide Container -->
+            <div id="slide-container" class="min-h-screen p-8 flex items-center justify-center">
+                <div id="slide-content" class="max-w-4xl w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-12 prose prose-lg dark:prose-invert max-w-none">
+                    <!-- Slide content will be rendered here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">설정</h3>
+                <button id="close-settings" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="font-size" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        폰트 크기
+                    </label>
+                    <select id="font-size" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white">
+                        <option value="small">작게</option>
+                        <option value="medium" selected>보통</option>
+                        <option value="large">크게</option>
+                        <option value="xlarge">매우 크게</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="theme-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        테마
+                    </label>
+                    <select id="theme-select" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white">
+                        <option value="default">기본</option>
+                        <option value="dark">다크</option>
+                        <option value="academic">학술용</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 flex items-center space-x-3">
+            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+            <span class="text-gray-900 dark:text-white">프레젠테이션을 로드하는 중...</span>
+        </div>
+    </div>
+
+    <script src="./assets/js/app.js"></script>
+</body>
+</html>
