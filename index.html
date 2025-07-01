@@ -46,7 +46,7 @@
                     
                     <!-- Repository Source Selection -->
                     <div class="mb-6">
-                        <div class="flex space-x-4 mb-4">
+                        <div class="flex flex-col space-y-2 mb-4">
                             <label class="flex items-center cursor-pointer">
                                 <input type="radio" name="repo-source" value="current" id="current-repo" class="mr-2 text-blue-600" checked>
                                 <span class="text-gray-700 dark:text-gray-300">배포 리포지토리에서 찾기</span>
@@ -54,6 +54,10 @@
                             <label class="flex items-center cursor-pointer">
                                 <input type="radio" name="repo-source" value="custom" id="custom-repo" class="mr-2 text-blue-600">
                                 <span class="text-gray-700 dark:text-gray-300">다른 리포지토리에서 찾기</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="repo-source" value="local" id="local-files" class="mr-2 text-blue-600">
+                                <span class="text-gray-700 dark:text-gray-300">로컬 파일에서 불러오기</span>
                             </label>
                         </div>
                     </div>
@@ -78,6 +82,20 @@
                             </div>
                         </div>
                         
+                        <!-- Local File Upload -->
+                        <div id="local-file-fields" class="hidden">
+                            <div>
+                                <label for="file-upload" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    마크다운 파일 선택 (여러 개 선택 가능)
+                                </label>
+                                <input type="file" id="file-upload" accept=".md" multiple
+                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    .md 파일을 선택하세요. Ctrl/Cmd+클릭으로 여러 파일 선택 가능합니다.
+                                </p>
+                            </div>
+                        </div>
+                        
                         <!-- Folder Selection -->
                         <div id="folder-selection" class="hidden">
                             <label for="folder-dropdown" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -90,6 +108,10 @@
                         
                         <button type="button" id="search-folders-btn" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
                             폴더 검색하기
+                        </button>
+                        
+                        <button type="button" id="load-local-files-btn" class="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors hidden">
+                            로컬 파일 로드
                         </button>
                         
                         <button type="submit" id="load-presentation-btn" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors hidden">

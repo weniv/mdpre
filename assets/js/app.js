@@ -31,6 +31,12 @@ class GitHubMarkdownPresenter {
         // Search folders button
         document.getElementById('search-folders-btn').addEventListener('click', () => this.searchFolders());
 
+        // Load local files button
+        document.getElementById('load-local-files-btn').addEventListener('click', () => this.loadLocalFiles());
+
+        // File upload change event
+        document.getElementById('file-upload').addEventListener('change', () => this.handleFileUpload());
+
         // Repository form submission
         document.getElementById('repo-form').addEventListener('submit', (e) => {
             e.preventDefault();
@@ -180,28 +186,43 @@ class GitHubMarkdownPresenter {
     handleRepoSourceChange() {
         const selectedSource = document.querySelector('input[name="repo-source"]:checked').value;
         const customFields = document.getElementById('custom-repo-fields');
+        const localFields = document.getElementById('local-file-fields');
         const repoUrlInput = document.getElementById('repo-url');
         const historySection = document.getElementById('repo-history');
         const folderSelection = document.getElementById('folder-selection');
         const loadBtn = document.getElementById('load-presentation-btn');
+        const searchBtn = document.getElementById('search-folders-btn');
+        const loadLocalBtn = document.getElementById('load-local-files-btn');
         
-        // Reset folder selection
+        // Reset all selections
         folderSelection.classList.add('hidden');
         loadBtn.classList.add('hidden');
+        loadLocalBtn.classList.add('hidden');
         document.getElementById('folder-dropdown').innerHTML = '<option value="">폴더를 선택하세요...</option>';
         
         if (selectedSource === 'current') {
             customFields.style.display = 'none';
+            localFields.classList.add('hidden');
+            searchBtn.classList.remove('hidden');
             repoUrlInput.disabled = true;
             repoUrlInput.required = false;
             if (this.repoHistory.length > 0) {
                 historySection.classList.remove('hidden');
                 this.renderRepoHistory();
             }
-        } else {
+        } else if (selectedSource === 'custom') {
             customFields.style.display = 'block';
+            localFields.classList.add('hidden');
+            searchBtn.classList.remove('hidden');
             repoUrlInput.disabled = false;
             repoUrlInput.required = true;
+            historySection.classList.add('hidden');
+        } else if (selectedSource === 'local') {
+            customFields.style.display = 'none';
+            localFields.classList.remove('hidden');
+            searchBtn.classList.add('hidden');
+            repoUrlInput.disabled = true;
+            repoUrlInput.required = false;
             historySection.classList.add('hidden');
         }
     }
@@ -645,12 +666,15 @@ class GitHubMarkdownPresenter {
             // Process images to use GitHub raw URLs
             let processedContent = this.processImageUrls(content.trim(), owner, repo, folderPath);
             
-            // Process custom text formatting syntax
-            processedContent = this.processCustomSyntax(processedContent);
+            // First parse markdown to HTML
+            let htmlContent = marked.parse(processedContent);
+            
+            // Then process custom text formatting syntax on HTML
+            htmlContent = this.processCustomSyntax(htmlContent);
             
             return {
                 content: processedContent,
-                html: marked.parse(processedContent)
+                html: htmlContent
             };
         });
     }
@@ -667,38 +691,38 @@ class GitHubMarkdownPresenter {
         );
     }
 
-    processCustomSyntax(content) {
+    processCustomSyntax(htmlContent) {
         // Process {center}text{/center} - text centering
-        content = content.replace(
+        htmlContent = htmlContent.replace(
             /\{center\}([\s\S]*?)\{\/center\}/g,
             '<div class="text-center">$1</div>'
         );
         
         // Process {large}text{/large} - large text
-        content = content.replace(
+        htmlContent = htmlContent.replace(
             /\{large\}([\s\S]*?)\{\/large\}/g,
             '<div class="text-large">$1</div>'
         );
         
         // Process {xlarge}text{/xlarge} - extra large text
-        content = content.replace(
+        htmlContent = htmlContent.replace(
             /\{xlarge\}([\s\S]*?)\{\/xlarge\}/g,
             '<div class="text-xlarge">$1</div>'
         );
         
         // Process {highlight}text{/highlight} - highlighted text
-        content = content.replace(
+        htmlContent = htmlContent.replace(
             /\{highlight\}([\s\S]*?)\{\/highlight\}/g,
             '<span class="text-highlight">$1</span>'
         );
         
         // Process {bold}text{/bold} - bold text
-        content = content.replace(
+        htmlContent = htmlContent.replace(
             /\{bold\}([\s\S]*?)\{\/bold\}/g,
             '<strong class="text-bold">$1</strong>'
         );
         
-        return content;
+        return htmlContent;
     }
 
     showPresentation() {
@@ -881,6 +905,73 @@ class GitHubMarkdownPresenter {
         // Reset slides
         this.slides = [];
         this.currentSlide = 0;
+    }
+
+    handleFileUpload() {
+        const fileInput = document.getElementById('file-upload');
+        const loadLocalBtn = document.getElementById('load-local-files-btn');
+        
+        if (fileInput.files.length > 0) {
+            loadLocalBtn.classList.remove('hidden');
+        } else {
+            loadLocalBtn.classList.add('hidden');
+        }
+    }
+
+    async loadLocalFiles() {
+        const fileInput = document.getElementById('file-upload');
+        const files = fileInput.files;
+        
+        if (files.length === 0) {
+            alert('파일을 선택해주세요.');
+            return;
+        }
+        
+        try {
+            this.showLoading(true);
+            await this.loadLocalMarkdownFiles(files);
+            
+            if (this.slides.length === 0) {
+                throw new Error('유효한 마크다운 슬라이드를 찾을 수 없습니다.');
+            }
+            
+            this.showPresentation();
+            
+        } catch (error) {
+            console.error('로컬 파일 로드 실패:', error);
+            alert(`파일을 로드할 수 없습니다: ${error.message}`);
+        } finally {
+            this.showLoading(false);
+        }
+    }
+
+    async loadLocalMarkdownFiles(files) {
+        this.slides = [];
+        
+        const fileArray = Array.from(files);
+        // Sort files by name
+        fileArray.sort((a, b) => a.name.localeCompare(b.name));
+        
+        for (const file of fileArray) {
+            if (file.type === 'text/markdown' || file.name.endsWith('.md')) {
+                try {
+                    const content = await this.readFileContent(file);
+                    const slides = this.parseMarkdownToSlides(content, '', '', '');
+                    this.slides.push(...slides);
+                } catch (error) {
+                    console.warn(`파일 읽기 실패: ${file.name}`, error);
+                }
+            }
+        }
+    }
+
+    readFileContent(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = (e) => reject(new Error(`파일 읽기 실패: ${file.name}`));
+            reader.readAsText(file, 'UTF-8');
+        });
     }
 
     showLoading(show) {
