@@ -470,7 +470,7 @@ class GitHubMarkdownPresenter {
                 case 'ArrowUp':
                     // Smooth scroll up - handle fullscreen vs normal mode
                     if (this.isFullscreen) {
-                        const container = document.querySelector('.fullscreen #slide-content');
+                        const container = document.getElementById('slide-container');
                         if (container) {
                             container.scrollBy({ top: -50, behavior: 'smooth' });
                         }
@@ -482,7 +482,7 @@ class GitHubMarkdownPresenter {
                 case 'ArrowDown':
                     // Smooth scroll down - handle fullscreen vs normal mode
                     if (this.isFullscreen) {
-                        const container = document.querySelector('.fullscreen #slide-content');
+                        const container = document.getElementById('slide-container');
                         if (container) {
                             container.scrollBy({ top: 50, behavior: 'smooth' });
                         }
@@ -733,7 +733,11 @@ class GitHubMarkdownPresenter {
         // Process {xlarge}text{/xlarge} - extra large text
         htmlContent = htmlContent.replace(
             /\{xlarge\}([\s\S]*?)\{\/xlarge\}/g,
-            '<div class="text-xlarge">$1</div>'
+            (match, content) => {
+                // Remove heading tags (h1-h6) and keep only the text content
+                const cleanContent = content.replace(/<h[1-6][^>]*>(.*?)<\/h[1-6]>/g, '$1');
+                return `<div class="text-xlarge">${cleanContent}</div>`;
+            }
         );
         
         // Process {highlight}text{/highlight} - highlighted text
