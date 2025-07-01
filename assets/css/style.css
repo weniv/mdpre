@@ -600,6 +600,26 @@ html, body {
     margin: 1rem 0;
 }
 
+/* Center class list handling */
+.text-center ul,
+.text-center ol {
+    display: inline-block;
+    text-align: left;
+    list-style-position: inside;
+}
+
+.text-center ul {
+    list-style-type: disc;
+}
+
+.text-center ol {
+    list-style-type: decimal;
+}
+
+.text-center li {
+    text-align: left;
+}
+
 .text-large {
     font-size: 1.5rem;
     line-height: 1.4;
