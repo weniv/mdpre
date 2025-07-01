@@ -693,8 +693,8 @@ class GitHubMarkdownPresenter {
     }
 
     processImageUrls(content, owner, repo, folderPath = '') {
-        // Convert relative image paths to GitHub raw URLs
-        return content.replace(
+        // Convert relative image paths to GitHub raw URLs for markdown images
+        content = content.replace(
             /!\[([^\]]*)\]\((?!https?:\/\/)([^)]+)\)/g,
             (match, alt, imagePath) => {
                 // If folderPath exists, prepend it to the image path
@@ -702,6 +702,19 @@ class GitHubMarkdownPresenter {
                 return `![${alt}](https://raw.githubusercontent.com/${owner}/${repo}/refs/heads/main/${fullPath})`;
             }
         );
+        
+        // Convert relative image paths to GitHub raw URLs for HTML img tags
+        content = content.replace(
+            /<img([^>]*)\ssrc=["'](?!https?:\/\/)([^"']+)["']([^>]*)>/g,
+            (match, beforeSrc, imagePath, afterSrc) => {
+                // If folderPath exists, prepend it to the image path
+                const fullPath = folderPath ? `${folderPath}/${imagePath}` : imagePath;
+                const newSrc = `https://raw.githubusercontent.com/${owner}/${repo}/refs/heads/main/${fullPath}`;
+                return `<img${beforeSrc} src="${newSrc}"${afterSrc}>`;
+            }
+        );
+        
+        return content;
     }
 
     processCustomSyntax(htmlContent) {
@@ -974,13 +987,41 @@ class GitHubMarkdownPresenter {
             if (file.type === 'text/markdown' || file.name.endsWith('.md')) {
                 try {
                     const content = await this.readFileContent(file);
-                    const slides = this.parseMarkdownToSlides(content, '', '', '');
+                    // For local files, we need to handle image paths differently
+                    const slides = this.parseLocalMarkdownToSlides(content);
                     this.slides.push(...slides);
                 } catch (error) {
                     console.warn(`파일 읽기 실패: ${file.name}`, error);
                 }
             }
         }
+    }
+
+    parseLocalMarkdownToSlides(markdown) {
+        // Split by slide separator (---)
+        const slideContents = markdown.split(/^---\s*$/m).filter(content => content.trim());
+        
+        return slideContents.map((content, index) => {
+            // For local files, keep relative paths as they are
+            let processedContent = content.trim();
+            
+            // Configure marked with breaks option for line breaks
+            const markedOptions = {
+                breaks: true,  // Enable line breaks
+                gfm: true      // GitHub Flavored Markdown
+            };
+            
+            // First parse markdown to HTML with line break support
+            let htmlContent = marked.parse(processedContent, markedOptions);
+            
+            // Then process custom text formatting syntax on HTML
+            htmlContent = this.processCustomSyntax(htmlContent);
+            
+            return {
+                content: processedContent,
+                html: htmlContent
+            };
+        });
     }
 
     readFileContent(file) {
