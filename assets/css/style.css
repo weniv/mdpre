@@ -1,5 +1,41 @@
 /* Custom styles for GitHub Markdown Presenter */
 
+/* Font faces */
+@font-face {
+    font-family: 'BMJUA';
+    src: url('../../../font/BMJUA_ttf.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'BMHANNA';
+    src: url('../../../font/BMHANNAAir_ttf.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'BMDOHYEON';
+    src: url('../../../font/BMDOHYEON_ttf.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'BMYEONSUNG';
+    src: url('../../../font/BMYEONSUNG_ttf.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'BMEULJIROT';
+    src: url('../../../font/BMEULJIROTTF.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 /* Font size classes */
 .font-size-small {
     font-size: 0.875rem;
@@ -602,4 +638,29 @@ html, body {
 
 .dark .text-bold {
     color: #f9fafb;
+}
+
+/* Font family classes */
+.font-family-default {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.font-family-bmjua {
+    font-family: 'BMJUA', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.font-family-bmhanna {
+    font-family: 'BMHANNA', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.font-family-bmdohyeon {
+    font-family: 'BMDOHYEON', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.font-family-bmyeonsung {
+    font-family: 'BMYEONSUNG', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.font-family-bmeuljirot {
+    font-family: 'BMEULJIROT', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }

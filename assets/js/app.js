@@ -5,7 +5,8 @@ class GitHubMarkdownPresenter {
         this.isFullscreen = false;
         this.settings = {
             fontSize: 'medium',
-            theme: 'default'
+            theme: 'default',
+            fontFamily: 'bmjua'
         };
         this.repoHistory = [];
         
@@ -69,6 +70,12 @@ class GitHubMarkdownPresenter {
 
         document.getElementById('theme-select').addEventListener('change', (e) => {
             this.settings.theme = e.target.value;
+            this.applySettings();
+            this.saveSettings();
+        });
+
+        document.getElementById('font-family').addEventListener('change', (e) => {
+            this.settings.fontFamily = e.target.value;
             this.applySettings();
             this.saveSettings();
         });
@@ -858,6 +865,7 @@ class GitHubMarkdownPresenter {
         // Update form values
         document.getElementById('font-size').value = this.settings.fontSize;
         document.getElementById('theme-select').value = this.settings.theme;
+        document.getElementById('font-family').value = this.settings.fontFamily;
     }
 
     closeSettings() {
@@ -871,12 +879,16 @@ class GitHubMarkdownPresenter {
         // Remove existing theme classes
         body.classList.remove('theme-default', 'theme-dark', 'theme-academic');
         slideContent.classList.remove('font-size-small', 'font-size-medium', 'font-size-large', 'font-size-xlarge');
+        slideContent.classList.remove('font-family-default', 'font-family-bmjua', 'font-family-bmhanna', 'font-family-bmdohyeon', 'font-family-bmyeonsung', 'font-family-bmeuljirot');
         
         // Apply new theme
         body.classList.add(`theme-${this.settings.theme}`);
         
         // Apply font size
         slideContent.classList.add(`font-size-${this.settings.fontSize}`);
+        
+        // Apply font family
+        slideContent.classList.add(`font-family-${this.settings.fontFamily}`);
         
         // Handle dark mode class for Tailwind
         if (this.settings.theme === 'dark') {
