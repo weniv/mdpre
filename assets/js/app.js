@@ -243,9 +243,35 @@ class GitHubMarkdownPresenter {
         });
     }
 
-    loadFromHistory(repo) {
-        document.getElementById('folder-name').value = repo.folder || '';
-        this.loadPresentationFromRepo(repo.owner, repo.repo, repo.folder || '');
+    async loadFromHistory(repo) {
+        // First, search for folders and populate dropdown
+        try {
+            this.showLoading(true);
+            const folders = await this.fetchRepositoryFolders(repo.owner, repo.repo);
+            this.populateFolderDropdown(folders);
+            
+            // Show folder selection
+            document.getElementById('folder-selection').classList.remove('hidden');
+            document.getElementById('load-presentation-btn').classList.remove('hidden');
+            
+            // Select the folder from history if it exists
+            const folderDropdown = document.getElementById('folder-dropdown');
+            const folderPath = repo.folder || '';
+            
+            // Try to find and select the matching folder
+            for (let i = 0; i < folderDropdown.options.length; i++) {
+                if (folderDropdown.options[i].value === folderPath) {
+                    folderDropdown.selectedIndex = i;
+                    break;
+                }
+            }
+            
+        } catch (error) {
+            console.error('히스토리에서 폴더 로드 실패:', error);
+            alert(`폴더를 가져올 수 없습니다: ${error.message}`);
+        } finally {
+            this.showLoading(false);
+        }
     }
 
     deleteFromHistory(index) {
@@ -414,13 +440,13 @@ class GitHubMarkdownPresenter {
                     handled = true;
                     break;
                 case 'ArrowUp':
-                    // Scroll up
-                    window.scrollBy(0, -100);
+                    // Smooth scroll up
+                    window.scrollBy({ top: -50, behavior: 'smooth' });
                     handled = true;
                     break;
                 case 'ArrowDown':
-                    // Scroll down
-                    window.scrollBy(0, 100);
+                    // Smooth scroll down
+                    window.scrollBy({ top: 50, behavior: 'smooth' });
                     handled = true;
                     break;
                 case 'Home':
