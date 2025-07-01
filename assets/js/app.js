@@ -666,8 +666,14 @@ class GitHubMarkdownPresenter {
             // Process images to use GitHub raw URLs
             let processedContent = this.processImageUrls(content.trim(), owner, repo, folderPath);
             
-            // First parse markdown to HTML
-            let htmlContent = marked.parse(processedContent);
+            // Configure marked with breaks option for line breaks
+            const markedOptions = {
+                breaks: true,  // Enable line breaks
+                gfm: true      // GitHub Flavored Markdown
+            };
+            
+            // First parse markdown to HTML with line break support
+            let htmlContent = marked.parse(processedContent, markedOptions);
             
             // Then process custom text formatting syntax on HTML
             htmlContent = this.processCustomSyntax(htmlContent);
