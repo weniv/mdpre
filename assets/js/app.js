@@ -28,6 +28,9 @@ class GitHubMarkdownPresenter {
             radio.addEventListener('change', () => this.handleRepoSourceChange());
         });
 
+        // Search folders button
+        document.getElementById('search-folders-btn').addEventListener('click', () => this.searchFolders());
+
         // Repository form submission
         document.getElementById('repo-form').addEventListener('submit', (e) => {
             e.preventDefault();
@@ -37,6 +40,9 @@ class GitHubMarkdownPresenter {
         // Slide navigation
         document.getElementById('prev-slide').addEventListener('click', () => this.previousSlide());
         document.getElementById('next-slide').addEventListener('click', () => this.nextSlide());
+
+        // Home button
+        document.getElementById('home-button').addEventListener('click', () => this.goHome());
 
         // Fullscreen toggle
         document.getElementById('fullscreen-toggle').addEventListener('click', () => this.toggleFullscreen());
@@ -176,6 +182,13 @@ class GitHubMarkdownPresenter {
         const customFields = document.getElementById('custom-repo-fields');
         const repoUrlInput = document.getElementById('repo-url');
         const historySection = document.getElementById('repo-history');
+        const folderSelection = document.getElementById('folder-selection');
+        const loadBtn = document.getElementById('load-presentation-btn');
+        
+        // Reset folder selection
+        folderSelection.classList.add('hidden');
+        loadBtn.classList.add('hidden');
+        document.getElementById('folder-dropdown').innerHTML = '<option value="">폴더를 선택하세요...</option>';
         
         if (selectedSource === 'current') {
             customFields.style.display = 'none';
@@ -274,22 +287,140 @@ class GitHubMarkdownPresenter {
         this.handleRepoSourceChange(); // Update UI based on initial state
     }
 
+    async searchFolders() {
+        const selectedSource = document.querySelector('input[name="repo-source"]:checked').value;
+        let owner, repo;
+        
+        if (selectedSource === 'current') {
+            if (!this.currentRepo) {
+                alert('현재 GitHub Pages 리포지토리를 감지할 수 없습니다.');
+                return;
+            }
+            owner = this.currentRepo.owner;
+            repo = this.currentRepo.repo;
+        } else {
+            const repoUrl = document.getElementById('repo-url').value.trim();
+            if (!repoUrl) {
+                alert('GitHub 리포지토리 URL을 입력해주세요.');
+                return;
+            }
+            try {
+                const parsed = this.parseGitHubUrl(repoUrl);
+                owner = parsed.owner;
+                repo = parsed.repo;
+            } catch (error) {
+                alert(error.message);
+                return;
+            }
+        }
+
+        try {
+            this.showLoading(true);
+            const folders = await this.fetchRepositoryFolders(owner, repo);
+            this.populateFolderDropdown(folders);
+            
+            document.getElementById('folder-selection').classList.remove('hidden');
+            document.getElementById('load-presentation-btn').classList.remove('hidden');
+            
+        } catch (error) {
+            console.error('폴더 검색 실패:', error);
+            alert(`폴더를 가져올 수 없습니다: ${error.message}`);
+        } finally {
+            this.showLoading(false);
+        }
+    }
+
+    async fetchRepositoryFolders(owner, repo) {
+        const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents`;
+        
+        try {
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error(`GitHub API 오류: ${response.status} ${response.statusText}`);
+            }
+            
+            const contents = await response.json();
+            const folders = [];
+            
+            // Add root folder option
+            folders.push({ name: '루트 폴더', path: '' });
+            
+            // Get all directories that contain markdown files
+            for (const item of contents) {
+                if (item.type === 'dir') {
+                    try {
+                        const dirResponse = await fetch(item.url);
+                        if (dirResponse.ok) {
+                            const dirContents = await dirResponse.json();
+                            const hasMarkdown = dirContents.some(file => 
+                                file.type === 'file' && file.name.endsWith('.md')
+                            );
+                            if (hasMarkdown) {
+                                folders.push({ name: item.name, path: item.path });
+                            }
+                        }
+                    } catch (e) {
+                        console.warn(`Failed to check folder ${item.name}:`, e);
+                    }
+                }
+            }
+
+            // Check if root has markdown files
+            const rootMarkdown = contents.filter(item => 
+                item.type === 'file' && item.name.endsWith('.md')
+            );
+            
+            if (rootMarkdown.length === 0 && folders.length === 1) {
+                // Remove root folder option if no markdown in root
+                folders.shift();
+            }
+
+            return folders;
+            
+        } catch (error) {
+            throw new Error(`리포지토리 폴더를 가져올 수 없습니다: ${error.message}`);
+        }
+    }
+
+    populateFolderDropdown(folders) {
+        const dropdown = document.getElementById('folder-dropdown');
+        dropdown.innerHTML = '<option value="">폴더를 선택하세요...</option>';
+        
+        folders.forEach(folder => {
+            const option = document.createElement('option');
+            option.value = folder.path;
+            option.textContent = folder.name;
+            dropdown.appendChild(option);
+        });
+    }
+
     setupKeyboardNavigation() {
         let keyboardIndicator = null;
 
         document.addEventListener('keydown', (e) => {
+            // Only handle keyboard shortcuts in presentation mode
+            if (this.slides.length === 0) return;
+            
             let handled = false;
 
             switch(e.key) {
                 case 'ArrowLeft':
-                case 'ArrowUp':
                     this.previousSlide();
                     handled = true;
                     break;
                 case 'ArrowRight':
-                case 'ArrowDown':
                 case ' ':  // Space bar
                     this.nextSlide();
+                    handled = true;
+                    break;
+                case 'ArrowUp':
+                    // Scroll up
+                    window.scrollBy(0, -100);
+                    handled = true;
+                    break;
+                case 'ArrowDown':
+                    // Scroll down
+                    window.scrollBy(0, 100);
                     handled = true;
                     break;
                 case 'Home':
@@ -324,7 +455,7 @@ class GitHubMarkdownPresenter {
         if (!indicator) {
             indicator = document.createElement('div');
             indicator.className = 'keyboard-navigation';
-            indicator.innerHTML = '← → 슬라이드 이동 | F11 전체화면 | ESC 나가기';
+            indicator.innerHTML = '← → 슬라이드 이동 | 스페이스바 다음 슬라이드 | ↑ ↓ 스크롤 | F11 전체화면 | ESC 나가기';
             document.body.appendChild(indicator);
         }
 
@@ -337,13 +468,18 @@ class GitHubMarkdownPresenter {
 
     async loadPresentation() {
         const selectedSource = document.querySelector('input[name="repo-source"]:checked').value;
-        const folderName = document.getElementById('folder-name').value.trim();
+        const folderPath = document.getElementById('folder-dropdown').value;
+        
+        if (!document.getElementById('folder-selection').classList.contains('hidden') && !folderPath && folderPath !== '') {
+            alert('폴더를 선택해주세요.');
+            return;
+        }
         
         let owner, repo;
         
         if (selectedSource === 'current') {
             if (!this.currentRepo) {
-                alert('현재 GitHub Pages 리포지토리를 감지할 수 없습니다. 다른 리포지토리 옵션을 사용해주세요.');
+                alert('현재 GitHub Pages 리포지토리를 감지할 수 없습니다.');
                 return;
             }
             owner = this.currentRepo.owner;
@@ -354,12 +490,17 @@ class GitHubMarkdownPresenter {
                 alert('GitHub 리포지토리 URL을 입력해주세요.');
                 return;
             }
-            const parsed = this.parseGitHubUrl(repoUrl);
-            owner = parsed.owner;
-            repo = parsed.repo;
+            try {
+                const parsed = this.parseGitHubUrl(repoUrl);
+                owner = parsed.owner;
+                repo = parsed.repo;
+            } catch (error) {
+                alert(error.message);
+                return;
+            }
         }
 
-        await this.loadPresentationFromRepo(owner, repo, folderName);
+        await this.loadPresentationFromRepo(owner, repo, folderPath);
     }
 
     async loadPresentationFromRepo(owner, repo, folderName) {
@@ -445,7 +586,9 @@ class GitHubMarkdownPresenter {
                 const response = await fetch(file.download_url);
                 if (response.ok) {
                     const content = await response.text();
-                    const slides = this.parseMarkdownToSlides(content, owner, repo);
+                    // Get the folder path from the file path
+                    const folderPath = file.path.includes('/') ? file.path.substring(0, file.path.lastIndexOf('/')) : '';
+                    const slides = this.parseMarkdownToSlides(content, owner, repo, folderPath);
                     this.slides.push(...slides);
                 }
             } catch (error) {
@@ -454,13 +597,13 @@ class GitHubMarkdownPresenter {
         }
     }
 
-    parseMarkdownToSlides(markdown, owner, repo) {
+    parseMarkdownToSlides(markdown, owner, repo, folderPath = '') {
         // Split by slide separator (---)
         const slideContents = markdown.split(/^---\s*$/m).filter(content => content.trim());
         
         return slideContents.map((content, index) => {
             // Process images to use GitHub raw URLs
-            const processedContent = this.processImageUrls(content.trim(), owner, repo);
+            const processedContent = this.processImageUrls(content.trim(), owner, repo, folderPath);
             
             return {
                 content: processedContent,
@@ -469,11 +612,15 @@ class GitHubMarkdownPresenter {
         });
     }
 
-    processImageUrls(content, owner, repo) {
+    processImageUrls(content, owner, repo, folderPath = '') {
         // Convert relative image paths to GitHub raw URLs
         return content.replace(
             /!\[([^\]]*)\]\((?!https?:\/\/)([^)]+)\)/g,
-            `![$1](https://raw.githubusercontent.com/${owner}/${repo}/main/$2)`
+            (match, alt, imagePath) => {
+                // If folderPath exists, prepend it to the image path
+                const fullPath = folderPath ? `${folderPath}/${imagePath}` : imagePath;
+                return `![${alt}](https://raw.githubusercontent.com/${owner}/${repo}/refs/heads/main/${fullPath})`;
+            }
         );
     }
 
@@ -644,6 +791,21 @@ class GitHubMarkdownPresenter {
         this.applySettings();
     }
 
+    goHome() {
+        // Reset to input section
+        document.getElementById('presentation-section').classList.add('hidden');
+        document.getElementById('repo-input-section').classList.remove('hidden');
+        
+        // Exit fullscreen if active
+        if (this.isFullscreen) {
+            this.exitFullscreen();
+        }
+        
+        // Reset slides
+        this.slides = [];
+        this.currentSlide = 0;
+    }
+
     showLoading(show) {
         const loading = document.getElementById('loading');
         if (show) {
@@ -671,9 +833,9 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// Prevent default behavior for certain keys
+// Prevent default behavior for certain keys (except arrows for scrolling in presentation mode)
 document.addEventListener('keydown', (e) => {
-    if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+    if (['Space'].includes(e.code)) {
         if (e.target === document.body || e.target.tagName === 'BUTTON') {
             e.preventDefault();
         }

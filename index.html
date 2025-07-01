@@ -49,7 +49,7 @@
                         <div class="flex space-x-4 mb-4">
                             <label class="flex items-center cursor-pointer">
                                 <input type="radio" name="repo-source" value="current" id="current-repo" class="mr-2 text-blue-600" checked>
-                                <span class="text-gray-700 dark:text-gray-300">현재 배포 리포지토리에서 찾기</span>
+                                <span class="text-gray-700 dark:text-gray-300">배포 리포지토리에서 찾기</span>
                             </label>
                             <label class="flex items-center cursor-pointer">
                                 <input type="radio" name="repo-source" value="custom" id="custom-repo" class="mr-2 text-blue-600">
@@ -77,14 +77,22 @@
                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" disabled>
                             </div>
                         </div>
-                        <div>
-                            <label for="folder-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                폴더명 (선택사항)
+                        
+                        <!-- Folder Selection -->
+                        <div id="folder-selection" class="hidden">
+                            <label for="folder-dropdown" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                폴더 선택
                             </label>
-                            <input type="text" id="folder-name" placeholder="slides, presentations, docs 등" 
-                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                            <select id="folder-dropdown" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                                <option value="">폴더를 선택하세요...</option>
+                            </select>
                         </div>
-                        <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                        
+                        <button type="button" id="search-folders-btn" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                            폴더 검색하기
+                        </button>
+                        
+                        <button type="submit" id="load-presentation-btn" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors hidden">
                             프레젠테이션 로드
                         </button>
                     </form>
@@ -111,8 +119,15 @@
                 </div>
             </div>
 
+            <!-- Home Button -->
+            <button id="home-button" class="fixed top-20 left-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m0 0V11a1 1 0 011-1h2a1 1 0 011 1v10m3 0a1 1 0 001-1V10M5 10l7-7 7 7"></path>
+                </svg>
+            </button>
+
             <!-- Fullscreen Toggle -->
-            <button id="fullscreen-toggle" class="fixed top-20 left-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+            <button id="fullscreen-toggle" class="fixed top-20 left-16 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
                 </svg>
