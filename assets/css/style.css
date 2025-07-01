@@ -3,35 +3,35 @@
 /* Font faces */
 @font-face {
     font-family: 'BMJUA';
-    src: url('../../../font/BMJUA_ttf.ttf') format('truetype');
+    src: url('../../font/BMJUA_ttf.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'BMHANNA';
-    src: url('../../../font/BMHANNAAir_ttf.ttf') format('truetype');
+    src: url('../../font/BMHANNAAir_ttf.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'BMDOHYEON';
-    src: url('../../../font/BMDOHYEON_ttf.ttf') format('truetype');
+    src: url('../../font/BMDOHYEON_ttf.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'BMYEONSUNG';
-    src: url('../../../font/BMYEONSUNG_ttf.ttf') format('truetype');
+    src: url('../../font/BMYEONSUNG_ttf.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'BMEULJIROT';
-    src: url('../../../font/BMEULJIROTTF.ttf') format('truetype');
+    src: url('../../font/BMEULJIROTTF.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
