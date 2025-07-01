@@ -21,9 +21,34 @@
     line-height: 1.875rem;
 }
 
+/* Body and html styling for viewport control */
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
 /* Slide content styling */
 #slide-content {
     transition: all 0.3s ease-in-out;
+}
+
+/* Slide container viewport control */
+#slide-container {
+    min-height: calc(100vh - 64px); /* Account for header height */
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Center slide content properly */
+#slide-container #slide-content {
+    margin: auto;
+    align-self: center;
 }
 
 /* Heading font sizes - hierarchical scaling */
@@ -220,6 +245,9 @@
     background: #fff;
     padding: 2rem !important;
     overflow: auto;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 .dark .fullscreen {
@@ -230,12 +258,14 @@
     max-width: none !important;
     width: 100% !important;
     height: auto !important;
-    min-height: calc(100vh - 4rem) !important;
+    min-height: auto !important;
     display: flex;
     flex-direction: column;
     justify-content: center;
     padding: 2rem !important;
     box-shadow: none !important;
+    margin: auto !important;
+    align-self: center !important;
 }
 
 /* Fullscreen UI adjustments */
@@ -484,4 +514,50 @@
 .dark .history-item-delete:hover {
     background-color: #7f1d1d;
     color: #fca5a5;
+}
+
+/* Custom text formatting classes */
+.text-center {
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.text-large {
+    font-size: 1.5rem;
+    line-height: 1.4;
+    font-weight: 500;
+    margin: 1rem 0;
+}
+
+.text-xlarge {
+    font-size: 2rem;
+    line-height: 1.3;
+    font-weight: 600;
+    margin: 1.5rem 0;
+}
+
+.text-highlight {
+    background: linear-gradient(120deg, #a7f3d0 0%, #a7f3d0 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 0.2em;
+    background-position: 0 88%;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+}
+
+.dark .text-highlight {
+    background: linear-gradient(120deg, #065f46 0%, #065f46 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 0.2em;
+    background-position: 0 88%;
+    color: #a7f3d0;
+}
+
+.text-bold {
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.dark .text-bold {
+    color: #f9fafb;
 }

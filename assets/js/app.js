@@ -440,13 +440,27 @@ class GitHubMarkdownPresenter {
                     handled = true;
                     break;
                 case 'ArrowUp':
-                    // Smooth scroll up
-                    window.scrollBy({ top: -50, behavior: 'smooth' });
+                    // Smooth scroll up - handle fullscreen vs normal mode
+                    if (this.isFullscreen) {
+                        const container = document.querySelector('.fullscreen #slide-content');
+                        if (container) {
+                            container.scrollBy({ top: -50, behavior: 'smooth' });
+                        }
+                    } else {
+                        window.scrollBy({ top: -50, behavior: 'smooth' });
+                    }
                     handled = true;
                     break;
                 case 'ArrowDown':
-                    // Smooth scroll down
-                    window.scrollBy({ top: 50, behavior: 'smooth' });
+                    // Smooth scroll down - handle fullscreen vs normal mode
+                    if (this.isFullscreen) {
+                        const container = document.querySelector('.fullscreen #slide-content');
+                        if (container) {
+                            container.scrollBy({ top: 50, behavior: 'smooth' });
+                        }
+                    } else {
+                        window.scrollBy({ top: 50, behavior: 'smooth' });
+                    }
                     handled = true;
                     break;
                 case 'Home':
@@ -629,7 +643,10 @@ class GitHubMarkdownPresenter {
         
         return slideContents.map((content, index) => {
             // Process images to use GitHub raw URLs
-            const processedContent = this.processImageUrls(content.trim(), owner, repo, folderPath);
+            let processedContent = this.processImageUrls(content.trim(), owner, repo, folderPath);
+            
+            // Process custom text formatting syntax
+            processedContent = this.processCustomSyntax(processedContent);
             
             return {
                 content: processedContent,
@@ -648,6 +665,40 @@ class GitHubMarkdownPresenter {
                 return `![${alt}](https://raw.githubusercontent.com/${owner}/${repo}/refs/heads/main/${fullPath})`;
             }
         );
+    }
+
+    processCustomSyntax(content) {
+        // Process {center}text{/center} - text centering
+        content = content.replace(
+            /\{center\}([\s\S]*?)\{\/center\}/g,
+            '<div class="text-center">$1</div>'
+        );
+        
+        // Process {large}text{/large} - large text
+        content = content.replace(
+            /\{large\}([\s\S]*?)\{\/large\}/g,
+            '<div class="text-large">$1</div>'
+        );
+        
+        // Process {xlarge}text{/xlarge} - extra large text
+        content = content.replace(
+            /\{xlarge\}([\s\S]*?)\{\/xlarge\}/g,
+            '<div class="text-xlarge">$1</div>'
+        );
+        
+        // Process {highlight}text{/highlight} - highlighted text
+        content = content.replace(
+            /\{highlight\}([\s\S]*?)\{\/highlight\}/g,
+            '<span class="text-highlight">$1</span>'
+        );
+        
+        // Process {bold}text{/bold} - bold text
+        content = content.replace(
+            /\{bold\}([\s\S]*?)\{\/bold\}/g,
+            '<strong class="text-bold">$1</strong>'
+        );
+        
+        return content;
     }
 
     showPresentation() {
