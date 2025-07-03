@@ -20,6 +20,8 @@ class GitHubMarkdownPresenter {
         this.setupKeyboardNavigation();
         this.setupFullscreenHandling();
         this.getCurrentRepoInfo();
+        this.updateThemeIcon();
+        this.setupSystemThemeListener();
     }
 
     bindEvents() {
@@ -867,13 +869,143 @@ class GitHubMarkdownPresenter {
 
     toggleTheme() {
         const currentTheme = this.settings.theme;
-        const themes = ['default', 'dark', 'academic'];
+        const themes = ['default', 'dark']; // 'academic' temporarily disabled
         const currentIndex = themes.indexOf(currentTheme);
         const nextIndex = (currentIndex + 1) % themes.length;
         
         this.settings.theme = themes[nextIndex];
         this.applySettings();
         this.saveSettings();
+        this.updateThemeIcon();
+    }
+
+    updateThemeIcon() {
+        const moonIcon = document.getElementById('moon-icon');
+        const sunIcon = document.getElementById('sun-icon');
+        
+        console.log('Updating theme icon. Current theme:', this.settings.theme);
+        
+        if (this.settings.theme === 'dark') {
+            moonIcon.classList.add('hidden');
+            sunIcon.classList.remove('hidden');
+            console.log('Showing sun icon (dark mode)');
+        } else {
+            moonIcon.classList.remove('hidden');
+            sunIcon.classList.add('hidden');
+            console.log('Showing moon icon (light mode)');
+        }
+        
+        // Show theme change notification
+        this.showThemeNotification();
+    }
+
+    showThemeNotification() {
+        const themeNames = {
+            'default': '기본 테마',
+            'dark': '다크 테마'
+            // 'academic': '학술용 테마' // temporarily disabled
+        };
+        
+        const notification = document.createElement('div');
+        notification.className = 'theme-notification';
+        notification.textContent = `${themeNames[this.settings.theme]}로 변경되었습니다.`;
+        
+        document.body.appendChild(notification);
+        
+        // Remove notification after 2 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 2000);
+    }
+
+    setupSystemThemeListener() {
+        // Listen for system theme changes
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        
+        const handleSystemThemeChange = (e) => {
+            console.log('System theme changed:', e.matches ? 'dark' : 'light');
+            
+            // Check if user has manually set a theme
+            const savedSettings = localStorage.getItem('github-presenter-settings');
+            let hasManualTheme = false;
+            
+            if (savedSettings) {
+                try {
+                    const parsed = JSON.parse(savedSettings);
+                    hasManualTheme = parsed.theme && parsed.theme !== 'default';
+                    console.log('Saved theme:', parsed.theme, 'Has manual theme:', hasManualTheme);
+                } catch (e) {
+                    console.error('Error parsing saved settings:', e);
+                }
+            } else {
+                console.log('No saved settings found');
+            }
+            
+            // Always update theme to match system, but show notification if user had manual setting
+            const isDark = e.matches;
+            const newTheme = isDark ? 'dark' : 'default';
+            const wasManual = hasManualTheme;
+            
+            console.log('Updating theme from', this.settings.theme, 'to', newTheme);
+            
+            this.settings.theme = newTheme;
+            this.applySettings();
+            this.updateThemeIcon();
+            
+            // Show notification if user had manual theme
+            if (wasManual) {
+                this.showSystemThemeNotification(isDark);
+            }
+            
+            console.log('Theme updated successfully to:', this.settings.theme);
+        };
+        
+        // Initial check
+        console.log('Initial system theme check');
+        handleSystemThemeChange(mediaQuery);
+        
+        // Listen for changes
+        if (mediaQuery.addEventListener) {
+            mediaQuery.addEventListener('change', handleSystemThemeChange);
+            console.log('System theme listener added (modern)');
+        } else {
+            // Fallback for older browsers
+            mediaQuery.addListener(handleSystemThemeChange);
+            console.log('System theme listener added (legacy)');
+        }
+        
+        // Also listen for storage changes (in case settings are cleared)
+        window.addEventListener('storage', (e) => {
+            console.log('Storage changed:', e.key);
+            if (e.key === 'github-presenter-settings') {
+                handleSystemThemeChange(mediaQuery);
+            }
+        });
+    }
+
+    showSystemThemeNotification(isDark) {
+        const themeName = isDark ? '다크' : '라이트';
+        const notification = document.createElement('div');
+        notification.className = 'theme-notification system-theme-notification';
+        notification.innerHTML = `
+            <div class="flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>시스템 ${themeName} 모드로 자동 변경되었습니다</span>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 3000);
     }
 
     openSettings() {
@@ -894,7 +1026,7 @@ class GitHubMarkdownPresenter {
         const slideContent = document.getElementById('slide-content');
         
         // Remove existing theme classes
-        body.classList.remove('theme-default', 'theme-dark', 'theme-academic');
+        body.classList.remove('theme-default', 'theme-dark'); // 'theme-academic' temporarily disabled
         slideContent.classList.remove('font-size-small', 'font-size-medium', 'font-size-large', 'font-size-xlarge');
         slideContent.classList.remove('font-family-default', 'font-family-bmjua', 'font-family-bmhanna', 'font-family-bmdohyeon', 'font-family-bmyeonsung', 'font-family-bmeuljirot');
         
@@ -913,6 +1045,26 @@ class GitHubMarkdownPresenter {
         } else {
             body.classList.remove('dark');
         }
+        
+        // Force reflow to ensure CSS variables are applied
+        this.forceThemeUpdate();
+        
+        // Update theme icon
+        this.updateThemeIcon();
+    }
+
+    forceThemeUpdate() {
+        // Force a reflow to ensure CSS variables are properly applied
+        const elements = document.querySelectorAll('*');
+        elements.forEach(el => {
+            // Trigger a reflow by accessing offsetHeight
+            el.offsetHeight;
+        });
+        
+        // Alternative: force a repaint
+        document.body.style.display = 'none';
+        document.body.offsetHeight; // Trigger reflow
+        document.body.style.display = '';
     }
 
     saveSettings() {
@@ -922,7 +1074,21 @@ class GitHubMarkdownPresenter {
     loadSettings() {
         const saved = localStorage.getItem('github-presenter-settings');
         if (saved) {
-            this.settings = { ...this.settings, ...JSON.parse(saved) };
+            try {
+                const parsed = JSON.parse(saved);
+                this.settings = { ...this.settings, ...parsed };
+                console.log('Loaded saved settings:', parsed);
+            } catch (e) {
+                console.error('Error loading settings:', e);
+                // If parsing fails, use system theme
+                const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                this.settings.theme = isDark ? 'dark' : 'default';
+            }
+        } else {
+            // If no saved settings, use system theme
+            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            this.settings.theme = isDark ? 'dark' : 'default';
+            console.log('No saved settings, using system theme:', this.settings.theme);
         }
         this.applySettings();
     }

@@ -68,6 +68,8 @@ html, body {
 /* Slide content styling */
 #slide-content {
     transition: all 0.3s ease-in-out;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
 }
 
 /* Slide container viewport control */
@@ -410,13 +412,226 @@ html, body {
     --accent-color: #60a5fa;
 }
 
-.theme-academic {
+/* .theme-academic {
     --bg-primary: #fefefe;
     --bg-secondary: #f7f7f7;
     --text-primary: #2d3748;
     --text-secondary: #718096;
     --border-color: #e2e8f0;
     --accent-color: #805ad5;
+} */
+
+/* Apply theme variables to body */
+body {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Smooth transitions for all theme-related elements */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Apply theme variables to header */
+header {
+    background-color: var(--bg-primary) !important;
+    border-bottom-color: var(--border-color) !important;
+}
+
+/* Apply theme variables to buttons and controls */
+#slide-nav,
+#home-button,
+#fullscreen-toggle {
+    background-color: var(--bg-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Apply theme variables to settings modal */
+#settings-modal .bg-white {
+    background-color: var(--bg-primary) !important;
+}
+
+/* Apply theme variables to form elements */
+input, select, textarea {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Apply theme variables to all text elements */
+h1, h2, h3, h4, h5, h6, p, span, div, label {
+    color: var(--text-primary);
+}
+
+/* Apply theme variables to background elements */
+.bg-white {
+    background-color: var(--bg-primary) !important;
+}
+
+.bg-gray-100 {
+    background-color: var(--bg-secondary) !important;
+}
+
+.bg-gray-800 {
+    background-color: var(--bg-primary) !important;
+}
+
+/* Apply theme variables to text color classes */
+.text-gray-900 {
+    color: var(--text-primary) !important;
+}
+
+.text-gray-700 {
+    color: var(--text-primary) !important;
+}
+
+.text-gray-500 {
+    color: var(--text-secondary) !important;
+}
+
+.text-gray-300 {
+    color: var(--text-secondary) !important;
+}
+
+.text-white {
+    color: var(--text-primary) !important;
+}
+
+/* Apply theme variables to border classes */
+.border-gray-200 {
+    border-color: var(--border-color) !important;
+}
+
+.border-gray-600 {
+    border-color: var(--border-color) !important;
+}
+
+.border-gray-700 {
+    border-color: var(--border-color) !important;
+}
+
+/* Apply theme variables to prose elements */
+.prose {
+    color: var(--text-primary) !important;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    color: var(--text-primary) !important;
+}
+
+.prose p {
+    color: var(--text-primary) !important;
+}
+
+.prose strong {
+    color: var(--text-primary) !important;
+}
+
+.prose a {
+    color: var(--accent-color) !important;
+}
+
+.prose blockquote {
+    border-left-color: var(--accent-color) !important;
+    color: var(--text-secondary) !important;
+}
+
+/* Override Tailwind dark mode classes */
+.dark .prose {
+    color: var(--text-primary) !important;
+}
+
+.dark .prose h1, .dark .prose h2, .dark .prose h3, .dark .prose h4, .dark .prose h5, .dark .prose h6 {
+    color: var(--text-primary) !important;
+}
+
+.dark .prose p {
+    color: var(--text-primary) !important;
+}
+
+.dark .prose strong {
+    color: var(--text-primary) !important;
+}
+
+.dark .prose a {
+    color: var(--accent-color) !important;
+}
+
+.dark .prose blockquote {
+    border-left-color: var(--accent-color) !important;
+    color: var(--text-secondary) !important;
+}
+
+/* Theme toggle button improvements */
+#theme-toggle {
+    transition: all 0.2s ease;
+}
+
+#theme-toggle:hover {
+    background-color: var(--bg-secondary);
+    transform: scale(1.05);
+}
+
+#theme-toggle:active {
+    transform: scale(0.95);
+}
+
+/* Theme icon transitions */
+#moon-icon,
+#sun-icon {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#moon-icon.hidden,
+#sun-icon.hidden {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+/* Theme change notification */
+.theme-notification {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* System theme notification styling */
+.system-theme-notification {
+    background-color: var(--bg-primary);
+    border-left: 4px solid var(--accent-color);
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    animation: slideInRight 0.3s ease-out;
+    max-width: 300px;
+}
+
+.system-theme-notification svg {
+    color: var(--accent-color);
 }
 
 /* Responsive design */
