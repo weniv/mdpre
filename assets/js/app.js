@@ -141,6 +141,7 @@ class GitHubMarkdownPresenter {
                 logoContainer.style.top = '20px';
                 logoContainer.style.left = '20px';
                 logoContainer.style.zIndex = '100';
+                logoContainer.style.transform = 'none';
             }
         } else {
             container.classList.remove('fullscreen');
@@ -154,6 +155,7 @@ class GitHubMarkdownPresenter {
                 logoContainer.style.top = '';
                 logoContainer.style.left = '';
                 logoContainer.style.zIndex = '';
+                logoContainer.style.transform = '';
             }
         }
 
