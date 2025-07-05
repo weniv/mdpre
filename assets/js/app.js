@@ -9,6 +9,7 @@ class GitHubMarkdownPresenter {
             fontFamily: 'bmjua'
         };
         this.repoHistory = [];
+        this.fileSlideMap = [];
         
         this.init();
     }
@@ -51,8 +52,23 @@ class GitHubMarkdownPresenter {
         // Home button
         document.getElementById('home-button').addEventListener('click', () => this.goHome());
 
+        // Presentation logo
+        document.getElementById('presentation-logo').addEventListener('click', () => this.goToFirstSlide());
+
         // Fullscreen toggle
         document.getElementById('fullscreen-toggle').addEventListener('click', () => this.toggleFullscreen());
+
+        // File navigation toggle
+        document.getElementById('file-nav-toggle').addEventListener('click', () => this.toggleFileNavigation());
+        document.getElementById('close-file-nav').addEventListener('click', () => this.closeFileNavigation());
+
+        // Page input navigation
+        document.getElementById('page-input').addEventListener('change', (e) => this.goToPageInput(e.target.value));
+        document.getElementById('page-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                this.goToPageInput(e.target.value);
+            }
+        });
 
         // Theme toggle
         document.getElementById('theme-toggle').addEventListener('click', () => this.toggleTheme());
@@ -585,6 +601,9 @@ class GitHubMarkdownPresenter {
                 throw new Error('마크다운 파일을 찾을 수 없습니다.');
             }
 
+            // Try to load logo
+            await this.loadPresentationLogo(owner, repo, folderName);
+
             // Add to history
             this.addToHistory(owner, repo, folderName);
 
@@ -648,6 +667,7 @@ class GitHubMarkdownPresenter {
 
     async loadMarkdownFiles(owner, repo, files) {
         this.slides = [];
+        this.fileSlideMap = [];
         
         for (const file of files) {
             try {
@@ -657,6 +677,16 @@ class GitHubMarkdownPresenter {
                     // Get the folder path from the file path
                     const folderPath = file.path.includes('/') ? file.path.substring(0, file.path.lastIndexOf('/')) : '';
                     const slides = this.parseMarkdownToSlides(content, owner, repo, folderPath);
+                    
+                    // Track file information
+                    const fileInfo = {
+                        name: file.name,
+                        path: file.path,
+                        startSlide: this.slides.length,
+                        slideCount: slides.length
+                    };
+                    this.fileSlideMap.push(fileInfo);
+                    
                     this.slides.push(...slides);
                 }
             } catch (error) {
@@ -791,17 +821,24 @@ class GitHubMarkdownPresenter {
     }
 
     updateNavigation() {
-        const counter = document.getElementById('slide-counter');
+        const pageInput = document.getElementById('page-input');
+        const totalPages = document.getElementById('total-pages');
         const prevBtn = document.getElementById('prev-slide');
         const nextBtn = document.getElementById('next-slide');
         
-        counter.textContent = `${this.currentSlide + 1} / ${this.slides.length}`;
+        // Update page input and total pages
+        pageInput.value = this.currentSlide + 1;
+        pageInput.max = this.slides.length;
+        totalPages.textContent = this.slides.length;
         
         prevBtn.disabled = this.currentSlide === 0;
         nextBtn.disabled = this.currentSlide === this.slides.length - 1;
         
         prevBtn.classList.toggle('opacity-50', this.currentSlide === 0);
         nextBtn.classList.toggle('opacity-50', this.currentSlide === this.slides.length - 1);
+        
+        // Update file navigation highlighting
+        this.updateFileNavigationHighlight();
     }
 
     previousSlide() {
@@ -940,6 +977,151 @@ class GitHubMarkdownPresenter {
         // Reset slides
         this.slides = [];
         this.currentSlide = 0;
+        this.fileSlideMap = [];
+        
+        // Hide logo
+        document.getElementById('presentation-logo').classList.add('hidden');
+    }
+
+    async loadPresentationLogo(owner, repo, folderName) {
+        const logoNames = ['logo.png', 'logo.jpg', 'logo.jpeg', 'logo.svg', 'logo.gif'];
+        const logoContainer = document.getElementById('presentation-logo');
+        const logoImage = document.getElementById('logo-image');
+        
+        try {
+            // Try to find logo in the specified folder or root
+            const apiUrl = folderName ? 
+                `https://api.github.com/repos/${owner}/${repo}/contents/${folderName}` :
+                `https://api.github.com/repos/${owner}/${repo}/contents`;
+            
+            const response = await fetch(apiUrl);
+            if (!response.ok) return;
+            
+            const contents = await response.json();
+            
+            // Look for logo files
+            for (const logoName of logoNames) {
+                const logoFile = contents.find(item => 
+                    item.type === 'file' && item.name.toLowerCase() === logoName
+                );
+                
+                if (logoFile) {
+                    // Test if the image loads successfully
+                    const logoUrl = `https://raw.githubusercontent.com/${owner}/${repo}/refs/heads/main/${logoFile.path}`;
+                    const img = new Image();
+                    
+                    img.onload = () => {
+                        logoImage.src = logoUrl;
+                        logoContainer.classList.remove('hidden');
+                    };
+                    
+                    img.onerror = () => {
+                        console.warn(`Logo file found but failed to load: ${logoUrl}`);
+                    };
+                    
+                    img.src = logoUrl;
+                    break; // Use the first logo found
+                }
+            }
+        } catch (error) {
+            console.warn('Logo loading failed:', error);
+        }
+    }
+
+    async loadLocalLogo(files) {
+        const logoNames = ['logo.png', 'logo.jpg', 'logo.jpeg', 'logo.svg', 'logo.gif'];
+        const logoContainer = document.getElementById('presentation-logo');
+        const logoImage = document.getElementById('logo-image');
+        
+        // Look for logo files in the uploaded files
+        for (const logoName of logoNames) {
+            const logoFile = Array.from(files).find(file => 
+                file.name.toLowerCase() === logoName
+            );
+            
+            if (logoFile) {
+                try {
+                    const logoUrl = URL.createObjectURL(logoFile);
+                    logoImage.src = logoUrl;
+                    logoContainer.classList.remove('hidden');
+                    break; // Use the first logo found
+                } catch (error) {
+                    console.warn(`Failed to load local logo: ${logoFile.name}`, error);
+                }
+            }
+        }
+    }
+
+    goToFirstSlide() {
+        if (this.slides.length > 0) {
+            this.goToSlide(0);
+        } else {
+            this.goHome();
+        }
+    }
+
+    goToPageInput(pageNumber) {
+        const page = parseInt(pageNumber);
+        if (page >= 1 && page <= this.slides.length) {
+            this.goToSlide(page - 1);
+        } else {
+            // Reset to current page if invalid
+            document.getElementById('page-input').value = this.currentSlide + 1;
+        }
+    }
+
+    toggleFileNavigation() {
+        const sidebar = document.getElementById('file-nav-sidebar');
+        if (sidebar.classList.contains('hidden')) {
+            this.showFileNavigation();
+        } else {
+            this.closeFileNavigation();
+        }
+    }
+
+    showFileNavigation() {
+        const sidebar = document.getElementById('file-nav-sidebar');
+        sidebar.classList.remove('hidden');
+        this.populateFileNavigation();
+    }
+
+    closeFileNavigation() {
+        const sidebar = document.getElementById('file-nav-sidebar');
+        sidebar.classList.add('hidden');
+    }
+
+    populateFileNavigation() {
+        const fileNavList = document.getElementById('file-nav-list');
+        fileNavList.innerHTML = '';
+        
+        this.fileSlideMap.forEach((fileInfo, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-nav-item cursor-pointer p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors';
+            fileItem.innerHTML = `
+                <div class="text-sm font-medium text-gray-900 dark:text-white">${fileInfo.name}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">슬라이드 ${fileInfo.startSlide + 1}-${fileInfo.startSlide + fileInfo.slideCount}</div>
+            `;
+            
+            fileItem.addEventListener('click', () => {
+                this.goToSlide(fileInfo.startSlide);
+                this.closeFileNavigation();
+            });
+            
+            fileNavList.appendChild(fileItem);
+        });
+    }
+
+    updateFileNavigationHighlight() {
+        const fileNavItems = document.querySelectorAll('.file-nav-item');
+        fileNavItems.forEach((item, index) => {
+            const fileInfo = this.fileSlideMap[index];
+            if (fileInfo && this.currentSlide >= fileInfo.startSlide && 
+                this.currentSlide < fileInfo.startSlide + fileInfo.slideCount) {
+                item.classList.add('bg-blue-100', 'dark:bg-blue-900');
+            } else {
+                item.classList.remove('bg-blue-100', 'dark:bg-blue-900');
+            }
+        });
     }
 
     handleFileUpload() {
@@ -970,6 +1152,9 @@ class GitHubMarkdownPresenter {
                 throw new Error('유효한 마크다운 슬라이드를 찾을 수 없습니다.');
             }
             
+            // Try to load logo from local files
+            await this.loadLocalLogo(files);
+            
             this.showPresentation();
             
         } catch (error) {
@@ -982,6 +1167,7 @@ class GitHubMarkdownPresenter {
 
     async loadLocalMarkdownFiles(files) {
         this.slides = [];
+        this.fileSlideMap = [];
         
         const fileArray = Array.from(files);
         // Sort files by name
@@ -993,6 +1179,16 @@ class GitHubMarkdownPresenter {
                     const content = await this.readFileContent(file);
                     // For local files, we need to handle image paths differently
                     const slides = this.parseLocalMarkdownToSlides(content);
+                    
+                    // Track file information
+                    const fileInfo = {
+                        name: file.name,
+                        path: file.name,
+                        startSlide: this.slides.length,
+                        slideCount: slides.length
+                    };
+                    this.fileSlideMap.push(fileInfo);
+                    
                     this.slides.push(...slides);
                 } catch (error) {
                     console.warn(`파일 읽기 실패: ${file.name}`, error);
@@ -1052,15 +1248,23 @@ document.addEventListener('DOMContentLoaded', () => {
     new GitHubMarkdownPresenter();
 });
 
-// Handle click outside settings modal
+// Handle click outside settings modal and file navigation
 document.addEventListener('click', (e) => {
     const modal = document.getElementById('settings-modal');
     const settingsBtn = document.getElementById('settings-btn');
+    const fileNavSidebar = document.getElementById('file-nav-sidebar');
+    const fileNavToggle = document.getElementById('file-nav-toggle');
     
     if (!modal.classList.contains('hidden') && 
         !modal.contains(e.target) && 
         !settingsBtn.contains(e.target)) {
         modal.classList.add('hidden');
+    }
+    
+    if (!fileNavSidebar.classList.contains('hidden') && 
+        !fileNavSidebar.contains(e.target) && 
+        !fileNavToggle.contains(e.target)) {
+        fileNavSidebar.classList.add('hidden');
     }
 });
 

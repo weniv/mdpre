@@ -132,7 +132,12 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                         </svg>
                     </button>
-                    <span id="slide-counter" class="text-sm font-medium text-gray-700 dark:text-gray-300 min-w-12 text-center">1 / 1</span>
+                    <div class="flex items-center space-x-1">
+                        <input type="number" id="page-input" min="1" max="1" value="1" 
+                               class="w-12 px-1 py-1 text-xs text-center border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">/</span>
+                        <span id="total-pages" class="text-sm font-medium text-gray-700 dark:text-gray-300">1</span>
+                    </div>
                     <button id="next-slide" class="p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white disabled:opacity-50">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -155,9 +160,35 @@
                 </svg>
             </button>
 
+            <!-- File Navigation Toggle -->
+            <button id="file-nav-toggle" class="fixed top-20 left-28 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+
+            <!-- File Navigation Sidebar -->
+            <div id="file-nav-sidebar" class="fixed top-20 left-4 z-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 max-w-xs w-64 max-h-96 overflow-y-auto hidden">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">파일 목록</h3>
+                    <button id="close-file-nav" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div id="file-nav-list" class="space-y-2">
+                    <!-- File navigation items will be inserted here -->
+                </div>
+            </div>
+
             <!-- Slide Container -->
             <div id="slide-container" class="min-h-screen p-8 flex items-center justify-center">
-                <div id="slide-content" class="max-w-4xl w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-12 prose prose-lg dark:prose-invert max-w-none">
+                <div id="slide-content" class="max-w-4xl w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-12 prose prose-lg dark:prose-invert max-w-none relative">
+                    <!-- Presentation Logo -->
+                    <div id="presentation-logo" class="absolute top-4 left-4 cursor-pointer hidden">
+                        <img id="logo-image" class="max-w-16 max-h-16 object-contain" alt="Presentation Logo">
+                    </div>
                     <!-- Slide content will be rendered here -->
                 </div>
             </div>
