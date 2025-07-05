@@ -219,7 +219,7 @@ class GitHubMarkdownPresenter {
         if (this.currentRepo) {
             const currentRepoRadio = document.getElementById('current-repo');
             const label = currentRepoRadio.nextElementSibling;
-            label.innerHTML = `현재 배포 리포지토리에서 찾기 <span class="text-sm text-gray-500">(${this.currentRepo.owner}/${this.currentRepo.repo})</span>`;
+            label.innerHTML = `배포 repo에서 찾기 <span class="text-sm text-gray-500">(${this.currentRepo.owner}/${this.currentRepo.repo})</span>`;
         }
     }
 
