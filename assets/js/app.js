@@ -127,17 +127,34 @@ class GitHubMarkdownPresenter {
         const container = document.getElementById('slide-container');
         const slideNav = document.getElementById('slide-nav');
         const fullscreenToggle = document.getElementById('fullscreen-toggle');
+        const logoContainer = document.getElementById('presentation-logo');
         
         if (this.isFullscreen) {
             container.classList.add('fullscreen');
             // Ensure navigation controls are visible and properly positioned
             if (slideNav) slideNav.style.display = 'block';
             if (fullscreenToggle) fullscreenToggle.style.display = 'block';
+            
+            // Position logo at top-left of screen in fullscreen mode
+            if (logoContainer) {
+                logoContainer.style.position = 'fixed';
+                logoContainer.style.top = '20px';
+                logoContainer.style.left = '20px';
+                logoContainer.style.zIndex = '100';
+            }
         } else {
             container.classList.remove('fullscreen');
             // Reset any inline styles that might interfere
             if (slideNav) slideNav.style.display = '';
             if (fullscreenToggle) fullscreenToggle.style.display = '';
+            
+            // Reset logo position to slide-content relative positioning
+            if (logoContainer) {
+                logoContainer.style.position = '';
+                logoContainer.style.top = '';
+                logoContainer.style.left = '';
+                logoContainer.style.zIndex = '';
+            }
         }
 
         // Trigger layout recalculation after a short delay
@@ -805,7 +822,18 @@ class GitHubMarkdownPresenter {
         slideContent.style.transform = 'translateX(20px)';
         
         setTimeout(() => {
+            // Preserve logo element
+            const logoElement = document.getElementById('presentation-logo');
+            const logoParent = logoElement ? logoElement.parentNode : null;
+            
+            // Update content
             slideContent.innerHTML = slide.html;
+            
+            // Re-add logo element if it existed
+            if (logoElement && logoParent === slideContent) {
+                slideContent.appendChild(logoElement);
+            }
+            
             this.applySyntaxHighlighting();
             
             slideContent.style.opacity = '1';
@@ -988,16 +1016,26 @@ class GitHubMarkdownPresenter {
         const logoContainer = document.getElementById('presentation-logo');
         const logoImage = document.getElementById('logo-image');
         
+        // Reset logo state
+        logoContainer.classList.add('hidden');
+        logoImage.src = '';
+        
         try {
             // Try to find logo in the specified folder or root
             const apiUrl = folderName ? 
                 `https://api.github.com/repos/${owner}/${repo}/contents/${folderName}` :
                 `https://api.github.com/repos/${owner}/${repo}/contents`;
             
+            console.log('Searching for logo in:', apiUrl);
+            
             const response = await fetch(apiUrl);
-            if (!response.ok) return;
+            if (!response.ok) {
+                console.warn('Failed to fetch repository contents:', response.status);
+                return;
+            }
             
             const contents = await response.json();
+            console.log('Repository contents:', contents.map(item => item.name));
             
             // Look for logo files
             for (const logoName of logoNames) {
@@ -1006,13 +1044,19 @@ class GitHubMarkdownPresenter {
                 );
                 
                 if (logoFile) {
+                    console.log('Found logo file:', logoFile.name);
                     // Test if the image loads successfully
                     const logoUrl = `https://raw.githubusercontent.com/${owner}/${repo}/refs/heads/main/${logoFile.path}`;
+                    console.log('Logo URL:', logoUrl);
+                    
                     const img = new Image();
                     
                     img.onload = () => {
+                        console.log('Logo loaded successfully');
                         logoImage.src = logoUrl;
                         logoContainer.classList.remove('hidden');
+                        // Force a layout update
+                        logoContainer.style.display = 'block';
                     };
                     
                     img.onerror = () => {
@@ -1022,6 +1066,10 @@ class GitHubMarkdownPresenter {
                     img.src = logoUrl;
                     break; // Use the first logo found
                 }
+            }
+            
+            if (!contents.some(item => logoNames.includes(item.name.toLowerCase()))) {
+                console.log('No logo files found in repository');
             }
         } catch (error) {
             console.warn('Logo loading failed:', error);
