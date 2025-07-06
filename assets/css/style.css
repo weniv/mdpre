@@ -1,4 +1,4 @@
-/* Custom styles for GitHub Markdown Presenter */
+/* Custom styles for WENIV Presenter */
 
 /* Font faces */
 @font-face {
@@ -68,6 +68,13 @@ html, body {
 /* Slide content styling */
 #slide-content {
     transition: all 0.3s ease-in-out;
+    max-width: 90vw;
+    width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    font-size: 2rem; /* 기본 텍스트 크기 200% 확대 */
+    line-height: 1.8; /* 줄간격 개선 */
+    display: block; /* flexbox 제거하여 일반 블록 요소로 설정 */
 }
 
 /* Slide container viewport control */
@@ -77,8 +84,10 @@ html, body {
     overflow-y: auto;
     overflow-x: hidden;
     display: flex;
-    align-items: center;
+    align-items: center; /* 중앙정렬 */
     justify-content: center;
+    padding: 2rem 1rem;
+    scroll-behavior: smooth; /* 부드러운 스크롤 */
 }
 
 /* Center slide content properly */
@@ -89,35 +98,35 @@ html, body {
 
 /* Heading font sizes - hierarchical scaling */
 #slide-content h1 {
-    font-size: 2.5rem; /* 40px */
-    line-height: 1.2;
+    font-size: 5rem; /* 80px - 200% of 40px */
+    line-height: 1.3; /* 줄간격 개선 */
     font-weight: 700;
     border-bottom: 2px solid #e5e7eb;
     padding-bottom: 0.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem; /* 제목 아래 여백 확대 */
     margin-top: 0;
 }
 
 #slide-content h2 {
-    font-size: 2rem; /* 32px */
-    line-height: 1.25;
+    font-size: 4rem; /* 64px - 200% of 32px */
+    line-height: 1.35; /* 줄간격 개선 */
     font-weight: 600;
     color: #1f2937;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
+    margin-top: 2.5rem; /* 제목 위 여백 확대 */
+    margin-bottom: 1.5rem; /* 제목 아래 여백 확대 */
 }
 
 #slide-content h3 {
-    font-size: 1.75rem; /* 28px */
-    line-height: 1.3;
+    font-size: 3.5rem; /* 56px - 200% of 28px */
+    line-height: 1.4; /* 줄간격 개선 */
     font-weight: 600;
     color: #374151;
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
+    margin-top: 2rem; /* 제목 위 여백 확대 */
+    margin-bottom: 1rem; /* 제목 아래 여백 확대 */
 }
 
 #slide-content h4 {
-    font-size: 1.5rem; /* 24px */
+    font-size: 3rem; /* 48px - 200% of 24px */
     line-height: 1.35;
     font-weight: 600;
     color: #4b5563;
@@ -127,7 +136,7 @@ html, body {
 
 #slide-content h5,
 #slide-content h6 {
-    font-size: 1.25rem; /* 20px */
+    font-size: 2.5rem; /* 40px - 200% of 20px */
     line-height: 1.4;
     font-weight: 600;
     color: #6b7280;
@@ -136,9 +145,9 @@ html, body {
 }
 
 #slide-content p {
-    font-size: 1rem; /* 16px */
-    line-height: 1.6;
-    margin-bottom: 1rem;
+    font-size: 2rem; /* 32px - 200% of 16px */
+    line-height: 1.8; /* 줄간격 개선 */
+    margin-bottom: 1.5rem; /* 단락 간격 확대 */
 }
 
 /* Dark mode heading colors */
@@ -188,7 +197,7 @@ html, body {
     color: #dc2626;
     padding: 0.125rem 0.25rem;
     border-radius: 0.25rem;
-    font-size: 0.875em;
+    font-size: 1.75em; /* 200% of 0.875em */
 }
 
 .dark #slide-content code {
@@ -243,9 +252,11 @@ html, body {
 }
 
 #slide-content li {
-    margin: 0.5rem 0;
+    margin: 0.8rem 0; /* 리스트 아이템 간격 확대 */
     display: list-item;
     list-style-position: outside;
+    font-size: 2rem; /* 32px - 200% of 16px */
+    line-height: 1.8; /* 줄간격 개선 */
 }
 
 /* Override prose styles that might remove list markers */
@@ -336,7 +347,7 @@ html, body {
     max-width: none !important;
     width: 100% !important;
     height: auto !important;
-    min-height: auto !important;
+    min-height: 70vh !important; /* 전체화면에서도 최소 높이 유지 */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -427,7 +438,49 @@ html, body {
     
     #slide-content {
         padding: 1.5rem;
-        font-size: 0.875rem;
+        font-size: 1.5rem; /* 150% of base for mobile */
+        line-height: 1.7; /* 모바일 줄간격 조정 */
+        min-height: 50vh; /* 모바일에서 최소 높이 조정 */
+    }
+    
+    #slide-content h1 {
+        font-size: 3rem; /* 150% of original 2rem */
+        line-height: 1.3;
+    }
+    
+    #slide-content h2 {
+        font-size: 2.5rem; /* 150% of original 1.6rem */
+        line-height: 1.35;
+    }
+    
+    #slide-content h3 {
+        font-size: 2rem; /* 150% of original 1.3rem */
+        line-height: 1.4;
+    }
+    
+    #slide-content h4 {
+        font-size: 1.8rem; /* 150% of original 1.2rem */
+        line-height: 1.4;
+    }
+    
+    #slide-content h5,
+    #slide-content h6 {
+        font-size: 1.5rem; /* 150% of original 1rem */
+        line-height: 1.5;
+    }
+    
+    #slide-content p {
+        font-size: 1.5rem; /* 150% of original 1rem */
+        line-height: 1.7;
+    }
+    
+    #slide-content li {
+        font-size: 1.5rem; /* 150% of original 1rem */
+        line-height: 1.7;
+    }
+    
+    .text-center {
+        font-size: 1.5rem; /* 모바일 센터 텍스트 조정 */
     }
     
     #slide-nav {
@@ -452,19 +505,49 @@ html, body {
 @media (max-width: 480px) {
     #slide-content {
         padding: 1rem;
-        font-size: 0.8125rem;
+        font-size: 1.25rem; /* 125% of base for small mobile */
+        line-height: 1.6; /* 소형 모바일 줄간격 조정 */
+        min-height: 45vh; /* 소형 모바일에서 최소 높이 조정 */
     }
     
     #slide-content h1 {
-        font-size: 1.5rem;
+        font-size: 2.5rem; /* 125% of original 2rem */
+        line-height: 1.3;
     }
     
     #slide-content h2 {
-        font-size: 1.25rem;
+        font-size: 2rem; /* 125% of original 1.6rem */
+        line-height: 1.35;
     }
     
     #slide-content h3 {
-        font-size: 1.125rem;
+        font-size: 1.7rem; /* 125% of original 1.35rem */
+        line-height: 1.4;
+    }
+    
+    #slide-content h4 {
+        font-size: 1.5rem; /* 125% of original 1.2rem */
+        line-height: 1.4;
+    }
+    
+    #slide-content h5,
+    #slide-content h6 {
+        font-size: 1.25rem; /* 125% of original 1rem */
+        line-height: 1.5;
+    }
+    
+    #slide-content p {
+        font-size: 1.25rem; /* 125% of original 1rem */
+        line-height: 1.6;
+    }
+    
+    #slide-content li {
+        font-size: 1.25rem; /* 125% of original 1rem */
+        line-height: 1.6;
+    }
+    
+    .text-center {
+        font-size: 1.25rem; /* 소형 모바일 센터 텍스트 조정 */
     }
 }
 
@@ -597,7 +680,18 @@ html, body {
 /* Custom text formatting classes */
 .text-center {
     text-align: center;
-    margin: 1rem 0;
+    margin: 1.5rem 0; /* 여백 확대 */
+    font-size: 2rem; /* 기본 텍스트 크기 200% 확대 */
+    line-height: 1.8; /* 줄간격 개선 */
+}
+
+/* Slide content의 text-center만 상하 중앙정렬 */
+#slide-content .text-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 40vh; /* 최소 높이 설정으로 상하 중앙정렬 공간 확보 */
 }
 
 /* Center class list handling */
@@ -621,17 +715,17 @@ html, body {
 }
 
 .text-large {
-    font-size: 1.5rem;
-    line-height: 1.4;
+    font-size: 3rem; /* 200% 확대 */
+    line-height: 1.6; /* 줄간격 개선 */
     font-weight: 500;
-    margin: 1rem 0;
+    margin: 1.5rem 0; /* 여백 확대 */
 }
 
 .text-xlarge {
-    font-size: 2rem;
-    line-height: 1.3;
+    font-size: 4rem; /* 200% 확대 */
+    line-height: 1.5; /* 줄간격 개선 */
     font-weight: 600;
-    margin: 1.5rem 0;
+    margin: 2rem 0; /* 여백 확대 */
 }
 
 .text-highlight {
@@ -639,8 +733,10 @@ html, body {
     background-repeat: no-repeat;
     background-size: 100% 0.2em;
     background-position: 0 88%;
-    padding: 0.125rem 0.25rem;
-    border-radius: 0.25rem;
+    padding: 0.25rem 0.5rem; /* 패딩 확대 */
+    border-radius: 0.5rem; /* 보더 라디우스 확대 */
+    font-size: inherit; /* 부모 요소의 폰트 크기 상속 */
+    line-height: inherit; /* 부모 요소의 줄간격 상속 */
 }
 
 .dark .text-highlight {
@@ -654,6 +750,8 @@ html, body {
 .text-bold {
     font-weight: 700;
     color: #1f2937;
+    font-size: inherit; /* 부모 요소의 폰트 크기 상속 */
+    line-height: inherit; /* 부모 요소의 줄간격 상속 */
 }
 
 .dark .text-bold {

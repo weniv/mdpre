@@ -1,6 +1,6 @@
-# GitHub Markdown Presenter
+# WENIV Presenter
 
-GitHub Pages 기반의 마크다운 프레젠테이션 웹 서비스입니다. Marp의 장점은 유지하면서 단점을 보완한 웹 기반 프레젠테이션 도구입니다.
+GitHub Pages 기반의 마크다운 프레젠테이션 웹 서비스입니다. Marp의 장점은 유지하면서 단점을 보완한 웹 기반 프레젠테이션 도구입니다. 해당 서비스는 Claude Code와 함께 개발되었습니다. 자세한 개발기는 30일 첼린지 폴더를 참고해주세요.
 
 ## 📚 배포
 
@@ -21,22 +21,24 @@ URL: https://weniv.github.io/mdpre/
 
 ### 로컬 개발 환경
 
+이 프로젝트는 바닐라 JavaScript와 Tailwind CSS로 작성되었습니다. 따라서 라이브 서버나 Node.js 환경에서 쉽게 실행할 수 있습니다.
+
 1. 리포지토리 클론
 ```bash
-git clone https://github.com/username/github-markdown-presenter.git
+git clone https://github.com/weniv/mdpre.git
 cd github-markdown-presenter
 ```
 
 2. 로컬 서버 실행
 ```bash
-# Python을 사용한 방법
+# 1. VSCode Live Server 확장 사용
+
+# 2. Python을 사용한 방법
 python -m http.server 8080
 
-# 또는 Node.js가 설치된 경우
+# 3. Node.js가 설치된 경우
 npm run dev
 ```
-
-3. 브라우저에서 `http://localhost:8080` 접속
 
 ### GitHub Pages 배포
 
@@ -49,7 +51,7 @@ npm run dev
 
 ### 마크다운 슬라이드 작성
 
-슬라이드는 `---`로 구분합니다:
+슬라이드는 `---`로 구분합니다.
 
 ```markdown
 # 첫 번째 슬라이드
