@@ -66,15 +66,10 @@ npm run dev
 ---
 ```
 
-코드 블록은 백틱 3개로 감싸고, 언어를 지정할 수 있습니다.
-
-```md
-```javascript
-function hello() {
-    console.log("Hello, World!");
-}
-```
-```
+코드 블록은 백틱 3개로 감싸고, 언어를 지정할 수 있습니다. 마크다운 문법과 같습니다.<br>
+\`\`\`js<br>
+console.log("Hello, World!");<br>
+\`\`\`
 
 ### 📝 커스텀 텍스트 문법
 
