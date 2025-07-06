@@ -221,6 +221,17 @@ html, body {
     display: block;
 }
 
+/* Fix flex layout for image + source combination */
+.text-center img {
+    margin-bottom: 0.5rem;
+}
+
+.text-center .text-highlight {
+    display: inline;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
 /* Lists */
 #slide-content ul, #slide-content ol {
     margin: 1rem 0;
@@ -687,19 +698,19 @@ html, body {
 
 /* Slide content의 text-center만 상하 중앙정렬 */
 #slide-content .text-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
     text-align: center;
-    min-height: 40vh; /* 최소 높이 설정으로 상하 중앙정렬 공간 확보 */
+    margin: 1.5rem auto;
 }
 
 /* Center class list handling */
 .text-center ul,
 .text-center ol {
-    display: inline-block;
+    display: block;
     text-align: left;
     list-style-position: inside;
+    margin: 1rem auto;
+    width: fit-content;
 }
 
 .text-center ul {
@@ -737,6 +748,8 @@ html, body {
     border-radius: 0.5rem; /* 보더 라디우스 확대 */
     font-size: inherit; /* 부모 요소의 폰트 크기 상속 */
     line-height: inherit; /* 부모 요소의 줄간격 상속 */
+    display: inline; /* 인라인 요소로 설정하여 텍스트 길이에 맞춤 */
+    box-decoration-break: clone; /* 줄바꿈 시 장식 유지 */
 }
 
 .dark .text-highlight {

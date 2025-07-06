@@ -770,13 +770,23 @@ class GitHubMarkdownPresenter {
         // Process {center}text{/center} - text centering
         htmlContent = htmlContent.replace(
             /\{center\}([\s\S]*?)\{\/center\}/g,
-            '<div class="text-center">$1</div>'
+            (match, content) => {
+                // Remove leading and trailing <br> tags and whitespace
+                const cleanContent = content
+                    .replace(/^(\s*<br\s*\/?>)*\s*/, '') // Remove leading br tags and whitespace
+                    .replace(/\s*(\s*<br\s*\/?>)*\s*$/, ''); // Remove trailing br tags and whitespace
+                return `<div class="text-center">${cleanContent}</div>`;
+            }
         );
         
         // Process {large}text{/large} - large text
         htmlContent = htmlContent.replace(
             /\{large\}([\s\S]*?)\{\/large\}/g,
-            '<div class="text-large">$1</div>'
+            (match, content) => {
+                // Remove leading <br> tags and whitespace from the beginning
+                const cleanContent = content.replace(/^(\s*<br\s*\/?>)*\s*/, '');
+                return `<div class="text-large">${cleanContent}</div>`;
+            }
         );
         
         // Process {xlarge}text{/xlarge} - extra large text
@@ -784,7 +794,9 @@ class GitHubMarkdownPresenter {
             /\{xlarge\}([\s\S]*?)\{\/xlarge\}/g,
             (match, content) => {
                 // Remove heading tags (h1-h6) and keep only the text content
-                const cleanContent = content.replace(/<h[1-6][^>]*>(.*?)<\/h[1-6]>/g, '$1');
+                let cleanContent = content.replace(/<h[1-6][^>]*>(.*?)<\/h[1-6]>/g, '$1');
+                // Remove leading <br> tags and whitespace from the beginning
+                cleanContent = cleanContent.replace(/^(\s*<br\s*\/?>)*\s*/, '');
                 return `<div class="text-xlarge">${cleanContent}</div>`;
             }
         );
@@ -799,6 +811,20 @@ class GitHubMarkdownPresenter {
         htmlContent = htmlContent.replace(
             /\{bold\}([\s\S]*?)\{\/bold\}/g,
             '<strong class="text-bold">$1</strong>'
+        );
+        
+        // Clean up br tags between nested divs in text-center blocks
+        htmlContent = htmlContent.replace(
+            /<div class="text-center">([\s\S]*?)<\/div>/g,
+            (match, content) => {
+                // Remove br tags between opening and closing of nested divs
+                const cleanContent = content
+                    .replace(/(<br\s*\/?>|\s)+$/g, '') // Remove all trailing br tags and whitespace
+                    .replace(/(<\/div>)\s*<br\s*\/?>/g, '$1') // Remove br tags right after closing divs
+                    .replace(/>(\s*<br\s*\/?>)+\s*<div/g, '><div') // Remove br tags between div tags
+                    .replace(/<\/div>(\s*<br\s*\/?>)+\s*$/g, '</div>'); // Remove br tags after last closing div
+                return `<div class="text-center">${cleanContent}</div>`;
+            }
         );
         
         return htmlContent;
