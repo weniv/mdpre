@@ -64,12 +64,16 @@ npm run dev
 - 리스트 아이템 2
 
 ---
+```
 
-## 코드 블록 예제
+코드 블록은 백틱 3개로 감싸고, 언어를 지정할 수 있습니다.
+
+```md
 ```javascript
 function hello() {
     console.log("Hello, World!");
 }
+```
 ```
 
 ### 📝 커스텀 텍스트 문법
