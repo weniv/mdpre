@@ -62,6 +62,9 @@ class GitHubMarkdownPresenter {
         document.getElementById('file-nav-toggle').addEventListener('click', () => this.toggleFileNavigation());
         document.getElementById('close-file-nav').addEventListener('click', () => this.closeFileNavigation());
 
+        // PDF export button
+        document.getElementById('pdf-export-btn').addEventListener('click', () => this.exportToPDF());
+
         // Page input navigation
         document.getElementById('page-input').addEventListener('change', (e) => this.goToPageInput(e.target.value));
         document.getElementById('page-input').addEventListener('keydown', (e) => {
@@ -1316,6 +1319,142 @@ class GitHubMarkdownPresenter {
         } else {
             loading.classList.add('hidden');
         }
+    }
+
+    exportToPDF() {
+        if (this.slides.length === 0) {
+            alert('먼저 슬라이드를 로드해주세요.');
+            return;
+        }
+
+        // 현재 슬라이드 인덱스 저장
+        const currentSlideIndex = this.currentSlide;
+        
+        // PDF 생성을 위한 임시 컨테이너 생성
+        const pdfContainer = document.createElement('div');
+        pdfContainer.style.position = 'absolute';
+        pdfContainer.style.left = '-9999px';
+        pdfContainer.style.top = '0';
+        pdfContainer.style.width = '100vw';
+        pdfContainer.style.background = 'white';
+        
+        // 현재 슬라이드 컨테이너에서 폰트 클래스 가져오기
+        const slideContent = document.getElementById('slide-content');
+        const currentFontClass = Array.from(slideContent.classList).find(cls => cls.startsWith('font-family-'));
+        
+        // 로고 정보 가져오기
+        const logoContainer = document.getElementById('presentation-logo');
+        const logoImage = document.getElementById('logo-image');
+        const hasLogo = logoContainer && !logoContainer.classList.contains('hidden') && logoImage.src;
+        
+        // 모든 슬라이드를 PDF용 포맷으로 생성 (첫 번째 슬라이드 제외)
+        this.slides.slice(1).forEach((slide, index) => {
+            const slideDiv = document.createElement('div');
+            slideDiv.className = 'pdf-slide';
+            
+            // 실제로는 두 번째 슬라이드부터이지만 첫 번째로 처리
+            if (index === 0) {
+                slideDiv.classList.add('pdf-slide-first');
+            }
+            
+            if (currentFontClass) {
+                slideDiv.classList.add(currentFontClass);
+            }
+            
+            // 마크다운 원본에서 직접 HTML 생성 (로고 없는 순수 콘텐츠)
+            let cleanHTML;
+            if (slide.content) {
+                const markedOptions = {
+                    breaks: true,
+                    gfm: true
+                };
+                cleanHTML = marked.parse(slide.content, markedOptions);
+                cleanHTML = this.processCustomSyntax(cleanHTML);
+            } else {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = slide.html;
+                
+                // 로고 제거
+                const logoSelectors = [
+                    '#presentation-logo',
+                    '.presentation-logo', 
+                    '#logo-image',
+                    '[alt*="logo"]', 
+                    '[alt*="Logo"]',
+                    '[alt*="LOGO"]',
+                    '[src*="logo"]',
+                    '[class*="logo"]',
+                    'img[src*="logo."]'
+                ];
+                
+                logoSelectors.forEach(selector => {
+                    const elements = tempDiv.querySelectorAll(selector);
+                    elements.forEach(el => el.remove());
+                });
+                
+                cleanHTML = tempDiv.innerHTML;
+            }
+            
+            slideDiv.innerHTML = cleanHTML;
+            
+            // 각 슬라이드에 동일한 크기의 로고 추가
+            if (hasLogo) {
+                const logoClone = document.createElement('div');
+                logoClone.className = 'pdf-logo';
+                logoClone.innerHTML = `<img src="${logoImage.src}" alt="Presentation Logo" class="pdf-logo-image">`;
+                slideDiv.appendChild(logoClone);
+            }
+            
+            pdfContainer.appendChild(slideDiv);
+        });
+        
+        // 임시로 body에 추가
+        document.body.appendChild(pdfContainer);
+        
+        // 기존 슬라이드 컨테이너 숨기기
+        const slideContainer = document.getElementById('slide-container');
+        const originalDisplay = slideContainer.style.display;
+        slideContainer.style.display = 'none';
+        
+        // PDF 컨테이너를 메인 위치로 이동
+        pdfContainer.style.position = 'static';
+        pdfContainer.style.left = 'auto';
+        
+        // 짧은 지연 후 인쇄 다이얼로그 열기
+        setTimeout(() => {
+            const originalTitle = document.title;
+            document.title = `${originalTitle} - 슬라이드 PDF`;
+            
+            // 인쇄 실행
+            window.print();
+            
+            // 인쇄 완료 후 정리
+            const cleanup = () => {
+                document.title = originalTitle;
+                slideContainer.style.display = originalDisplay;
+                document.body.removeChild(pdfContainer);
+                
+                // 원래 슬라이드로 복원
+                this.currentSlide = currentSlideIndex;
+                this.renderSlide();
+                this.updateNavigation();
+            };
+            
+            // 인쇄 다이얼로그가 닫힌 후 정리
+            const checkPrintDialog = () => {
+                if (window.matchMedia('print').matches) {
+                    // 아직 인쇄 중
+                    setTimeout(checkPrintDialog, 100);
+                } else {
+                    // 인쇄 완료
+                    cleanup();
+                }
+            };
+            
+            // 약간의 지연 후 확인 시작
+            setTimeout(checkPrintDialog, 500);
+            
+        }, 300);
     }
 }
 

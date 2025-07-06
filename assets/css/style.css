@@ -564,21 +564,254 @@ html, body {
 
 /* Print styles */
 @media print {
+    * {
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+    
+    @font-face {
+        font-family: 'BMJUA';
+        src: url('../../font/BMJUA_ttf.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+    
+    @font-face {
+        font-family: 'BMHANNA';
+        src: url('../../font/BMHANNAAir_ttf.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+    
+    @font-face {
+        font-family: 'BMDOHYEON';
+        src: url('../../font/BMDOHYEON_ttf.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+    
+    @font-face {
+        font-family: 'BMYEONSUNG';
+        src: url('../../font/BMYEONSUNG_ttf.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+    
+    @font-face {
+        font-family: 'BMEULJIROT';
+        src: url('../../font/BMEULJIROTTF.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+    
     header,
     #slide-nav,
-    #fullscreen-toggle {
+    #fullscreen-toggle,
+    #home-button,
+    #file-nav-toggle,
+    #pdf-export-btn,
+    #file-nav-sidebar {
         display: none !important;
+    }
+    
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
     }
     
     #slide-container {
         padding: 0 !important;
         min-height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        display: block !important;
     }
     
     #slide-content {
         box-shadow: none !important;
-        border: 1px solid #000 !important;
+        border: none !important;
         page-break-inside: avoid;
+        break-inside: avoid;
+        margin: 0 !important;
+        padding: 1.5cm !important;
+        width: 100% !important;
+        max-width: none !important;
+        min-height: 90vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        background: white !important;
+    }
+    
+    /* PDF용 모든 슬라이드 컨테이너 */
+    .pdf-slide {
+        page-break-before: always;
+        page-break-inside: avoid;
+        break-inside: avoid;
+        width: 100% !important;
+        min-height: 90vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 1.5cm !important;
+        margin: 0 !important;
+        background: white !important;
+        position: relative !important;
+        font-family: inherit !important;
+    }
+    
+    .pdf-slide:first-child,
+    .pdf-slide-first {
+        page-break-before: auto !important;
+        margin-top: 0 !important;
+    }
+    
+    /* PDF 폰트 상속 */
+    .pdf-slide,
+    .pdf-slide * {
+        font-family: inherit !important;
+    }
+    
+    .pdf-slide.font-family-bmjua,
+    .pdf-slide.font-family-bmjua * {
+        font-family: 'BMJUA', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+    
+    .pdf-slide.font-family-bmhanna,
+    .pdf-slide.font-family-bmhanna * {
+        font-family: 'BMHANNA', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+    
+    .pdf-slide.font-family-bmdohyeon,
+    .pdf-slide.font-family-bmdohyeon * {
+        font-family: 'BMDOHYEON', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+    
+    .pdf-slide.font-family-bmyeonsung,
+    .pdf-slide.font-family-bmyeonsung * {
+        font-family: 'BMYEONSUNG', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+    
+    .pdf-slide.font-family-bmeuljirot,
+    .pdf-slide.font-family-bmeuljirot * {
+        font-family: 'BMEULJIROT', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+    
+    .pdf-slide.font-family-default,
+    .pdf-slide.font-family-default * {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    }
+    
+    /* PDF 모드에서 폰트 크기 최적화 (가로 모드용) */
+    .pdf-slide h1 {
+        font-size: 3.5rem !important;
+        line-height: 1.2 !important;
+        margin: 1rem 0 !important;
+        text-align: center !important;
+    }
+    
+    .pdf-slide h2 {
+        font-size: 3rem !important;
+        line-height: 1.3 !important;
+        margin: 0.8rem 0 !important;
+        text-align: center !important;
+    }
+    
+    .pdf-slide h3 {
+        font-size: 2.5rem !important;
+        line-height: 1.4 !important;
+        margin: 0.6rem 0 !important;
+        text-align: center !important;
+    }
+    
+    .pdf-slide h4,
+    .pdf-slide h5,
+    .pdf-slide h6 {
+        font-size: 2rem !important;
+        line-height: 1.4 !important;
+        margin: 0.5rem 0 !important;
+        text-align: center !important;
+    }
+    
+    .pdf-slide p {
+        font-size: 1.5rem !important;
+        line-height: 1.6 !important;
+        margin: 0.8rem 0 !important;
+        text-align: center !important;
+    }
+    
+    .pdf-slide li {
+        font-size: 1.5rem !important;
+        line-height: 1.6 !important;
+        margin: 0.4rem 0 !important;
+    }
+    
+    .pdf-slide ul,
+    .pdf-slide ol {
+        margin: 0.8rem auto !important;
+        width: fit-content !important;
+    }
+    
+    .pdf-slide img {
+        max-width: 85% !important;
+        max-height: 70vh !important;
+        margin: 1rem auto !important;
+        display: block !important;
+    }
+    
+    .pdf-slide .text-center {
+        text-align: center !important;
+        margin: 1rem auto !important;
+    }
+    
+    .pdf-slide .text-large {
+        font-size: 2.2rem !important;
+        line-height: 1.5 !important;
+    }
+    
+    .pdf-slide .text-xlarge {
+        font-size: 2.8rem !important;
+        line-height: 1.4 !important;
+    }
+    
+    .pdf-slide code,
+    .pdf-slide pre {
+        font-size: 1.2rem !important;
+        line-height: 1.4 !important;
+    }
+    
+    /* PDF 로고 스타일 */
+    .pdf-logo {
+        position: absolute !important;
+        top: 1cm !important;
+        left: 1cm !important;
+        z-index: 1000 !important;
+        max-width: 120px !important;
+        max-height: 120px !important;
+    }
+    
+    .pdf-logo-image {
+        max-width: 120px !important;
+        max-height: 120px !important;
+        width: auto !important;
+        height: auto !important;
+        object-fit: contain !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border-radius: 4px !important;
+    }
+    
+    /* 페이지 번호 제거 */
+    .pdf-slide::after {
+        display: none;
+    }
+    
+    @page {
+        size: A4 landscape;
+        margin: 0;
     }
 }
 
