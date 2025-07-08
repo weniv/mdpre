@@ -992,7 +992,31 @@ html, body {
     box-decoration-break: clone; /* 줄바꿈 시 장식 유지 */
 }
 
+/* **텍스트** (strong 태그)에 형광펜 효과 적용 */
+#slide-content strong {
+    background: linear-gradient(120deg, #a7f3d0 0%, #a7f3d0 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 0.2em;
+    background-position: 0 88%;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+    font-size: inherit;
+    line-height: inherit;
+    display: inline;
+    box-decoration-break: clone;
+    font-weight: 700; /* 굵기 유지 */
+}
+
 .dark .text-highlight {
+    background: linear-gradient(120deg, #065f46 0%, #065f46 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 0.2em;
+    background-position: 0 88%;
+    color: #a7f3d0;
+}
+
+/* 다크모드에서 strong 태그 스타일 */
+.dark #slide-content strong {
     background: linear-gradient(120deg, #065f46 0%, #065f46 100%);
     background-repeat: no-repeat;
     background-size: 100% 0.2em;
