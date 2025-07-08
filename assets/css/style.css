@@ -940,7 +940,7 @@ html, body {
 .text-center ul,
 .text-center ol {
     display: block;
-    text-align: left;
+    text-align: center; /* 목록 전체를 중앙 정렬 */
     list-style-position: inside;
     margin: 1rem auto;
     width: fit-content;
@@ -955,7 +955,7 @@ html, body {
 }
 
 .text-center li {
-    text-align: left;
+    text-align: center; /* 각 목록 항목도 중앙 정렬 */
 }
 
 .text-large {
