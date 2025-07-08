@@ -925,7 +925,7 @@ html, body {
 .text-center {
     text-align: center;
     margin: 1.5rem 0; /* 여백 확대 */
-    font-size: 3rem; /* 기본 텍스트 크기를 {large} 수준(3rem)으로 변경 */
+    font-size: inherit; /* 부모 요소(#slide-content)의 3rem 폰트 크기 상속 */
     line-height: 1.8; /* 줄간격 개선 */
 }
 
