@@ -72,7 +72,7 @@ html, body {
     width: 100%;
     overflow-wrap: break-word;
     word-wrap: break-word;
-    font-size: 2rem; /* 기본 텍스트 크기 200% 확대 */
+    font-size: 2.5rem; /* 기본 텍스트 크기를 {large} 수준으로 변경 */
     line-height: 1.8; /* 줄간격 개선 */
     display: block; /* flexbox 제거하여 일반 블록 요소로 설정 */
 }
@@ -145,7 +145,7 @@ html, body {
 }
 
 #slide-content p {
-    font-size: 2rem; /* 32px - 200% of 16px */
+    font-size: 2.5rem; /* 기본 텍스트 크기를 {large} 수준으로 변경 */
     line-height: 1.8; /* 줄간격 개선 */
     margin-bottom: 1.5rem; /* 단락 간격 확대 */
 }
@@ -266,7 +266,7 @@ html, body {
     margin: 0.8rem 0; /* 리스트 아이템 간격 확대 */
     display: list-item;
     list-style-position: outside;
-    font-size: 2rem; /* 32px - 200% of 16px */
+    font-size: 2.5rem; /* 기본 텍스트 크기를 {large} 수준으로 변경 */
     line-height: 1.8; /* 줄간격 개선 */
 }
 
@@ -925,7 +925,7 @@ html, body {
 .text-center {
     text-align: center;
     margin: 1.5rem 0; /* 여백 확대 */
-    font-size: 2rem; /* 기본 텍스트 크기 200% 확대 */
+    font-size: 2.5rem; /* 기본 텍스트 크기를 {large} 수준으로 변경 */
     line-height: 1.8; /* 줄간격 개선 */
 }
 
@@ -959,10 +959,17 @@ html, body {
 }
 
 .text-large {
-    font-size: 3rem; /* 200% 확대 */
+    font-size: 2.5rem; /* 기존 기본 폰트 크기 수준으로 변경 (무시됨) */
     line-height: 1.6; /* 줄간격 개선 */
     font-weight: 500;
     margin: 1.5rem 0; /* 여백 확대 */
+}
+
+.text-small {
+    font-size: 2rem; /* 기존 기본 폰트 크기 (2rem) */
+    line-height: 1.6; /* 줄간격 개선 */
+    font-weight: 400;
+    margin: 1rem 0; /* 여백 */
 }
 
 .text-xlarge {

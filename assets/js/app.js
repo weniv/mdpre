@@ -782,13 +782,23 @@ class GitHubMarkdownPresenter {
             }
         );
         
-        // Process {large}text{/large} - large text
+        // Process {large}text{/large} - ignore this syntax as it's no longer needed
         htmlContent = htmlContent.replace(
             /\{large\}([\s\S]*?)\{\/large\}/g,
             (match, content) => {
+                // Remove leading <br> tags and return content without wrapper
+                const cleanContent = content.replace(/^(\s*<br\s*\/?>)*\s*/, '');
+                return cleanContent; // 기본 폰트 크기가 이미 효과를 제공하므로 무시
+            }
+        );
+        
+        // Process {small}text{/small} - small text (기존 기본 폰트 크기 사용)
+        htmlContent = htmlContent.replace(
+            /\{small\}([\s\S]*?)\{\/small\}/g,
+            (match, content) => {
                 // Remove leading <br> tags and whitespace from the beginning
                 const cleanContent = content.replace(/^(\s*<br\s*\/?>)*\s*/, '');
-                return `<div class="text-large">${cleanContent}</div>`;
+                return `<div class="text-small">${cleanContent}</div>`;
             }
         );
         
