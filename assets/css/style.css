@@ -1115,3 +1115,59 @@ pre[class*=language-] {
 .font-family-maruburi {
     font-family: 'MaruBuri', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
+
+/* Select dropdown styling */
+#folder-dropdown {
+    position: relative;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+#folder-dropdown option {
+    padding: 8px 12px;
+    background-color: #ffffff;
+    color: #1f2937;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#folder-dropdown option:hover {
+    background-color: #f3f4f6;
+}
+
+#folder-dropdown option:checked {
+    background-color: #3b82f6;
+    color: #ffffff;
+}
+
+/* Dark mode select dropdown */
+.dark #folder-dropdown option {
+    background-color: #374151;
+    color: #f9fafb;
+}
+
+.dark #folder-dropdown option:hover {
+    background-color: #4b5563;
+}
+
+.dark #folder-dropdown option:checked {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+/* Ensure dropdown appears above other elements */
+#folder-selection {
+    position: relative;
+    z-index: 100;
+}
+
+/* Improved select box spacing */
+#folder-selection {
+    margin-bottom: 1.5rem;
+}

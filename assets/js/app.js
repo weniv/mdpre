@@ -229,7 +229,8 @@ class GitHubMarkdownPresenter {
         folderSelection.classList.add('hidden');
         loadBtn.classList.add('hidden');
         loadLocalBtn.classList.add('hidden');
-        document.getElementById('folder-dropdown').innerHTML = '<option value="">폴더를 선택하세요...</option>';
+        searchBtn.classList.remove('hidden'); // 옵션 변경시 폴더 검색 버튼 다시 표시
+        document.getElementById('folder-dropdown').innerHTML = '';
         
         if (selectedSource === 'current') {
             customFields.style.display = 'none';
@@ -400,6 +401,9 @@ class GitHubMarkdownPresenter {
             document.getElementById('folder-selection').classList.remove('hidden');
             document.getElementById('load-presentation-btn').classList.remove('hidden');
             
+            // 폴더 검색 후 검색 버튼 숨기기
+            document.getElementById('search-folders-btn').classList.add('hidden');
+            
         } catch (error) {
             console.error('폴더 검색 실패:', error);
             alert(`폴더를 가져올 수 없습니다: ${error.message}`);
@@ -419,9 +423,6 @@ class GitHubMarkdownPresenter {
             
             const contents = await response.json();
             const folders = [];
-            
-            // Add root folder option
-            folders.push({ name: '루트 폴더', path: '' });
             
             // Get all directories that contain markdown files
             for (const item of contents) {
@@ -443,16 +444,6 @@ class GitHubMarkdownPresenter {
                 }
             }
 
-            // Check if root has markdown files
-            const rootMarkdown = contents.filter(item => 
-                item.type === 'file' && item.name.endsWith('.md')
-            );
-            
-            if (rootMarkdown.length === 0 && folders.length === 1) {
-                // Remove root folder option if no markdown in root
-                folders.shift();
-            }
-
             return folders;
             
         } catch (error) {
@@ -462,7 +453,7 @@ class GitHubMarkdownPresenter {
 
     populateFolderDropdown(folders) {
         const dropdown = document.getElementById('folder-dropdown');
-        dropdown.innerHTML = '<option value="">폴더를 선택하세요...</option>';
+        dropdown.innerHTML = '';
         
         folders.forEach(folder => {
             const option = document.createElement('option');
