@@ -4,8 +4,6 @@ class GitHubMarkdownPresenter {
         this.currentSlide = 0;
         this.isFullscreen = false;
         this.settings = {
-            fontSize: 'medium',
-            theme: 'default',
             fontFamily: 'bmjua'
         };
         this.repoHistory = [];
@@ -81,18 +79,6 @@ class GitHubMarkdownPresenter {
         document.getElementById('close-settings').addEventListener('click', () => this.closeSettings());
 
         // Settings form
-        document.getElementById('font-size').addEventListener('change', (e) => {
-            this.settings.fontSize = e.target.value;
-            this.applySettings();
-            this.saveSettings();
-        });
-
-        document.getElementById('theme-select').addEventListener('change', (e) => {
-            this.settings.theme = e.target.value;
-            this.applySettings();
-            this.saveSettings();
-        });
-
         document.getElementById('font-family').addEventListener('change', (e) => {
             this.settings.fontFamily = e.target.value;
             this.applySettings();
@@ -972,22 +958,18 @@ class GitHubMarkdownPresenter {
     }
 
     toggleTheme() {
-        const currentTheme = this.settings.theme;
-        const themes = ['default', 'dark', 'academic'];
-        const currentIndex = themes.indexOf(currentTheme);
-        const nextIndex = (currentIndex + 1) % themes.length;
-        
-        this.settings.theme = themes[nextIndex];
-        this.applySettings();
-        this.saveSettings();
+        const html = document.documentElement;
+        if (html.classList.contains('dark')) {
+            html.classList.remove('dark');
+        } else {
+            html.classList.add('dark');
+        }
     }
 
     openSettings() {
         document.getElementById('settings-modal').classList.remove('hidden');
         
         // Update form values
-        document.getElementById('font-size').value = this.settings.fontSize;
-        document.getElementById('theme-select').value = this.settings.theme;
         document.getElementById('font-family').value = this.settings.fontFamily;
     }
 
@@ -996,29 +978,13 @@ class GitHubMarkdownPresenter {
     }
 
     applySettings() {
-        const body = document.body;
         const slideContent = document.getElementById('slide-content');
         
-        // Remove existing theme classes
-        body.classList.remove('theme-default', 'theme-dark', 'theme-academic');
-        slideContent.classList.remove('font-size-small', 'font-size-medium', 'font-size-large', 'font-size-xlarge');
-        slideContent.classList.remove('font-family-default', 'font-family-bmjua', 'font-family-bmhanna', 'font-family-bmdohyeon', 'font-family-bmyeonsung', 'font-family-bmeuljirot');
-        
-        // Apply new theme
-        body.classList.add(`theme-${this.settings.theme}`);
-        
-        // Apply font size
-        slideContent.classList.add(`font-size-${this.settings.fontSize}`);
+        // Remove existing font family classes
+        slideContent.classList.remove('font-family-default', 'font-family-bmjua', 'font-family-bmhanna', 'font-family-bmdohyeon', 'font-family-bmyeonsung', 'font-family-bmeuljirot', 'font-family-maruburi');
         
         // Apply font family
         slideContent.classList.add(`font-family-${this.settings.fontFamily}`);
-        
-        // Handle dark mode class for Tailwind
-        if (this.settings.theme === 'dark') {
-            body.classList.add('dark');
-        } else {
-            body.classList.remove('dark');
-        }
     }
 
     saveSettings() {

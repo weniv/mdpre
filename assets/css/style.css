@@ -36,26 +36,13 @@
     font-style: normal;
 }
 
-/* Font size classes */
-.font-size-small {
-    font-size: 0.875rem;
-    line-height: 1.25rem;
+@font-face {
+    font-family: 'MaruBuri';
+    src: url('../../font/MaruBuri-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
 
-.font-size-medium {
-    font-size: 1rem;
-    line-height: 1.5rem;
-}
-
-.font-size-large {
-    font-size: 1.125rem;
-    line-height: 1.75rem;
-}
-
-.font-size-xlarge {
-    font-size: 1.25rem;
-    line-height: 1.875rem;
-}
 
 /* Body and html styling for viewport control */
 html, body {
@@ -63,6 +50,73 @@ html, body {
     padding: 0;
     overflow-x: hidden;
     min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode body styling */
+.dark body {
+    background-color: #111827;
+    color: #f9fafb;
+}
+
+/* Dark mode slide container */
+.dark #slide-container {
+    background-color: #111827;
+}
+
+/* Dark mode main background */
+.dark main {
+    background-color: #111827;
+}
+
+/* Force dark mode styles with higher specificity */
+.dark header {
+    background-color: #1f2937 !important;
+}
+
+.dark #slide-content {
+    background-color: #1f2937 !important;
+    color: #f9fafb !important;
+}
+
+.dark #repo-input-section {
+    background-color: #111827 !important;
+}
+
+.dark #repo-input-section .bg-white {
+    background-color: #1f2937 !important;
+}
+
+/* Dark mode navigation styles */
+.dark #slide-nav {
+    background-color: #1f2937 !important;
+}
+
+.dark #home-button {
+    background-color: #1f2937 !important;
+}
+
+.dark #fullscreen-toggle {
+    background-color: #1f2937 !important;
+}
+
+.dark #file-nav-toggle {
+    background-color: #1f2937 !important;
+}
+
+.dark #pdf-export-btn {
+    background-color: #1f2937 !important;
+}
+
+.dark #file-nav-sidebar {
+    background-color: #1f2937 !important;
+}
+
+/* Dark mode input styles */
+.dark #slide-nav input {
+    background-color: #374151 !important;
+    color: #f9fafb !important;
+    border-color: #6b7280 !important;
 }
 
 /* Slide content styling */
@@ -361,7 +415,7 @@ html, body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 2rem !important;
+    padding: 5rem !important;
     box-shadow: none !important;
     margin: auto !important;
     align-self: center !important;
@@ -412,33 +466,6 @@ html, body {
     transition: transform 0.3s ease-out, opacity 0.3s ease-out;
 }
 
-/* Theme variations */
-.theme-default {
-    --bg-primary: #ffffff;
-    --bg-secondary: #f8fafc;
-    --text-primary: #1f2937;
-    --text-secondary: #6b7280;
-    --border-color: #e5e7eb;
-    --accent-color: #3b82f6;
-}
-
-.theme-dark {
-    --bg-primary: #111827;
-    --bg-secondary: #1f2937;
-    --text-primary: #f9fafb;
-    --text-secondary: #d1d5db;
-    --border-color: #4b5563;
-    --accent-color: #60a5fa;
-}
-
-.theme-academic {
-    --bg-primary: #fefefe;
-    --bg-secondary: #f7f7f7;
-    --text-primary: #2d3748;
-    --text-secondary: #718096;
-    --border-color: #e2e8f0;
-    --accent-color: #805ad5;
-}
 
 /* Responsive design */
 @media (max-width: 768px) {
@@ -603,6 +630,13 @@ html, body {
         font-style: normal;
     }
     
+    @font-face {
+        font-family: 'MaruBuri';
+        src: url('../../font/MaruBuri-Regular.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+    
     header,
     #slide-nav,
     #fullscreen-toggle,
@@ -697,6 +731,11 @@ html, body {
     .pdf-slide.font-family-bmeuljirot,
     .pdf-slide.font-family-bmeuljirot * {
         font-family: 'BMEULJIROT', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+    
+    .pdf-slide.font-family-maruburi,
+    .pdf-slide.font-family-maruburi * {
+        font-family: 'MaruBuri', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
     }
     
     .pdf-slide.font-family-default,
@@ -829,6 +868,12 @@ html, body {
     pointer-events: none;
     transition: opacity 0.3s ease;
     z-index: 100;
+}
+
+/* Dark mode keyboard navigation */
+.dark .keyboard-navigation {
+    background: rgba(255, 255, 255, 0.9);
+    color: #1f2937;
 }
 
 .keyboard-navigation.show {
@@ -1059,4 +1104,8 @@ html, body {
 
 .font-family-bmeuljirot {
     font-family: 'BMEULJIROT', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.font-family-maruburi {
+    font-family: 'MaruBuri', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
