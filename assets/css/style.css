@@ -265,6 +265,12 @@ html, body {
     padding: 0;
 }
 
+/* Code block font size adjustment */
+code[class*=language-], 
+pre[class*=language-] {
+    font-size: 0.7em !important;
+}
+
 /* Images */
 #slide-content img {
     max-width: 100%;
