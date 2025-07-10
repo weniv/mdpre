@@ -34,6 +34,12 @@ class GitHubMarkdownPresenter {
         // Load local files button
         document.getElementById('load-local-files-btn').addEventListener('click', () => this.loadLocalFiles());
 
+        // Load direct input button
+        document.getElementById('load-direct-input-btn').addEventListener('click', () => this.loadDirectInput());
+
+        // Logo button - go back to home
+        document.getElementById('logo-btn').addEventListener('click', () => this.goToHome());
+
         // File upload change event
         document.getElementById('file-upload').addEventListener('change', () => this.handleFileUpload());
 
@@ -234,23 +240,27 @@ class GitHubMarkdownPresenter {
         const selectedSource = document.querySelector('input[name="repo-source"]:checked').value;
         const customFields = document.getElementById('custom-repo-fields');
         const localFields = document.getElementById('local-file-fields');
+        const directFields = document.getElementById('direct-input-fields');
         const repoUrlInput = document.getElementById('repo-url');
         const historySection = document.getElementById('repo-history');
         const folderSelection = document.getElementById('folder-selection');
         const loadBtn = document.getElementById('load-presentation-btn');
         const searchBtn = document.getElementById('search-folders-btn');
         const loadLocalBtn = document.getElementById('load-local-files-btn');
+        const loadDirectBtn = document.getElementById('load-direct-input-btn');
         
         // Reset all selections
         folderSelection.classList.add('hidden');
         loadBtn.classList.add('hidden');
         loadLocalBtn.classList.add('hidden');
+        loadDirectBtn.classList.add('hidden');
         searchBtn.classList.remove('hidden'); // 옵션 변경시 폴더 검색 버튼 다시 표시
         document.getElementById('folder-dropdown').innerHTML = '';
         
         if (selectedSource === 'current') {
             customFields.style.display = 'none';
             localFields.classList.add('hidden');
+            directFields.classList.add('hidden');
             searchBtn.classList.remove('hidden');
             repoUrlInput.disabled = true;
             repoUrlInput.required = false;
@@ -261,6 +271,7 @@ class GitHubMarkdownPresenter {
         } else if (selectedSource === 'custom') {
             customFields.style.display = 'block';
             localFields.classList.add('hidden');
+            directFields.classList.add('hidden');
             searchBtn.classList.remove('hidden');
             repoUrlInput.disabled = false;
             repoUrlInput.required = true;
@@ -268,7 +279,17 @@ class GitHubMarkdownPresenter {
         } else if (selectedSource === 'local') {
             customFields.style.display = 'none';
             localFields.classList.remove('hidden');
+            directFields.classList.add('hidden');
             searchBtn.classList.add('hidden');
+            repoUrlInput.disabled = true;
+            repoUrlInput.required = false;
+            historySection.classList.add('hidden');
+        } else if (selectedSource === 'direct') {
+            customFields.style.display = 'none';
+            localFields.classList.add('hidden');
+            directFields.classList.remove('hidden');
+            searchBtn.classList.add('hidden');
+            loadDirectBtn.classList.remove('hidden');
             repoUrlInput.disabled = true;
             repoUrlInput.required = false;
             historySection.classList.add('hidden');
@@ -1283,6 +1304,68 @@ class GitHubMarkdownPresenter {
             alert(`파일을 로드할 수 없습니다: ${error.message}`);
         } finally {
             this.showLoading(false);
+        }
+    }
+
+    async loadDirectInput() {
+        const directInputTextarea = document.getElementById('markdown-textarea');
+        const markdown = directInputTextarea.value.trim();
+        
+        if (!markdown) {
+            alert('마크다운 내용을 입력해주세요.');
+            return;
+        }
+        
+        try {
+            this.showLoading(true);
+            
+            // Parse the markdown content using the local parsing method
+            const slides = this.parseLocalMarkdownToSlides(markdown);
+            
+            if (slides.length === 0) {
+                throw new Error('유효한 마크다운 슬라이드를 찾을 수 없습니다.');
+            }
+            
+            // Reset slides and file mapping
+            this.slides = slides;
+            this.fileSlideMap = [{
+                name: '직접 입력',
+                path: 'direct-input',
+                startSlide: 0,
+                slideCount: slides.length
+            }];
+            
+            // Hide logo for direct input
+            document.getElementById('presentation-logo').classList.add('hidden');
+            
+            // Show the presentation
+            this.showPresentation();
+            
+        } catch (error) {
+            console.error('직접 입력 로드 실패:', error);
+            alert(`마크다운을 로드할 수 없습니다: ${error.message}`);
+        } finally {
+            this.showLoading(false);
+        }
+    }
+
+    goToHome() {
+        // Hide presentation section and show repository input section
+        document.getElementById('presentation-section').classList.add('hidden');
+        document.getElementById('repo-input-section').classList.remove('hidden');
+        
+        // Reset slides and file mapping
+        this.slides = [];
+        this.fileSlideMap = [];
+        this.currentSlide = 0;
+        
+        // Show logo if it was hidden
+        document.getElementById('presentation-logo').classList.remove('hidden');
+        
+        // Focus on the first input field if available
+        const firstInput = document.querySelector('input[type="url"], textarea');
+        if (firstInput) {
+            firstInput.focus();
         }
     }
 

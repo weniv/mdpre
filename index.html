@@ -20,6 +20,7 @@
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center space-x-4">
                     <h1 class="text-xl font-bold text-gray-900 dark:text-white">
+                        <button id="logo-btn" class="hover:opacity-80 transition-opacity">
                         <svg width="268" height="27" viewBox="0 0 268 27" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <g clip-path="url(#clip0_23_187)">
                             <path d="M77.15 7.72998C70.78 7.72998 65.61 12.85 65.61 19.15C65.61 20.13 66.41 20.92 67.4 20.92C68.39 20.92 69.19 20.13 69.19 19.15C69.19 14.81 72.76 11.27 77.15 11.27C81.54 11.27 85.11 14.8 85.11 19.15C85.11 20.13 85.91 20.92 86.9 20.92C87.89 20.92 88.69 20.13 88.69 19.15C88.69 12.85 83.51 7.72998 77.15 7.72998Z" fill="#2E6FF2"/>
@@ -46,6 +47,7 @@
                             </defs>
                         </svg>
                         <span class="sr-only">WENIV Presenter</span>
+                        </button>
                     </h1>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -134,6 +136,10 @@
                                 <input type="radio" name="repo-source" value="local" id="local-files" class="mr-2 text-blue-600">
                                 <span class="text-gray-700 dark:text-gray-300">로컬 파일 불러오기</span>
                             </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="repo-source" value="direct" id="direct-input" class="mr-2 text-blue-600">
+                                <span class="text-gray-700 dark:text-gray-300">마크다운 직접 입력하기</span>
+                            </label>
                         </div>
                     </div>
 
@@ -171,6 +177,20 @@
                             </div>
                         </div>
                         
+                        <!-- Direct Markdown Input -->
+                        <div id="direct-input-fields" class="hidden">
+                            <div>
+                                <label for="markdown-textarea" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    마크다운 입력
+                                </label>
+                                <textarea id="markdown-textarea" rows="10" placeholder="마크다운 내용을 직접 입력하세요..."
+                                          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white resize-vertical"></textarea>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    마크다운 형식으로 프레젠테이션 내용을 입력하세요. ## 으로 슬라이드를 구분합니다.
+                                </p>
+                            </div>
+                        </div>
+                        
                         <!-- Folder Selection -->
                         <div id="folder-selection" class="hidden">
                             <label for="folder-dropdown" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -186,6 +206,10 @@
                         
                         <button type="button" id="load-local-files-btn" class="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors hidden">
                             로컬 파일 로드
+                        </button>
+                        
+                        <button type="button" id="load-direct-input-btn" class="w-full bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors hidden">
+                            입력한 마크다운 로드
                         </button>
                         
                         <button type="submit" id="load-presentation-btn" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors hidden">
