@@ -49,17 +49,63 @@
                     </h1>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button id="theme-toggle" class="p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                    <!-- Dark Mode Toggle -->
+                    <button id="theme-toggle" class="relative">
+                        <svg width="56" height="33" viewBox="0 0 56 33" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Background track -->
+                            <rect y="0.828003" width="56" height="32" rx="16" fill="#2E6FF2"/>
+                            <!-- Switch circle -->
+                            <circle id="switch-circle" cx="16" cy="16.828" r="11" fill="#F3F5FA" class="transition-all duration-300 ease-in-out"/>
+                            <!-- Sun icon (light mode) -->
+                            <circle id="sun-icon" cx="16" cy="16.828" r="6" fill="#FFC533" class="transition-all duration-300 ease-in-out dark:opacity-0"/>
+                            <!-- Moon icon (dark mode) -->
+                            <path id="moon-icon" d="M38.7266 10.9644C38.2635 11.8153 38.0001 12.7907 38 13.8276C38 17.1413 40.6863 19.8276 44 19.8276C44.4368 19.8276 44.8622 19.7795 45.2725 19.6909C44.2558 21.5592 42.2767 22.8276 40 22.8276C36.6863 22.8276 34 20.1413 34 16.8276C34.0002 13.9511 36.0248 11.5484 38.7266 10.9644Z" fill="#FFC533" class="transition-all duration-300 ease-in-out opacity-0 dark:opacity-100"/>
                         </svg>
                     </button>
-                    <button id="settings-btn" class="p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
-                    </button>
+                    
+                    <!-- Settings Button -->
+                    <div class="relative">
+                        <button id="settings-btn" class="relative">
+                            <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect id="settings-bg" width="42" height="42" rx="10" fill="white"/>
+                                <ellipse id="settings-dot1" cx="21" cy="14.7" rx="1.4" ry="1.4" fill="#47494D"/>
+                                <circle id="settings-dot2" cx="21" cy="21" r="1.4" fill="#47494D"/>
+                                <ellipse id="settings-dot3" cx="21" cy="27.3" rx="1.4" ry="1.4" fill="#47494D"/>
+                            </svg>
+                        </button>
+                        
+                        <!-- Settings Dropdown -->
+                        <div id="settings-dropdown" class="hidden absolute top-full right-0 mt-2 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 p-4 min-w-64">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-sm font-medium text-gray-900 dark:text-white">설정</h3>
+                                <button id="close-settings-dropdown" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            
+                            <div class="space-y-3">
+                                <div>
+                                    <label for="font-family-dropdown" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        폰트
+                                    </label>
+                                    <select id="font-family-dropdown" class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                        <option value="bmjua" class="bg-white dark:bg-gray-700 text-gray-900 dark:text-white">배민 주아 (기본)</option>
+                                        <option value="default" class="bg-white dark:bg-gray-700 text-gray-900 dark:text-white">시스템 기본</option>
+                                        <option value="bmhanna" class="bg-white dark:bg-gray-700 text-gray-900 dark:text-white">배민 한나</option>
+                                        <option value="bmdohyeon" class="bg-white dark:bg-gray-700 text-gray-900 dark:text-white">배민 도현</option>
+                                        <option value="bmyeonsung" class="bg-white dark:bg-gray-700 text-gray-900 dark:text-white">배민 연성</option>
+                                        <option value="bmeuljirot" class="bg-white dark:bg-gray-700 text-gray-900 dark:text-white">배민 을지로</option>
+                                        <option value="maruburi" class="bg-white dark:bg-gray-700 text-gray-900 dark:text-white">마루부리</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Triangle pointer -->
+                            <div class="absolute top-0 right-6 transform -translate-y-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-white dark:border-b-gray-800"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -152,55 +198,92 @@
 
         <!-- Presentation Section -->
         <section id="presentation-section" class="hidden">
-            <!-- Slide Navigation -->
-            <div id="slide-nav" class="fixed top-20 right-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2">
-                <div class="flex items-center space-x-2">
-                    <button id="prev-slide" class="p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white disabled:opacity-50">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                        </svg>
-                    </button>
-                    <div class="flex items-center space-x-1">
-                        <input type="number" id="page-input" min="1" max="1" value="1" 
-                               class="w-12 px-1 py-1 text-sm text-center border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">/</span>
-                        <span id="total-pages" class="text-sm font-medium text-gray-700 dark:text-gray-300">1</span>
+            <!-- Bottom Navigation Container -->
+            <div id="bottom-nav-container" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 flex items-center space-x-4">
+                <!-- Control Buttons Box -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 p-2 h-16 flex items-center">
+                    <div class="flex items-center space-x-2">
+                        <!-- Home Button -->
+                        <button id="home-button" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white relative" data-tooltip="홈">
+                            <svg width="28" height="27" viewBox="0 0 28 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16.8001 16.9231C16.8001 15.3767 15.5465 14.1231 14.0001 14.1231C12.4537 14.1231 11.2001 15.3767 11.2001 16.9231V24.5231H16.8001V16.9231ZM19.2001 24.5231H22.8001C24.3465 24.5231 25.6001 23.2695 25.6001 21.7231V12.427C25.6001 11.5839 25.2201 10.7853 24.5657 10.2536L15.7657 3.10359C14.7371 2.26794 13.2632 2.26794 12.2345 3.10359L3.4345 10.2536C2.78011 10.7853 2.40012 11.5839 2.40012 12.427V21.7231C2.40012 23.2695 3.65372 24.5231 5.20012 24.5231H8.80012V16.9231C8.80013 14.0513 11.1282 11.7231 14.0001 11.7231C16.872 11.7231 19.2001 14.0513 19.2001 16.9231V24.5231ZM28.0001 21.7231C28.0001 24.595 25.672 26.9231 22.8001 26.9231H5.20012C2.32824 26.9231 0.00012207 24.595 0.00012207 21.7231V12.427C0.0001223 10.8612 0.705923 9.37852 1.92122 8.39109L10.7212 1.24109C12.6316 -0.310996 15.3686 -0.310994 17.279 1.24109L26.079 8.39109C27.2943 9.37852 28.0001 10.8612 28.0001 12.427V21.7231Z" fill="#8D9299"/>
+                            </svg>
+                        </button>
+                        
+                        <!-- Separator -->
+                        <div class="w-px h-8 bg-gray-200 dark:bg-gray-600"></div>
+                        
+                        <!-- File Navigation Toggle -->
+                        <div class="relative">
+                            <button id="file-nav-toggle" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white relative" data-tooltip="파일 목록">
+                                <svg width="28" height="19" viewBox="0 0 28 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M26.8 10.7001L1.2 10.7001C0.537258 10.7001 -1.91709e-08 10.1628 -4.28193e-08 9.50007C-6.64678e-08 8.83733 0.537258 8.30007 1.2 8.30007L26.8 8.30007C27.4627 8.30007 28 8.83733 28 9.50007C28 10.1628 27.4627 10.7001 26.8 10.7001Z" fill="#8D9299"/>
+                                    <path d="M26.8 2.70007L1.2 2.70007C0.537258 2.70007 -1.91709e-08 2.16281 -4.28193e-08 1.50007C-6.64678e-08 0.837332 0.537258 0.300073 1.2 0.300073L26.8 0.300072C27.4627 0.300072 28 0.83733 28 1.50007C28 2.16281 27.4627 2.70007 26.8 2.70007Z" fill="#8D9299"/>
+                                    <path d="M26.8 18.7001L1.2 18.7001C0.537258 18.7001 -2.68392e-08 18.1628 -5.9947e-08 17.5001C-9.30549e-08 16.8373 0.537258 16.3001 1.2 16.3001L26.8 16.3001C27.4627 16.3001 28 16.8373 28 17.5001C28 18.1628 27.4627 18.7001 26.8 18.7001Z" fill="#8D9299"/>
+                                </svg>
+                            </button>
+                            
+                            <!-- File List Popup -->
+                            <div id="file-list-popup" class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-4 z-40 hidden bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 p-4 min-w-48 max-w-xs">
+                                <div id="file-list-content">
+                                    <!-- File list items will be inserted here -->
+                                </div>
+                                <!-- Triangle pointer -->
+                                <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-white dark:border-t-gray-800"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- PDF Export Button -->
+                        <button id="pdf-export-btn" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white relative" data-tooltip="PDF 다운로드">
+                            <svg width="32" height="33" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M5.60024 6.22483C4.9375 6.22483 4.40024 6.76209 4.40024 7.42483V25.0248C4.40024 26.1294 5.29567 27.0248 6.40024 27.0248H25.6002C26.7048 27.0248 27.6002 26.1294 27.6002 25.0248V10.6248C27.6002 9.96209 27.063 9.42483 26.4002 9.42483H18.0002C16.8671 9.42483 15.8001 8.89133 15.1202 7.98483L14.1602 6.70483C13.9336 6.40266 13.578 6.22483 13.2002 6.22483H5.60024ZM2.00024 7.42483C2.00024 5.4366 3.61202 3.82483 5.60024 3.82483H13.2002C14.3334 3.82483 15.4004 4.35833 16.0802 5.26483L17.0402 6.54483C17.2669 6.847 17.6225 7.02483 18.0002 7.02483H26.4002C28.3885 7.02483 30.0002 8.6366 30.0002 10.6248V25.0248C30.0002 27.4549 28.0303 29.4248 25.6002 29.4248H6.40024C3.97019 29.4248 2.00024 27.4549 2.00024 25.0248V7.42483Z" fill="#8D9299"/>
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M16.0001 12.6249C16.6628 12.6249 17.2001 13.1621 17.2001 13.8249V19.097L19.1892 17.2736C19.6777 16.8258 20.4368 16.8588 20.8846 17.3473C21.3325 17.8359 21.2995 18.595 20.8109 19.0428L16.8109 22.7095C16.3521 23.13 15.648 23.13 15.1892 22.7095L11.1892 19.0428C10.7006 18.595 10.6676 17.8359 11.1155 17.3473C11.5633 16.8588 12.3224 16.8258 12.8109 17.2736L14.8001 19.097V13.8249C14.8001 13.1621 15.3373 12.6249 16.0001 12.6249Z" fill="#8D9299"/>
+                            </svg>
+                        </button>
+                        
+                        <!-- Fullscreen Toggle -->
+                        <button id="fullscreen-toggle" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white relative" data-tooltip="전체화면">
+                            <svg width="32" height="33" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M2.77734 5.64653C2.77734 4.18597 3.96136 3.00195 5.42192 3.00195H26.5786C28.0391 3.00195 29.2231 4.18597 29.2231 5.64653V26.8032C29.2231 28.2637 28.0391 29.4478 26.5786 29.4478H5.42192C3.96136 29.4478 2.77734 28.2637 2.77734 26.8032V5.64653ZM5.42192 5.26874C5.21327 5.26874 5.04413 5.43788 5.04413 5.64653V26.8032C5.04413 27.0118 5.21327 27.181 5.42192 27.181H26.5786C26.7872 27.181 26.9564 27.0118 26.9564 26.8032V5.64653C26.9564 5.43788 26.7872 5.26874 26.5786 5.26874H5.42192Z" fill="#8D9299"/>
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M19.0225 5.26874C18.8139 5.26874 18.6447 5.43788 18.6447 5.64653V7.53552C18.6447 8.16147 18.1373 8.66891 17.5113 8.66891C16.8854 8.66891 16.3779 8.16147 16.3779 7.53552V5.64653C16.3779 4.18597 17.5619 3.00195 19.0225 3.00195H20.9115C21.5375 3.00195 22.0449 3.50939 22.0449 4.13534C22.0449 4.7613 21.5375 5.26874 20.9115 5.26874H19.0225ZM23.5561 4.13534C23.5561 3.50939 24.0635 3.00195 24.6895 3.00195H26.5785C28.039 3.00195 29.223 4.18597 29.223 5.64653V7.53552C29.223 8.16147 28.7156 8.66891 28.0896 8.66891C27.4637 8.66891 26.9563 8.16147 26.9563 7.53552V5.64653C26.9563 5.43788 26.7871 5.26874 26.5785 5.26874H24.6895C24.0635 5.26874 23.5561 4.7613 23.5561 4.13534ZM17.5113 10.1801C18.1373 10.1801 18.6447 10.6875 18.6447 11.3135V13.2025C18.6447 13.4111 18.8139 13.5803 19.0225 13.5803H20.9115C21.5375 13.5803 22.0449 14.0877 22.0449 14.7137C22.0449 15.3396 21.5375 15.8471 20.9115 15.8471H19.0225C17.5619 15.8471 16.3779 14.663 16.3779 13.2025V11.3135C16.3779 10.6875 16.8854 10.1801 17.5113 10.1801ZM28.0896 10.1801C28.7156 10.1801 29.223 10.6875 29.223 11.3135V13.2025C29.223 14.663 28.039 15.8471 26.5785 15.8471H24.6895C24.0635 15.8471 23.5561 15.3396 23.5561 14.7137C23.5561 14.0877 24.0635 13.5803 24.6895 13.5803H26.5785C26.7871 13.5803 26.9563 13.4111 26.9563 13.2025V11.3135C26.9563 10.6875 27.4637 10.1801 28.0896 10.1801Z" fill="#8D9299"/>
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M8.0474 24.285C7.60479 23.8423 7.60479 23.1247 8.0474 22.6821L12.1564 18.5731L9.51382 18.6355C8.88804 18.6502 8.36878 18.1549 8.35402 17.5291C8.33925 16.9034 8.83458 16.3841 9.46036 16.3693L14.9323 16.2403C15.2421 16.2329 15.5413 16.3528 15.7605 16.5719C15.9796 16.791 16.0994 17.0903 16.0921 17.4001L15.963 22.872C15.9483 23.4978 15.429 23.9931 14.8032 23.9783C14.1774 23.9636 13.6821 23.4443 13.6969 22.8185L13.7592 20.176L9.65026 24.285C9.20765 24.7276 8.49002 24.7276 8.0474 24.285Z" fill="#8D9299"/>
+                            </svg>
+                        </button>
                     </div>
-                    <button id="next-slide" class="p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white disabled:opacity-50">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </button>
+                </div>
+                
+                <!-- Separator -->
+                <div class="w-px h-16 bg-gray-200 dark:bg-gray-600"></div>
+                
+                <!-- Navigation Box -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 p-2 h-16 flex items-center">
+                    <div class="flex items-center space-x-2">
+                        <!-- Previous Button -->
+                        <button id="prev-slide" class="p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white disabled:opacity-50">
+                            <svg width="32" height="33" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="0.000488281" y="0.463013" width="32" height="32" rx="10" fill="white"/>
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M19.1976 9.46328C19.5099 9.77565 19.5099 10.2821 19.1976 10.5945L13.3642 16.4279L19.1976 22.2613C19.5099 22.5737 19.5099 23.0801 19.1976 23.3925C18.8852 23.7048 18.3788 23.7048 18.0664 23.3925L11.6674 16.9935C11.355 16.6811 11.355 16.1747 11.6674 15.8623L18.0664 9.46328C18.3788 9.15091 18.8852 9.15091 19.1976 9.46328Z" fill="#8D9299"/>
+                            </svg>
+                        </button>
+                        
+                        <!-- Page Input -->
+                        <div class="flex items-center space-x-1">
+                            <input type="number" id="page-input" min="1" max="1" value="1" 
+                                       class="w-7 h-4 px-0 py-0 text-sm text-center bg-transparent border-none outline-none text-gray-900 dark:text-white leading-none">
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">/</span>
+                            <span id="total-pages" class="text-sm font-medium text-gray-700 dark:text-gray-300">1</span>
+                        </div>
+                        
+                        <!-- Next Button -->
+                        <button id="next-slide" class="p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white disabled:opacity-50">
+                            <svg width="33" height="33" viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="0.613281" y="0.463013" width="32" height="32" rx="10" fill="white"/>
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M13.3466 23.3926C13.0342 23.0802 13.0342 22.5737 13.3466 22.2614L19.18 16.428L13.3466 10.5946C13.0342 10.2822 13.0342 9.77573 13.3466 9.46336C13.659 9.15099 14.1654 9.15099 14.4778 9.46336L20.8768 15.8624C21.1892 16.1747 21.1892 16.6812 20.8768 16.9936L14.4778 23.3926C14.1654 23.7049 13.659 23.7049 13.3466 23.3926Z" fill="#8D9299"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
-
-            <!-- Home Button -->
-            <button id="home-button" class="fixed top-20 left-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m0 0V11a1 1 0 011-1h2a1 1 0 011 1v10m3 0a1 1 0 001-1V10M5 10l7-7 7 7"></path>
-                </svg>
-            </button>
-
-            <!-- Fullscreen Toggle -->
-            <button id="fullscreen-toggle" class="fixed top-20 left-16 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
-                </svg>
-            </button>
-
-            <!-- File Navigation Toggle -->
-            <button id="file-nav-toggle" class="fixed top-20 left-28 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </button>
-
-            <!-- PDF Export Button -->
-            <button id="pdf-export-btn" class="fixed top-20 left-40 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-            </button>
 
             <!-- File Navigation Sidebar -->
             <div id="file-nav-sidebar" class="fixed top-20 left-56 z-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 max-w-xs w-64 max-h-96 overflow-y-auto hidden">
@@ -216,6 +299,7 @@
                     <!-- File navigation items will be inserted here -->
                 </div>
             </div>
+
 
             <!-- Slide Container -->
             <div id="slide-container" class="min-h-screen p-4 flex items-center justify-center">

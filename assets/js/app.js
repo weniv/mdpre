@@ -57,7 +57,10 @@ class GitHubMarkdownPresenter {
         document.getElementById('fullscreen-toggle').addEventListener('click', () => this.toggleFullscreen());
 
         // File navigation toggle
-        document.getElementById('file-nav-toggle').addEventListener('click', () => this.toggleFileNavigation());
+        document.getElementById('file-nav-toggle').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.toggleFileListPopup();
+        });
         document.getElementById('close-file-nav').addEventListener('click', () => this.closeFileNavigation());
 
         // PDF export button
@@ -74,16 +77,32 @@ class GitHubMarkdownPresenter {
         // Theme toggle
         document.getElementById('theme-toggle').addEventListener('click', () => this.toggleTheme());
 
-        // Settings modal
-        document.getElementById('settings-btn').addEventListener('click', () => this.openSettings());
-        document.getElementById('close-settings').addEventListener('click', () => this.closeSettings());
+        // Settings dropdown
+        document.getElementById('settings-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.toggleSettingsDropdown();
+        });
+        
+        document.getElementById('close-settings-dropdown').addEventListener('click', () => {
+            this.closeSettingsDropdown();
+        });
 
-        // Settings form
-        document.getElementById('font-family').addEventListener('change', (e) => {
+        // Settings form - new dropdown
+        document.getElementById('font-family-dropdown').addEventListener('change', (e) => {
             this.settings.fontFamily = e.target.value;
             this.applySettings();
             this.saveSettings();
         });
+
+        // Settings form - old modal (keep for compatibility)
+        const oldFontFamily = document.getElementById('font-family');
+        if (oldFontFamily) {
+            oldFontFamily.addEventListener('change', (e) => {
+                this.settings.fontFamily = e.target.value;
+                this.applySettings();
+                this.saveSettings();
+            });
+        }
     }
 
     setupFullscreenHandling() {
@@ -114,15 +133,13 @@ class GitHubMarkdownPresenter {
         
         // Update UI state
         const container = document.getElementById('slide-container');
-        const slideNav = document.getElementById('slide-nav');
-        const fullscreenToggle = document.getElementById('fullscreen-toggle');
+        const bottomNavContainer = document.getElementById('bottom-nav-container');
         const logoContainer = document.getElementById('presentation-logo');
         
         if (this.isFullscreen) {
             container.classList.add('fullscreen');
-            // Ensure navigation controls are visible and properly positioned
-            if (slideNav) slideNav.style.display = 'block';
-            if (fullscreenToggle) fullscreenToggle.style.display = 'block';
+            // Ensure bottom navigation is visible in fullscreen
+            if (bottomNavContainer) bottomNavContainer.style.display = 'flex';
             
             // Position logo at top-left of screen in fullscreen mode
             if (logoContainer) {
@@ -135,8 +152,7 @@ class GitHubMarkdownPresenter {
         } else {
             container.classList.remove('fullscreen');
             // Reset any inline styles that might interfere
-            if (slideNav) slideNav.style.display = '';
-            if (fullscreenToggle) fullscreenToggle.style.display = '';
+            if (bottomNavContainer) bottomNavContainer.style.display = '';
             
             // Reset logo position to slide-content relative positioning
             if (logoContainer) {
@@ -968,6 +984,65 @@ class GitHubMarkdownPresenter {
         document.getElementById('settings-modal').classList.add('hidden');
     }
 
+    toggleSettingsDropdown() {
+        const dropdown = document.getElementById('settings-dropdown');
+        if (dropdown.classList.contains('hidden')) {
+            // Update dropdown form values
+            document.getElementById('font-family-dropdown').value = this.settings.fontFamily;
+            dropdown.classList.remove('hidden');
+        } else {
+            dropdown.classList.add('hidden');
+        }
+    }
+
+    closeSettingsDropdown() {
+        const dropdown = document.getElementById('settings-dropdown');
+        dropdown.classList.add('hidden');
+    }
+
+    toggleFileListPopup() {
+        const popup = document.getElementById('file-list-popup');
+        const content = document.getElementById('file-list-content');
+        
+        if (popup.classList.contains('hidden')) {
+            // Show popup and populate with file list
+            this.populateFileListPopup(content);
+            popup.classList.remove('hidden');
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                popup.classList.add('hidden');
+            }, 3000);
+        } else {
+            popup.classList.add('hidden');
+        }
+    }
+
+    populateFileListPopup(content) {
+        content.innerHTML = '';
+        
+        if (this.fileSlideMap.length === 0) {
+            content.innerHTML = '<div class="text-center text-gray-500 dark:text-gray-400 text-sm">파일이 없습니다</div>';
+            return;
+        }
+
+        this.fileSlideMap.forEach((fileInfo, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'cursor-pointer p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-sm';
+            fileItem.innerHTML = `
+                <div class="font-medium text-gray-900 dark:text-white">${fileInfo.name}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">슬라이드 ${fileInfo.startSlide + 1}-${fileInfo.startSlide + fileInfo.slideCount}</div>
+            `;
+            
+            fileItem.addEventListener('click', () => {
+                this.goToSlide(fileInfo.startSlide);
+                document.getElementById('file-list-popup').classList.add('hidden');
+            });
+            
+            content.appendChild(fileItem);
+        });
+    }
+
     applySettings() {
         const slideContent = document.getElementById('slide-content');
         
@@ -1434,8 +1509,10 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('click', (e) => {
     const modal = document.getElementById('settings-modal');
     const settingsBtn = document.getElementById('settings-btn');
+    const settingsDropdown = document.getElementById('settings-dropdown');
     const fileNavSidebar = document.getElementById('file-nav-sidebar');
     const fileNavToggle = document.getElementById('file-nav-toggle');
+    const fileListPopup = document.getElementById('file-list-popup');
     
     if (!modal.classList.contains('hidden') && 
         !modal.contains(e.target) && 
@@ -1443,10 +1520,24 @@ document.addEventListener('click', (e) => {
         modal.classList.add('hidden');
     }
     
+    // Close settings dropdown when clicking outside
+    if (!settingsDropdown.classList.contains('hidden') && 
+        !settingsDropdown.contains(e.target) && 
+        !settingsBtn.contains(e.target)) {
+        settingsDropdown.classList.add('hidden');
+    }
+    
     if (!fileNavSidebar.classList.contains('hidden') && 
         !fileNavSidebar.contains(e.target) && 
         !fileNavToggle.contains(e.target)) {
         fileNavSidebar.classList.add('hidden');
+    }
+    
+    // Close file list popup when clicking outside
+    if (!fileListPopup.classList.contains('hidden') && 
+        !fileListPopup.contains(e.target) && 
+        !fileNavToggle.contains(e.target)) {
+        fileListPopup.classList.add('hidden');
     }
 });
 

@@ -862,7 +862,7 @@ pre[class*=language-] {
 /* Keyboard navigation indicators */
 .keyboard-navigation {
     position: fixed;
-    bottom: 20px;
+    bottom: 100px;
     left: 50%;
     transform: translateX(-50%);
     background: rgba(0, 0, 0, 0.8);
@@ -1170,4 +1170,200 @@ pre[class*=language-] {
 /* Improved select box spacing */
 #folder-selection {
     margin-bottom: 1.5rem;
+}
+
+/* Bottom Navigation Container Styles */
+#bottom-nav-container {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Control Button Tooltips */
+.control-btn {
+    position: relative;
+}
+
+.control-btn::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 18px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #121314;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.control-btn::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #121314;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.control-btn:hover::after,
+.control-btn:hover::before {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Settings Dropdown Styles */
+#settings-dropdown {
+    animation: fadeIn 0.2s ease-out;
+}
+
+#settings-dropdown.hidden {
+    animation: fadeOut 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+/* Dark mode support for settings dropdown */
+.dark #settings-dropdown svg rect[fill="white"] {
+    fill: #1f2937 !important;
+}
+
+/* File List Popup Styles */
+#file-list-popup {
+    animation: slideUp 0.3s ease-out;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+#file-list-popup.hidden {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+/* Update fullscreen styles for new bottom navigation */
+.fullscreen #bottom-nav-container {
+    position: fixed !important;
+    bottom: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 10000 !important;
+}
+
+/* Hide old navigation in fullscreen */
+.fullscreen #slide-nav,
+.fullscreen #home-button,
+.fullscreen #fullscreen-toggle,
+.fullscreen #file-nav-toggle,
+.fullscreen #pdf-export-btn {
+    display: none !important;
+}
+
+/* Ensure file navigation sidebar is positioned correctly */
+#file-nav-sidebar {
+    top: 80px !important;
+    left: 20px !important;
+    right: auto !important;
+}
+
+/* Dark mode switch animation */
+.dark #switch-circle {
+    transform: translateX(24px);
+}
+
+.dark #sun-icon {
+    transform: translateX(24px);
+}
+
+.dark #moon-icon {
+    transform: translateX(-24px);
+}
+
+/* Dark mode settings button */
+.dark #settings-bg {
+    fill: #1f2937;
+}
+
+.dark #settings-dot1,
+.dark #settings-dot2,
+.dark #settings-dot3 {
+    fill: #d1d5db;
+}
+
+/* File list popup positioning */
+#file-list-popup {
+    position: absolute !important;
+    bottom: 100% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Dark mode bottom navigation boxes */
+.dark #bottom-nav-container .bg-white {
+    background-color: #1f2937 !important;
+}
+
+.dark #bottom-nav-container .border-gray-200 {
+    border-color: #4b5563 !important;
+}
+
+/* Dark mode navigation box text colors */
+.dark #bottom-nav-container .text-gray-700 {
+    color: #ffffff !important;
+}
+
+.dark #bottom-nav-container .text-gray-900 {
+    color: #ffffff !important;
 }
