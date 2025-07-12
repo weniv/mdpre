@@ -789,9 +789,18 @@ class GitHubMarkdownPresenter {
             /\{center\}([\s\S]*?)\{\/center\}/g,
             (match, content) => {
                 // Remove leading and trailing <br> tags and whitespace
-                const cleanContent = content
+                let cleanContent = content
                     .replace(/^(\s*<br\s*\/?>)*\s*/, '') // Remove leading br tags and whitespace
                     .replace(/\s*(\s*<br\s*\/?>)*\s*$/, ''); // Remove trailing br tags and whitespace
+                
+                // Convert multiple br tags to paragraph breaks for better PDF handling
+                cleanContent = cleanContent.replace(/\s*<br\s*\/?>\s*<br\s*\/?>\s*/g, '</p><p>');
+                
+                // If content has paragraph breaks, wrap in paragraphs
+                if (cleanContent.includes('</p><p>')) {
+                    cleanContent = '<p>' + cleanContent + '</p>';
+                }
+                
                 return `<div class="text-center">${cleanContent}</div>`;
             }
         );
@@ -1521,6 +1530,14 @@ class GitHubMarkdownPresenter {
             }
             
             slideDiv.innerHTML = cleanHTML;
+            
+            // PDF용 코드 하이라이팅 적용
+            if (window.Prism) {
+                const codeBlocks = slideDiv.querySelectorAll('pre code, code[class*="language-"]');
+                codeBlocks.forEach(block => {
+                    Prism.highlightElement(block);
+                });
+            }
             
             // 각 슬라이드에 동일한 크기의 로고 추가
             if (hasLogo) {
