@@ -44,6 +44,7 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" rel="stylesheet">
     <link href="./assets/css/style.css" rel="stylesheet">
 </head>
@@ -136,6 +137,13 @@
                                         <option value="maruburi" class="bg-white dark:bg-gray-700 text-gray-900 dark:text-white">마루부리</option>
                                     </select>
                                 </div>
+                                
+                                <!-- Help Button -->
+                                <div class="pt-2 border-t border-gray-200 dark:border-gray-600">
+                                    <button id="help-btn" class="w-full flex items-center justify-center space-x-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors">
+                                        <span>사용법 안내</span>
+                                    </button>
+                                </div>
                             </div>
                             
                             <!-- Triangle pointer -->
@@ -168,7 +176,7 @@
                             </label>
                             <label class="flex items-center cursor-pointer">
                                 <input type="radio" name="repo-source" value="local" id="local-files" class="mr-2 text-blue-600">
-                                <span class="text-gray-700 dark:text-gray-300">로컬 파일 불러오기</span>
+                                <span class="text-gray-700 dark:text-gray-300">노션 또는 로컬 파일 불러오기</span>
                             </label>
                             <label class="flex items-center cursor-pointer">
                                 <input type="radio" name="repo-source" value="direct" id="direct-input" class="mr-2 text-blue-600">
@@ -200,13 +208,42 @@
                         <!-- Local File Upload -->
                         <div id="local-file-fields" class="hidden">
                             <div>
-                                <label for="file-upload" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    마크다운 파일 선택 (여러 개 선택 가능)
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                    파일 업로드 (마크다운 또는 Notion 내보내기 zip)
                                 </label>
-                                <input type="file" id="file-upload" accept=".md" multiple
-                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
-                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                    .md 파일을 선택하세요. Ctrl/Cmd+클릭으로 여러 파일 선택 가능합니다.
+                                
+                                <!-- Drag and Drop Zone (Always Visible) -->
+                                <div id="drop-zone" class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 p-8 text-center transition-colors duration-200 hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-gray-600">
+                                    <div class="space-y-3">
+                                        <svg class="mx-auto h-16 w-16 text-gray-400 dark:text-gray-500" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                        <div>
+                                            <p class="text-lg font-medium text-gray-700 dark:text-gray-300">파일을 드래그하여 업로드</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">또는</p>
+                                        </div>
+                                        <button type="button" id="file-select-btn" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                            </svg>
+                                            파일 선택
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Hidden File Input -->
+                                <input type="file" id="file-upload" accept=".md,.zip" multiple class="hidden">
+                                
+                                <!-- File List Display -->
+                                <div id="uploaded-files-list" class="hidden mt-4">
+                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">업로드된 파일:</h4>
+                                    <div id="file-items" class="space-y-2 max-h-32 overflow-y-auto">
+                                        <!-- File items will be inserted here -->
+                                    </div>
+                                </div>
+                                
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                                    지원 파일: .md (마크다운), .zip (Notion 내보내기)
                                 </p>
                             </div>
                         </div>
@@ -403,11 +440,221 @@
         </div>
     </div>
 
+    <!-- Help Modal -->
+    <div id="help-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-600">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white">사용법 안내</h2>
+                <button id="close-help-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Modal Content -->
+            <div class="overflow-y-auto max-h-[calc(90vh-8rem)]">
+                <div class="p-6">
+                    <!-- Accordion Container -->
+                    <div class="space-y-4">
+                        <!-- File Upload Section -->
+                        <div class="border border-gray-200 dark:border-gray-600 rounded-lg">
+                            <button class="help-accordion-btn w-full flex justify-between items-center p-4 text-left bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-target="upload-section">
+                                <span class="font-medium text-gray-900 dark:text-white">📁 파일 업로드 방법</span>
+                                <svg class="help-accordion-icon w-5 h-5 text-gray-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div id="upload-section" class="help-accordion-content hidden p-4 bg-white dark:bg-gray-800">
+                                <div class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                                    <h4 class="font-medium text-gray-900 dark:text-white">마크다운 파일 업로드</h4>
+                                    <ul class="list-disc pl-5 space-y-1">
+                                        <li>"노션 또는 로컬 파일 불러오기" 선택 후 파일 선택 버튼 클릭</li>
+                                        <li>.md 파일을 직접 선택하거나 드래그 앤 드롭으로 업로드</li>
+                                        <li>여러 개의 마크다운 파일을 동시에 업로드 가능</li>
+                                    </ul>
+                                    
+                                    <h4 class="font-medium text-gray-900 dark:text-white mt-4">Notion 내보내기 사용법</h4>
+                                    <ul class="list-disc pl-5 space-y-1">
+                                        <li>Notion에서 "내보내기" → "마크다운 & CSV" 선택</li>
+                                        <li>하위 페이지 포함 옵션 체크</li>
+                                        <li>다운로드된 .zip 파일을 직접 업로드</li>
+                                        <li>zip 파일 내부의 이미지들이 자동으로 처리됩니다</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Section -->
+                        <div class="border border-gray-200 dark:border-gray-600 rounded-lg">
+                            <button class="help-accordion-btn w-full flex justify-between items-center p-4 text-left bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-target="navigation-section">
+                                <span class="font-medium text-gray-900 dark:text-white">⌨️ 프레젠테이션 조작 방법</span>
+                                <svg class="help-accordion-icon w-5 h-5 text-gray-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div id="navigation-section" class="help-accordion-content hidden p-4 bg-white dark:bg-gray-800">
+                                <div class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                                    <h4 class="font-medium text-gray-900 dark:text-white">키보드 단축키</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded">
+                                            <span class="font-mono bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-xs">→ ↓ Space</span>
+                                            <p class="mt-1">다음 슬라이드</p>
+                                        </div>
+                                        <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded">
+                                            <span class="font-mono bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-xs">← ↑ Backspace</span>
+                                            <p class="mt-1">이전 슬라이드</p>
+                                        </div>
+                                        <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded">
+                                            <span class="font-mono bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-xs">F11</span>
+                                            <p class="mt-1">전체화면 토글</p>
+                                        </div>
+                                        <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded">
+                                            <span class="font-mono bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-xs">Home / End</span>
+                                            <p class="mt-1">첫/마지막 슬라이드</p>
+                                        </div>
+                                        <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded">
+                                            <span class="font-mono bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-xs">B</span>
+                                            <p class="mt-1">화면 끄기 (검은 화면)</p>
+                                        </div>
+                                        <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded">
+                                            <span class="font-mono bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-xs">W</span>
+                                            <p class="mt-1">화면 끄기 (흰 화면)</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <h4 class="font-medium text-gray-900 dark:text-white mt-4">프레젠터 리모컨 지원</h4>
+                                    <ul class="list-disc pl-5 space-y-1">
+                                        <li>로지텍 등 대부분의 USB 프레젠터 리모컨 지원</li>
+                                        <li>PageUp/PageDown 키로 슬라이드 이동</li>
+                                        <li>F5 키로 프레젠테이션 모드 시작</li>
+                                        <li>레이저 포인터 기능 시뮬레이션 (L 키)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Features Section -->
+                        <div class="border border-gray-200 dark:border-gray-600 rounded-lg">
+                            <button class="help-accordion-btn w-full flex justify-between items-center p-4 text-left bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-target="features-section">
+                                <span class="font-medium text-gray-900 dark:text-white">🎯 슬라이드 탐색 기능</span>
+                                <svg class="help-accordion-icon w-5 h-5 text-gray-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div id="features-section" class="help-accordion-content hidden p-4 bg-white dark:bg-gray-800">
+                                <div class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                                    <ul class="list-disc pl-5 space-y-2">
+                                        <li><strong>페이지 입력:</strong> 하단 입력창에 페이지 번호 입력하여 직접 이동</li>
+                                        <li><strong>파일 목록:</strong> 여러 파일 업로드 시 파일 간 빠른 전환</li>
+                                        <li><strong>로고 클릭:</strong> 프레젠테이션 로고 클릭 시 첫 슬라이드로 이동</li>
+                                        <li><strong>홈 버튼:</strong> 언제든지 메인 화면으로 돌아가기</li>
+                                        <li><strong>PDF 내보내기:</strong> 전체 슬라이드를 PDF로 저장</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Markdown Section -->
+                        <div class="border border-gray-200 dark:border-gray-600 rounded-lg">
+                            <button class="help-accordion-btn w-full flex justify-between items-center p-4 text-left bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-target="markdown-section">
+                                <span class="font-medium text-gray-900 dark:text-white">📝 지원되는 마크다운 문법</span>
+                                <svg class="help-accordion-icon w-5 h-5 text-gray-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div id="markdown-section" class="help-accordion-content hidden p-4 bg-white dark:bg-gray-800">
+                                <div class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                                    <h4 class="font-medium text-gray-900 dark:text-white">기본 마크다운 문법</h4>
+                                    <div class="space-y-2">
+                                        <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded font-mono text-xs">
+                                            <div># 제목 1</div>
+                                            <div>## 제목 2</div>
+                                            <div>### 제목 3</div>
+                                            <div>**굵은 글씨** *기울임* `코드`</div>
+                                            <div>- 목록 항목</div>
+                                            <div>1. 번호 목록</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <h4 class="font-medium text-gray-900 dark:text-white">슬라이드 구분</h4>
+                                    <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded font-mono text-xs">
+                                        <div>---</div>
+                                        <div class="text-gray-500 dark:text-gray-400">(또는 ## 제목으로 자동 구분)</div>
+                                    </div>
+                                    
+                                    <h4 class="font-medium text-gray-900 dark:text-white">커스텀 포맷팅</h4>
+                                    <div class="space-y-2">
+                                        <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded font-mono text-xs">
+                                            <div>{center}중앙 정렬 텍스트{/center}</div>
+                                            <div>{large}큰 텍스트{/large}</div>
+                                            <div>{xlarge}매우 큰 텍스트{/xlarge}</div>
+                                            <div>{small}작은 텍스트{/small}</div>
+                                            <div>{highlight}하이라이트{/highlight}</div>
+                                            <div>{bold}굵은 텍스트{/bold}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <h4 class="font-medium text-gray-900 dark:text-white">코드 블록</h4>
+                                    <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded font-mono text-xs">
+                                        <div>```javascript</div>
+                                        <div>console.log('Hello World');</div>
+                                        <div>```</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Images Section -->
+                        <div class="border border-gray-200 dark:border-gray-600 rounded-lg">
+                            <button class="help-accordion-btn w-full flex justify-between items-center p-4 text-left bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-target="images-section">
+                                <span class="font-medium text-gray-900 dark:text-white">🖼️ 이미지 삽입 방법</span>
+                                <svg class="help-accordion-icon w-5 h-5 text-gray-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div id="images-section" class="help-accordion-content hidden p-4 bg-white dark:bg-gray-800">
+                                <div class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                                    <h4 class="font-medium text-gray-900 dark:text-white">로컬 파일 이미지</h4>
+                                    <ul class="list-disc pl-5 space-y-1">
+                                        <li>마크다운 파일과 같은 폴더에 이미지 파일 배치</li>
+                                        <li>상대 경로로 이미지 참조: ![설명](./image.png)</li>
+                                        <li>지원 형식: PNG, JPG, JPEG, GIF, SVG</li>
+                                    </ul>
+                                    
+                                    <h4 class="font-medium text-gray-900 dark:text-white mt-4">Notion 이미지</h4>
+                                    <ul class="list-disc pl-5 space-y-1">
+                                        <li>Notion 내보내기 시 이미지가 자동으로 zip에 포함</li>
+                                        <li>업로드 후 자동으로 Base64로 변환되어 표시</li>
+                                        <li>별도 설정 없이 바로 사용 가능</li>
+                                    </ul>
+                                    
+                                    <h4 class="font-medium text-gray-900 dark:text-white mt-4">온라인 이미지</h4>
+                                    <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded font-mono text-xs">
+                                        ![설명](https://example.com/image.png)
+                                    </div>
+                                    
+                                    <h4 class="font-medium text-gray-900 dark:text-white mt-4">로고 설정</h4>
+                                    <ul class="list-disc pl-5 space-y-1">
+                                        <li>마크다운 파일과 같은 폴더에 "logo.png" 파일 배치</li>
+                                        <li>프레젠테이션 시 자동으로 좌측 상단에 표시</li>
+                                        <li>로고 클릭 시 첫 슬라이드로 이동</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Loading Indicator -->
     <div id="loading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white dark:bg-gray-800 rounded-lg p-6 flex items-center space-x-3">
             <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-            <span class="text-gray-900 dark:text-white">프레젠테이션을 로드하는 중...</span>
+            <span id="loading-text" class="text-gray-900 dark:text-white">프레젠테이션을 로드하는 중...</span>
         </div>
     </div>
 

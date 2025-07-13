@@ -43,6 +43,12 @@ class GitHubMarkdownPresenter {
         // File upload change event
         document.getElementById('file-upload').addEventListener('change', () => this.handleFileUpload());
 
+        // File select button event
+        document.getElementById('file-select-btn').addEventListener('click', () => this.openFileDialog());
+
+        // Drag and drop events
+        this.setupDragAndDrop();
+
         // Repository form submission
         document.getElementById('repo-form').addEventListener('submit', (e) => {
             e.preventDefault();
@@ -82,6 +88,20 @@ class GitHubMarkdownPresenter {
 
         // Theme toggle
         document.getElementById('theme-toggle').addEventListener('click', () => this.toggleTheme());
+
+        // Help modal
+        document.getElementById('help-btn').addEventListener('click', () => {
+            this.closeSettingsDropdown(); // Close settings dropdown first
+            this.openHelpModal();
+        });
+        document.getElementById('close-help-modal').addEventListener('click', () => this.closeHelpModal());
+        
+        // Help modal backdrop click
+        document.getElementById('help-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'help-modal') {
+                this.closeHelpModal();
+            }
+        });
 
         // Settings dropdown
         document.getElementById('settings-btn').addEventListener('click', (e) => {
@@ -504,43 +524,53 @@ class GitHubMarkdownPresenter {
         let keyboardIndicator = null;
 
         document.addEventListener('keydown', (e) => {
+            // Debug mode: log all key events when in presentation mode
+            if (this.slides.length > 0) {
+                console.log('Key pressed:', {
+                    key: e.key,
+                    code: e.code,
+                    keyCode: e.keyCode,
+                    which: e.which,
+                    ctrlKey: e.ctrlKey,
+                    shiftKey: e.shiftKey,
+                    altKey: e.altKey,
+                    metaKey: e.metaKey,
+                    location: e.location,
+                    repeat: e.repeat
+                });
+            }
+            
             // Only handle keyboard shortcuts in presentation mode
             if (this.slides.length === 0) return;
             
             let handled = false;
 
+            // Handle presenter remote and navigation keys
             switch(e.key) {
+                // Previous slide keys
+                case 'PageUp':
                 case 'ArrowLeft':
+                case 'Backspace':
                     this.previousSlide();
                     handled = true;
                     break;
+                
+                // Next slide keys
+                case 'PageDown':
                 case 'ArrowRight':
                 case ' ':  // Space bar
+                case 'Enter':
                     this.nextSlide();
                     handled = true;
                     break;
                 case 'ArrowUp':
-                    // Smooth scroll up - handle fullscreen vs normal mode
-                    if (this.isFullscreen) {
-                        const container = document.getElementById('slide-container');
-                        if (container) {
-                            container.scrollBy({ top: -50, behavior: 'smooth' });
-                        }
-                    } else {
-                        window.scrollBy({ top: -50, behavior: 'smooth' });
-                    }
+                    // Smooth scroll up - try slide content first, then window
+                    this.handleVerticalScroll(-50);
                     handled = true;
                     break;
                 case 'ArrowDown':
-                    // Smooth scroll down - handle fullscreen vs normal mode
-                    if (this.isFullscreen) {
-                        const container = document.getElementById('slide-container');
-                        if (container) {
-                            container.scrollBy({ top: 50, behavior: 'smooth' });
-                        }
-                    } else {
-                        window.scrollBy({ top: 50, behavior: 'smooth' });
-                    }
+                    // Smooth scroll down - try slide content first, then window
+                    this.handleVerticalScroll(50);
                     handled = true;
                     break;
                 case 'Home':
@@ -563,11 +593,249 @@ class GitHubMarkdownPresenter {
                     break;
             }
 
+            // If not handled by key names, try key codes for presenter compatibility
+            if (!handled) {
+                handled = this.handlePresenterKeyCodes(e);
+            }
+
             if (handled) {
                 e.preventDefault();
                 this.showKeyboardIndicator();
             }
         });
+    }
+
+    handlePresenterKeyCodes(e) {
+        // Handle key codes that some presenter remotes might send
+        switch(e.keyCode || e.which) {
+            // Common presenter key codes
+            case 33: // Page Up
+                this.previousSlide();
+                return true;
+            case 34: // Page Down
+                this.nextSlide();
+                return true;
+            case 37: // Left Arrow
+                this.previousSlide();
+                return true;
+            case 39: // Right Arrow
+                this.nextSlide();
+                return true;
+            case 38: // Up Arrow
+                this.handleVerticalScroll(-50);
+                return true;
+            case 40: // Down Arrow
+                this.handleVerticalScroll(50);
+                return true;
+            case 32: // Space
+                this.nextSlide();
+                return true;
+            case 13: // Enter
+                this.nextSlide();
+                return true;
+            case 8: // Backspace
+                this.previousSlide();
+                return true;
+            case 27: // Escape
+                if (this.isFullscreen) {
+                    this.exitFullscreen();
+                    return true;
+                }
+                break;
+            case 122: // F11
+                this.toggleFullscreen();
+                return true;
+            case 36: // Home
+                this.goToSlide(0);
+                return true;
+            case 35: // End
+                this.goToSlide(this.slides.length - 1);
+                return true;
+            
+            // Some Logitech presenter specific codes (may vary by model)
+            case 116: // F5 - often used for presentation mode
+                this.toggleFullscreen();
+                return true;
+            case 66: // B key - black screen (some presenters)
+                this.toggleBlackScreen();
+                return true;
+            case 87: // W key - white screen (some presenters)
+                this.toggleWhiteScreen();
+                return true;
+            case 190: // Period - sometimes used for laser pointer simulation
+                this.showLaserPointer(e);
+                return true;
+        }
+        return false;
+    }
+
+    toggleBlackScreen() {
+        let blackScreen = document.getElementById('black-screen');
+        if (!blackScreen) {
+            blackScreen = document.createElement('div');
+            blackScreen.id = 'black-screen';
+            blackScreen.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: black;
+                z-index: 10000;
+                display: none;
+            `;
+            document.body.appendChild(blackScreen);
+        }
+        
+        const isVisible = blackScreen.style.display === 'block';
+        blackScreen.style.display = isVisible ? 'none' : 'block';
+        
+        if (!isVisible) {
+            setTimeout(() => {
+                blackScreen.style.display = 'none';
+            }, 3000); // Auto hide after 3 seconds
+        }
+    }
+
+    toggleWhiteScreen() {
+        let whiteScreen = document.getElementById('white-screen');
+        if (!whiteScreen) {
+            whiteScreen = document.createElement('div');
+            whiteScreen.id = 'white-screen';
+            whiteScreen.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: white;
+                z-index: 10000;
+                display: none;
+            `;
+            document.body.appendChild(whiteScreen);
+        }
+        
+        const isVisible = whiteScreen.style.display === 'block';
+        whiteScreen.style.display = isVisible ? 'none' : 'block';
+        
+        if (!isVisible) {
+            setTimeout(() => {
+                whiteScreen.style.display = 'none';
+            }, 3000); // Auto hide after 3 seconds
+        }
+    }
+
+    showLaserPointer(e) {
+        // Simple laser pointer simulation
+        let pointer = document.getElementById('laser-pointer');
+        if (!pointer) {
+            pointer = document.createElement('div');
+            pointer.id = 'laser-pointer';
+            pointer.style.cssText = `
+                position: fixed;
+                width: 20px;
+                height: 20px;
+                background: radial-gradient(circle, red 30%, transparent 70%);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 10000;
+                opacity: 0.8;
+                display: none;
+            `;
+            document.body.appendChild(pointer);
+        }
+        
+        // Show pointer at mouse position or center of screen
+        const x = e.clientX || window.innerWidth / 2;
+        const y = e.clientY || window.innerHeight / 2;
+        pointer.style.left = (x - 10) + 'px';
+        pointer.style.top = (y - 10) + 'px';
+        pointer.style.display = 'block';
+        
+        setTimeout(() => {
+            pointer.style.display = 'none';
+        }, 1000);
+    }
+
+    handleVerticalScroll(scrollAmount) {
+        // Get the slide content element
+        const slideContent = document.getElementById('slide-content');
+        const slideContainer = document.getElementById('slide-container');
+        const presentationSection = document.getElementById('presentation-section');
+        
+        if (!slideContent || !slideContainer) {
+            // Fallback to window scroll if elements not found
+            window.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+            return;
+        }
+        
+        // Check if we're in presentation mode
+        const inPresentationMode = presentationSection && !presentationSection.classList.contains('hidden');
+        
+        if (!inPresentationMode) {
+            // Not in presentation mode, scroll the window
+            window.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+            return;
+        }
+        
+        // We're in presentation mode - determine the best scroll target
+        if (this.isFullscreen) {
+            // In fullscreen mode, always scroll the container
+            slideContainer.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+            return;
+        }
+        
+        // Normal presentation mode - check if content needs scrolling
+        const containerRect = slideContainer.getBoundingClientRect();
+        const contentRect = slideContent.getBoundingClientRect();
+        
+        // Check if content extends beyond the visible container area
+        const contentOverflowsTop = contentRect.top < containerRect.top;
+        const contentOverflowsBottom = contentRect.bottom > containerRect.bottom;
+        const needsScrolling = contentOverflowsTop || contentOverflowsBottom || 
+                              slideContent.scrollHeight > slideContainer.clientHeight;
+        
+        if (needsScrolling) {
+            // Content needs scrolling within the container
+            slideContainer.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+            
+            // Also provide visual feedback
+            this.showScrollIndicator();
+        } else {
+            // Content fits entirely - scroll the page instead for better UX
+            window.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+        }
+    }
+
+    showScrollIndicator() {
+        // Show a brief visual indicator that scrolling occurred
+        let indicator = document.querySelector('.scroll-indicator');
+        if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.className = 'scroll-indicator';
+            indicator.innerHTML = '↕ 스크롤 중';
+            indicator.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(0, 0, 0, 0.7);
+                color: white;
+                padding: 8px 12px;
+                border-radius: 6px;
+                font-size: 12px;
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.2s ease;
+                pointer-events: none;
+            `;
+            document.body.appendChild(indicator);
+        }
+        
+        indicator.style.opacity = '1';
+        clearTimeout(this.scrollIndicatorTimeout);
+        this.scrollIndicatorTimeout = setTimeout(() => {
+            indicator.style.opacity = '0';
+        }, 1000);
     }
 
     showKeyboardIndicator() {
@@ -588,6 +856,20 @@ class GitHubMarkdownPresenter {
 
     async loadPresentation() {
         const selectedSource = document.querySelector('input[name="repo-source"]:checked').value;
+        
+        // Handle local files - redirect to loadLocalFiles
+        if (selectedSource === 'local') {
+            await this.loadLocalFiles();
+            return;
+        }
+        
+        // Handle direct input - redirect to loadDirectInput
+        if (selectedSource === 'direct') {
+            await this.loadDirectInput();
+            return;
+        }
+        
+        // Handle GitHub repository sources
         const folderPath = document.getElementById('folder-dropdown').value;
         
         if (!document.getElementById('folder-selection').classList.contains('hidden') && !folderPath && folderPath !== '') {
@@ -604,7 +886,7 @@ class GitHubMarkdownPresenter {
             }
             owner = this.currentRepo.owner;
             repo = this.currentRepo.repo;
-        } else {
+        } else if (selectedSource === 'custom') {
             const repoUrl = document.getElementById('repo-url').value.trim();
             if (!repoUrl) {
                 alert('GitHub 리포지토리 URL을 입력해주세요.');
@@ -618,6 +900,9 @@ class GitHubMarkdownPresenter {
                 alert(error.message);
                 return;
             }
+        } else {
+            alert('올바른 소스를 선택해주세요.');
+            return;
         }
 
         await this.loadPresentationFromRepo(owner, repo, folderPath);
@@ -1281,8 +1566,166 @@ class GitHubMarkdownPresenter {
         
         if (fileInput.files.length > 0) {
             loadLocalBtn.classList.remove('hidden');
+            this.displayUploadedFiles(fileInput.files);
         } else {
             loadLocalBtn.classList.add('hidden');
+            this.hideUploadedFiles();
+        }
+    }
+
+    displayUploadedFiles(files) {
+        const filesList = document.getElementById('uploaded-files-list');
+        const fileItems = document.getElementById('file-items');
+        
+        if (!filesList || !fileItems) return;
+        
+        // Clear existing items
+        fileItems.innerHTML = '';
+        
+        // Show the files list
+        filesList.classList.remove('hidden');
+        
+        // Add each file to the list
+        Array.from(files).forEach((file, index) => {
+            const fileItem = this.createFileItem(file, index);
+            fileItems.appendChild(fileItem);
+        });
+    }
+
+    createFileItem(file, index) {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600';
+        
+        const fileSize = this.formatFileSize(file.size);
+        const fileType = this.getFileTypeDisplay(file.name);
+        
+        fileItem.innerHTML = `
+            <div class="flex items-center space-x-3">
+                ${this.getFileIcon(file.name)}
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 dark:text-white truncate" title="${file.name}">
+                        ${file.name}
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                        ${fileType} • ${fileSize}
+                    </p>
+                </div>
+            </div>
+            <button class="file-remove-btn ml-2 p-1 text-gray-400 hover:text-red-500 transition-colors" data-index="${index}" title="파일 제거">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        `;
+        
+        // Add remove button event listener
+        const removeBtn = fileItem.querySelector('.file-remove-btn');
+        removeBtn.addEventListener('click', () => this.removeFile(index));
+        
+        return fileItem;
+    }
+
+    getFileIcon(fileName) {
+        const extension = fileName.toLowerCase().split('.').pop();
+        
+        if (extension === 'zip') {
+            return `
+                <svg class="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                </svg>
+            `;
+        } else if (extension === 'md') {
+            return `
+                <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+            `;
+        } else {
+            return `
+                <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+            `;
+        }
+    }
+
+    getFileTypeDisplay(fileName) {
+        const extension = fileName.toLowerCase().split('.').pop();
+        
+        switch (extension) {
+            case 'zip':
+                return 'Notion 내보내기';
+            case 'md':
+                return '마크다운 파일';
+            default:
+                return extension.toUpperCase() + ' 파일';
+        }
+    }
+
+    formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    removeFile(index) {
+        const fileInput = document.getElementById('file-upload');
+        if (!fileInput.files) return;
+        
+        // Prevent any form submission during file removal
+        const form = document.getElementById('repo-form');
+        const tempHandler = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        };
+        
+        if (form) {
+            form.addEventListener('submit', tempHandler, true);
+        }
+        
+        try {
+            // Create a new FileList without the removed file
+            const dt = new DataTransfer();
+            const files = Array.from(fileInput.files);
+            
+            files.forEach((file, i) => {
+                if (i !== index) {
+                    dt.items.add(file);
+                }
+            });
+            
+            fileInput.files = dt.files;
+            
+            // Update the display
+            if (fileInput.files.length > 0) {
+                this.displayUploadedFiles(fileInput.files);
+            } else {
+                this.hideUploadedFiles();
+                const loadLocalBtn = document.getElementById('load-local-files-btn');
+                if (loadLocalBtn) {
+                    loadLocalBtn.classList.add('hidden');
+                }
+            }
+        } catch (error) {
+            console.warn('파일 제거 중 오류:', error);
+        } finally {
+            // Remove the temporary form submission handler
+            if (form) {
+                setTimeout(() => {
+                    form.removeEventListener('submit', tempHandler, true);
+                }, 100);
+            }
+        }
+    }
+
+    hideUploadedFiles() {
+        const filesList = document.getElementById('uploaded-files-list');
+        if (filesList) {
+            filesList.classList.add('hidden');
         }
     }
 
@@ -1297,14 +1740,29 @@ class GitHubMarkdownPresenter {
         
         try {
             this.showLoading(true);
-            await this.loadLocalMarkdownFiles(files);
+            
+            // Check if there are ZIP files
+            const zipFiles = Array.from(files).filter(file => file.name.toLowerCase().endsWith('.zip'));
+            const markdownFiles = Array.from(files).filter(file => file.name.toLowerCase().endsWith('.md'));
+            
+            if (zipFiles.length > 0) {
+                // Process ZIP files (Notion exports)
+                await this.loadZipFiles(zipFiles);
+            } else if (markdownFiles.length > 0) {
+                // Process regular markdown files
+                await this.loadLocalMarkdownFiles(files);
+            } else {
+                throw new Error('마크다운 파일(.md) 또는 ZIP 파일을 선택해주세요.');
+            }
             
             if (this.slides.length === 0) {
                 throw new Error('유효한 마크다운 슬라이드를 찾을 수 없습니다.');
             }
             
-            // Try to load logo from local files
-            await this.loadLocalLogo(files);
+            // Try to load logo from local files (only for non-ZIP uploads)
+            if (zipFiles.length === 0) {
+                await this.loadLocalLogo(files);
+            }
             
             this.showPresentation();
             
@@ -1314,6 +1772,36 @@ class GitHubMarkdownPresenter {
         } finally {
             this.showLoading(false);
         }
+    }
+
+    async loadZipFiles(zipFiles) {
+        this.slides = [];
+        this.fileSlideMap = [];
+        
+        for (const zipFile of zipFiles) {
+            try {
+                const markdownContent = await this.processZipFile(zipFile);
+                const slides = this.parseLocalMarkdownToSlides(markdownContent);
+                
+                // Track file information
+                const fileInfo = {
+                    name: zipFile.name,
+                    path: zipFile.name,
+                    startSlide: this.slides.length,
+                    slideCount: slides.length
+                };
+                this.fileSlideMap.push(fileInfo);
+                
+                this.slides.push(...slides);
+                
+            } catch (error) {
+                console.warn(`ZIP 파일 처리 실패: ${zipFile.name}`, error);
+                // Continue processing other files instead of stopping
+            }
+        }
+        
+        // Hide logo for ZIP imports (Notion exports typically don't need logos)
+        document.getElementById('presentation-logo').classList.add('hidden');
     }
 
     async loadDirectInput() {
@@ -1446,13 +1934,400 @@ class GitHubMarkdownPresenter {
         });
     }
 
-    showLoading(show) {
+    showLoading(show, message = '프레젠테이션을 로드하는 중...') {
         const loading = document.getElementById('loading');
+        const loadingText = document.getElementById('loading-text');
         if (show) {
+            loadingText.textContent = message;
             loading.classList.remove('hidden');
         } else {
             loading.classList.add('hidden');
         }
+    }
+
+    openFileDialog() {
+        const fileUpload = document.getElementById('file-upload');
+        if (fileUpload) {
+            fileUpload.click();
+        }
+    }
+
+    setupDragAndDrop() {
+        const dropZone = document.getElementById('drop-zone');
+        const fileUpload = document.getElementById('file-upload');
+        const localFileFields = document.getElementById('local-file-fields');
+
+        if (!dropZone || !fileUpload) return;
+
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            document.addEventListener(eventName, preventDefaults, false);
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // Highlight drop zone when item is dragged over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                if (!localFileFields.classList.contains('hidden')) {
+                    dropZone.classList.add('border-blue-500', 'bg-blue-100', 'dark:bg-blue-900');
+                    dropZone.classList.remove('border-gray-300', 'dark:border-gray-600');
+                }
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.remove('border-blue-500', 'bg-blue-100', 'dark:bg-blue-900');
+                dropZone.classList.add('border-gray-300', 'dark:border-gray-600');
+            }, false);
+        });
+
+        // Handle dropped files
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                fileUpload.files = files;
+                this.handleFileUpload();
+                this.showDropSuccessMessage(files.length);
+            }
+        }, false);
+
+        // Also make the drop zone clickable for better UX
+        dropZone.addEventListener('click', (e) => {
+            // Don't trigger if clicking on the file select button
+            if (!e.target.closest('#file-select-btn')) {
+                this.openFileDialog();
+            }
+        });
+    }
+
+    showDropSuccessMessage(fileCount) {
+        const dropZone = document.getElementById('drop-zone');
+        if (!dropZone) return;
+
+        // Temporarily show success message
+        const originalContent = dropZone.innerHTML;
+        dropZone.innerHTML = `
+            <div class="space-y-3">
+                <svg class="mx-auto h-16 w-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <div>
+                    <p class="text-lg font-medium text-green-700 dark:text-green-300">${fileCount}개 파일이 업로드되었습니다</p>
+                    <p class="text-sm text-green-600 dark:text-green-400">아래에서 파일 목록을 확인하세요</p>
+                </div>
+            </div>
+        `;
+        
+        dropZone.classList.add('border-green-500', 'bg-green-100', 'dark:bg-green-900');
+        dropZone.classList.remove('border-gray-300', 'dark:border-gray-600');
+
+        setTimeout(() => {
+            dropZone.innerHTML = originalContent;
+            dropZone.classList.remove('border-green-500', 'bg-green-100', 'dark:bg-green-900');
+            dropZone.classList.add('border-gray-300', 'dark:border-gray-600');
+            // Re-bind the click event to the new content
+            this.bindDropZoneClick();
+        }, 2000);
+    }
+
+    bindDropZoneClick() {
+        const dropZone = document.getElementById('drop-zone');
+        const fileSelectBtn = document.getElementById('file-select-btn');
+        
+        if (dropZone && fileSelectBtn) {
+            // Re-bind file select button
+            fileSelectBtn.addEventListener('click', () => this.openFileDialog());
+            
+            // Re-bind drop zone click
+            dropZone.addEventListener('click', (e) => {
+                if (!e.target.closest('#file-select-btn')) {
+                    this.openFileDialog();
+                }
+            });
+        }
+    }
+
+    async processZipFile(file) {
+        try {
+            this.showLoading(true, 'Notion zip 파일을 처리하는 중...');
+            
+            if (!window.JSZip) {
+                throw new Error('JSZip 라이브러리가 로드되지 않았습니다.');
+            }
+
+            const zip = new JSZip();
+            const zipContent = await zip.loadAsync(file);
+            
+            let markdownContent = '';
+            const imageMap = new Map();
+            
+            console.log('ZIP 파일 내용 분석 중...');
+            
+            // Extract markdown files and images
+            for (const [relativePath, zipEntry] of Object.entries(zipContent.files)) {
+                if (!zipEntry.dir) {
+                    const fileName = relativePath.split('/').pop();
+                    console.log('처리 중인 파일:', relativePath, '파일명:', fileName);
+                    
+                    if (fileName.endsWith('.md')) {
+                        // Extract markdown content
+                        const content = await zipEntry.async('text');
+                        console.log('마크다운 파일 발견:', fileName);
+                        console.log('마크다운 내용 미리보기:', content.substring(0, 200));
+                        markdownContent += content + '\n\n---\n\n';
+                    } else if (this.isImageFile(fileName)) {
+                        // Extract image as base64
+                        console.log('이미지 파일 발견:', fileName, '경로:', relativePath);
+                        const imageData = await zipEntry.async('base64');
+                        const mimeType = this.getMimeType(fileName);
+                        const base64Url = `data:${mimeType};base64,${imageData}`;
+                        
+                        // Store multiple variations of the image path for matching
+                        imageMap.set(fileName, base64Url);
+                        imageMap.set(relativePath, base64Url);
+                        
+                        // Also store URL-encoded versions (Notion sometimes uses these)
+                        const encodedFileName = encodeURIComponent(fileName);
+                        const encodedRelativePath = encodeURIComponent(relativePath);
+                        imageMap.set(encodedFileName, base64Url);
+                        imageMap.set(encodedRelativePath, base64Url);
+                        
+                        // Store without spaces (sometimes Notion replaces spaces)
+                        const fileNameNoSpaces = fileName.replace(/\s+/g, '%20');
+                        const relativePathNoSpaces = relativePath.replace(/\s+/g, '%20');
+                        imageMap.set(fileNameNoSpaces, base64Url);
+                        imageMap.set(relativePathNoSpaces, base64Url);
+                        
+                        // Store decoded versions (in case the zip path is encoded)
+                        try {
+                            const decodedFileName = decodeURIComponent(fileName);
+                            const decodedRelativePath = decodeURIComponent(relativePath);
+                            imageMap.set(decodedFileName, base64Url);
+                            imageMap.set(decodedRelativePath, base64Url);
+                        } catch (e) {
+                            // Ignore decode errors
+                        }
+                        
+                        // Store normalized versions (lowercase, no special chars)
+                        const normalizedFileName = fileName.toLowerCase().replace(/[^a-z0-9.-]/g, '');
+                        const normalizedRelativePath = relativePath.toLowerCase().replace(/[^a-z0-9.-/]/g, '');
+                        if (normalizedFileName) imageMap.set(normalizedFileName, base64Url);
+                        if (normalizedRelativePath) imageMap.set(normalizedRelativePath, base64Url);
+                        
+                        console.log('이미지 맵에 추가됨:', {
+                            fileName,
+                            relativePath,
+                            encodedFileName,
+                            fileNameNoSpaces
+                        });
+                    }
+                }
+            }
+
+            if (!markdownContent.trim()) {
+                throw new Error('zip 파일에서 마크다운 파일을 찾을 수 없습니다.');
+            }
+
+            console.log('이미지 맵 총 개수:', imageMap.size);
+            console.log('이미지 맵 키들:', Array.from(imageMap.keys()));
+
+            // Process image references in markdown
+            markdownContent = this.processZipImageReferences(markdownContent, imageMap);
+
+            return markdownContent;
+
+        } catch (error) {
+            console.error('ZIP 파일 처리 실패:', error);
+            throw new Error(`ZIP 파일을 처리할 수 없습니다: ${error.message}`);
+        }
+    }
+
+    isImageFile(fileName) {
+        const imageExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.bmp'];
+        const extension = fileName.toLowerCase().substring(fileName.lastIndexOf('.'));
+        return imageExtensions.includes(extension);
+    }
+
+    getMimeType(fileName) {
+        const extension = fileName.toLowerCase().substring(fileName.lastIndexOf('.'));
+        const mimeTypes = {
+            '.png': 'image/png',
+            '.jpg': 'image/jpeg',
+            '.jpeg': 'image/jpeg',
+            '.gif': 'image/gif',
+            '.svg': 'image/svg+xml',
+            '.webp': 'image/webp',
+            '.bmp': 'image/bmp'
+        };
+        return mimeTypes[extension] || 'image/png';
+    }
+
+    processZipImageReferences(markdownContent, imageMap) {
+        console.log('이미지 참조 처리 시작');
+        console.log('원본 마크다운 내용:', markdownContent.substring(0, 500));
+        
+        let processedContent = markdownContent;
+        
+        // Find all image references in the markdown
+        const imageRefPatterns = [
+            // ![alt](path) format
+            /!\[([^\]]*)\]\(([^)]+)\)/g,
+            // <img src="path"> format
+            /<img[^>]*src=["']([^"']+)["'][^>]*>/g
+        ];
+        
+        imageRefPatterns.forEach(pattern => {
+            let match;
+            while ((match = pattern.exec(markdownContent)) !== null) {
+                const fullMatch = match[0];
+                let imagePath = match[2] || match[1]; // Get the path from either format
+                
+                console.log('이미지 참조 발견:', fullMatch);
+                console.log('추출된 이미지 경로:', imagePath);
+                
+                // Try to find matching image in our imageMap
+                let base64Url = this.findImageInMap(imagePath, imageMap);
+                
+                if (base64Url) {
+                    console.log('매칭된 이미지 발견, 교체 중:', imagePath);
+                    
+                    // Replace the image reference with base64 URL
+                    if (fullMatch.startsWith('![')) {
+                        // Markdown format
+                        const altText = match[1] || '';
+                        const replacement = `![${altText}](${base64Url})`;
+                        processedContent = processedContent.replace(fullMatch, replacement);
+                        console.log('마크다운 형식으로 교체:', replacement);
+                    } else {
+                        // HTML img tag format
+                        const replacement = fullMatch.replace(/src=["'][^"']+["']/, `src="${base64Url}"`);
+                        processedContent = processedContent.replace(fullMatch, replacement);
+                        console.log('HTML 형식으로 교체:', replacement);
+                    }
+                } else {
+                    console.log('매칭되는 이미지를 찾을 수 없음:', imagePath);
+                    console.log('사용 가능한 이미지 경로들:', Array.from(imageMap.keys()));
+                }
+            }
+            pattern.lastIndex = 0; // Reset regex
+        });
+        
+        console.log('처리된 마크다운 내용:', processedContent.substring(0, 500));
+        return processedContent;
+    }
+
+    findImageInMap(imagePath, imageMap) {
+        // Clean the image path
+        const cleanPath = imagePath.trim();
+        
+        console.log('이미지 경로 매칭 시도:', cleanPath);
+        
+        // Direct match
+        if (imageMap.has(cleanPath)) {
+            console.log('직접 매칭 성공:', cleanPath);
+            return imageMap.get(cleanPath);
+        }
+        
+        // Try removing leading ./ 
+        const withoutDotSlash = cleanPath.replace(/^\.\//, '');
+        if (imageMap.has(withoutDotSlash)) {
+            console.log('상대경로 제거 후 매칭 성공:', withoutDotSlash);
+            return imageMap.get(withoutDotSlash);
+        }
+        
+        // Try just the filename
+        const fileName = cleanPath.split('/').pop();
+        if (imageMap.has(fileName)) {
+            console.log('파일명만으로 매칭 성공:', fileName);
+            return imageMap.get(fileName);
+        }
+        
+        // Try URL encoded versions
+        const encodedPath = encodeURIComponent(cleanPath);
+        if (imageMap.has(encodedPath)) {
+            console.log('인코딩된 경로로 매칭 성공:', encodedPath);
+            return imageMap.get(encodedPath);
+        }
+        
+        const encodedFileName = encodeURIComponent(fileName);
+        if (imageMap.has(encodedFileName)) {
+            console.log('인코딩된 파일명으로 매칭 성공:', encodedFileName);
+            return imageMap.get(encodedFileName);
+        }
+        
+        // Try with spaces converted to %20
+        const pathWithSpaces = cleanPath.replace(/\s+/g, '%20');
+        if (imageMap.has(pathWithSpaces)) {
+            console.log('공백 변환 후 매칭 성공:', pathWithSpaces);
+            return imageMap.get(pathWithSpaces);
+        }
+        
+        // Try decoding the path
+        try {
+            const decodedPath = decodeURIComponent(cleanPath);
+            if (imageMap.has(decodedPath)) {
+                console.log('디코딩된 경로로 매칭 성공:', decodedPath);
+                return imageMap.get(decodedPath);
+            }
+            
+            const decodedFileName = decodeURIComponent(fileName);
+            if (imageMap.has(decodedFileName)) {
+                console.log('디코딩된 파일명으로 매칭 성공:', decodedFileName);
+                return imageMap.get(decodedFileName);
+            }
+        } catch (e) {
+            // Ignore decode errors
+        }
+        
+        // Try normalized matching (case insensitive, no special chars)
+        const normalizedPath = cleanPath.toLowerCase().replace(/[^a-z0-9.-]/g, '');
+        const normalizedFileName = fileName.toLowerCase().replace(/[^a-z0-9.-]/g, '');
+        
+        if (normalizedPath && imageMap.has(normalizedPath)) {
+            console.log('정규화된 경로로 매칭 성공:', normalizedPath);
+            return imageMap.get(normalizedPath);
+        }
+        
+        if (normalizedFileName && imageMap.has(normalizedFileName)) {
+            console.log('정규화된 파일명으로 매칭 성공:', normalizedFileName);
+            return imageMap.get(normalizedFileName);
+        }
+        
+        // Try partial matching (case insensitive)
+        for (const [mapKey, mapValue] of imageMap) {
+            if (mapKey.toLowerCase().includes(fileName.toLowerCase()) || 
+                fileName.toLowerCase().includes(mapKey.toLowerCase())) {
+                console.log('부분 매칭 성공:', mapKey, '<->', fileName);
+                return mapValue;
+            }
+        }
+        
+        // Last resort: try fuzzy matching by comparing file extensions and similar names
+        const fileExt = fileName.toLowerCase().substring(fileName.lastIndexOf('.'));
+        for (const [mapKey, mapValue] of imageMap) {
+            const mapKeyExt = mapKey.toLowerCase().substring(mapKey.lastIndexOf('.'));
+            const mapKeyName = mapKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const fileNameNormalized = fileName.toLowerCase().replace(/[^a-z0-9]/g, '');
+            
+            if (fileExt === mapKeyExt && mapKeyName.includes(fileNameNormalized.substring(0, 5))) {
+                console.log('퍼지 매칭 성공:', mapKey, '<->', fileName);
+                return mapValue;
+            }
+        }
+        
+        console.log('매칭 실패 - 모든 시도 완료');
+        return null;
+    }
+
+    escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
     exportToPDF() {
@@ -1602,7 +2477,7 @@ class GitHubMarkdownPresenter {
 
 // Initialize the application when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    new GitHubMarkdownPresenter();
+    window.presenter = new GitHubMarkdownPresenter();
 });
 
 // Handle click outside settings modal and file navigation
@@ -1646,6 +2521,82 @@ document.addEventListener('keydown', (e) => {
     if (['Space'].includes(e.code)) {
         if (e.target === document.body || e.target.tagName === 'BUTTON') {
             e.preventDefault();
+        }
+    }
+});
+
+// Help modal methods (add to GitHubMarkdownPresenter class)
+GitHubMarkdownPresenter.prototype.openHelpModal = function() {
+    const helpModal = document.getElementById('help-modal');
+    helpModal.classList.remove('hidden');
+    
+    // Setup accordion functionality
+    this.setupHelpAccordion();
+    
+    // Focus management for accessibility
+    const closeButton = document.getElementById('close-help-modal');
+    setTimeout(() => closeButton.focus(), 100);
+};
+
+GitHubMarkdownPresenter.prototype.closeHelpModal = function() {
+    const helpModal = document.getElementById('help-modal');
+    helpModal.classList.add('hidden');
+    
+    // Return focus to settings button
+    document.getElementById('settings-btn').focus();
+};
+
+GitHubMarkdownPresenter.prototype.setupHelpAccordion = function() {
+    const accordionButtons = document.querySelectorAll('.help-accordion-btn');
+    
+    accordionButtons.forEach(button => {
+        // Remove existing listeners to prevent duplicates
+        button.replaceWith(button.cloneNode(true));
+    });
+    
+    // Re-attach event listeners
+    document.querySelectorAll('.help-accordion-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            const targetId = button.getAttribute('data-target');
+            const content = document.getElementById(targetId);
+            const icon = button.querySelector('.help-accordion-icon');
+            
+            // Toggle current section
+            const isOpen = !content.classList.contains('hidden');
+            
+            if (isOpen) {
+                content.classList.add('hidden');
+                content.classList.remove('open');
+                icon.classList.remove('rotated');
+            } else {
+                content.classList.remove('hidden');
+                content.classList.add('open');
+                icon.classList.add('rotated');
+            }
+        });
+    });
+};
+
+// ESC key handler for modals
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const helpModal = document.getElementById('help-modal');
+        const settingsDropdown = document.getElementById('settings-dropdown');
+        
+        // Close help modal if open
+        if (!helpModal.classList.contains('hidden')) {
+            const presenter = window.presenter || new GitHubMarkdownPresenter();
+            presenter.closeHelpModal();
+            return;
+        }
+        
+        // Close settings dropdown if open
+        if (!settingsDropdown.classList.contains('hidden')) {
+            const presenter = window.presenter || new GitHubMarkdownPresenter();
+            presenter.closeSettingsDropdown();
+            return;
         }
     }
 });

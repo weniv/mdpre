@@ -100,6 +100,57 @@ html, body {
     background-color: #1f2937 !important;
 }
 
+
+/* Help modal responsive and accessibility styles */
+#help-modal {
+    backdrop-filter: blur(4px);
+}
+
+.help-accordion-btn:focus {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+.help-accordion-icon.rotated {
+    transform: rotate(180deg);
+}
+
+/* Mobile responsiveness for help modal */
+@media (max-width: 768px) {
+    #help-modal .max-w-4xl {
+        max-width: 95vw;
+        margin: 1rem;
+    }
+    
+    #help-modal .grid-cols-1.md\\:grid-cols-2 {
+        grid-template-columns: 1fr;
+    }
+    
+    #help-modal .p-6 {
+        padding: 1rem;
+    }
+    
+    #help-modal .space-y-4 > * + * {
+        margin-top: 0.75rem;
+    }
+}
+
+/* Smooth accordion animation */
+.help-accordion-content {
+    transition: all 0.3s ease;
+    max-height: 0;
+    overflow: hidden;
+}
+
+.help-accordion-content.open {
+    max-height: 2000px;
+}
+
+/* Code block styling in help */
+.help-accordion-content .font-mono {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+}
+
 .dark #file-nav-toggle {
     background-color: #1f2937 !important;
 }
@@ -142,12 +193,42 @@ html, body {
     justify-content: center;
     padding: 2rem 1rem;
     scroll-behavior: smooth; /* 부드러운 스크롤 */
+    -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
+    scrollbar-width: thin; /* Firefox 스크롤바 얇게 */
+    scrollbar-color: rgba(156, 163, 175, 0.5) transparent; /* Firefox 스크롤바 색상 */
 }
 
 /* Center slide content properly */
 #slide-container #slide-content {
     margin: auto;
     align-self: center;
+}
+
+/* Webkit scrollbar styling */
+#slide-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+#slide-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#slide-container::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.5);
+    border-radius: 3px;
+}
+
+#slide-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.8);
+}
+
+/* Dark mode scrollbar */
+.dark #slide-container::-webkit-scrollbar-thumb {
+    background: rgba(107, 114, 128, 0.5);
+}
+
+.dark #slide-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(107, 114, 128, 0.8);
 }
 
 /* Heading font sizes - hierarchical scaling */
