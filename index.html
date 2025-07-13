@@ -122,20 +122,88 @@
                                 </button>
                             </div>
                             
-                            <div class="space-y-3">
+                            <div class="space-y-4">
+                                <!-- 제목 폰트 설정 -->
                                 <div>
-                                    <label for="font-family-dropdown" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        폰트
+                                    <label for="heading-font-dropdown" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        제목 폰트 (H1~H6)
                                     </label>
-                                    <select id="font-family-dropdown" class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                                        <option value="bmjua" class="bg-white dark:bg-gray-700 text-gray-900 dark:text-white">배민 주아 (기본)</option>
-                                        <option value="default" class="bg-white dark:bg-gray-700 text-gray-900 dark:text-white">시스템 기본</option>
-                                        <option value="bmhanna" class="bg-white dark:bg-gray-700 text-gray-900 dark:text-white">배민 한나</option>
-                                        <option value="bmdohyeon" class="bg-white dark:bg-gray-700 text-gray-900 dark:text-white">배민 도현</option>
-                                        <option value="bmyeonsung" class="bg-white dark:bg-gray-700 text-gray-900 dark:text-white">배민 연성</option>
-                                        <option value="bmeuljirot" class="bg-white dark:bg-gray-700 text-gray-900 dark:text-white">배민 을지로</option>
-                                        <option value="maruburi" class="bg-white dark:bg-gray-700 text-gray-900 dark:text-white">마루부리</option>
+                                    <select id="heading-font-dropdown" class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                        <option value="bmjua">배민 주아 (기본)</option>
+                                        <option value="default">시스템 기본</option>
+                                        <option value="bmhanna">배민 한나</option>
+                                        <option value="bmhannapro">배민 한나 Pro</option>
+                                        <option value="bmhanna11yrs">배민 한나 11주년</option>
+                                        <option value="bmdohyeon">배민 도현</option>
+                                        <option value="bmyeonsung">배민 연성</option>
+                                        <option value="bmeuljirot">배민 을지로</option>
+                                        <option value="bmeuljirobold">배민 을지로 10주년</option>
+                                        <option value="bmeuljirovintage">배민 을지로 빈티지</option>
+                                        <option value="bmkiranghaerang">배민 기랑해랑</option>
+                                        <option value="maruburi">마루부리</option>
+                                        <option value="nanumbarungothic">나눔 바른고딕</option>
+                                        <option value="nanumbarunpen">나눔 바른펜</option>
+                                        <option value="nanumgothic">나눔고딕</option>
+                                        <option value="nanumsquare">나눔스퀘어</option>
                                     </select>
+                                </div>
+
+                                <!-- 본문 폰트 설정 -->
+                                <div>
+                                    <label for="body-font-dropdown" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        본문 폰트
+                                    </label>
+                                    <select id="body-font-dropdown" class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                        <option value="bmjua">배민 주아 (기본)</option>
+                                        <option value="default">시스템 기본</option>
+                                        <option value="bmhanna">배민 한나</option>
+                                        <option value="bmhannapro">배민 한나 Pro</option>
+                                        <option value="bmhanna11yrs">배민 한나 11주년</option>
+                                        <option value="bmdohyeon">배민 도현</option>
+                                        <option value="bmyeonsung">배민 연성</option>
+                                        <option value="bmeuljirot">배민 을지로</option>
+                                        <option value="bmeuljirobold">배민 을지로 10주년</option>
+                                        <option value="bmeuljirovintage">배민 을지로 빈티지</option>
+                                        <option value="bmkiranghaerang">배민 기랑해랑</option>
+                                        <option value="maruburi">마루부리</option>
+                                        <option value="nanumbarungothic">나눔 바른고딕</option>
+                                        <option value="nanumbarunpen">나눔 바른펜</option>
+                                        <option value="nanumgothic">나눔고딕</option>
+                                        <option value="nanumsquare">나눔스퀘어</option>
+                                    </select>
+                                </div>
+
+                                <!-- 코드 폰트 설정 -->
+                                <div>
+                                    <label for="code-font-dropdown" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        코드 폰트
+                                    </label>
+                                    <select id="code-font-dropdown" class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                        <option value="d2coding">D2Coding (기본)</option>
+                                        <option value="default">시스템 Monospace</option>
+                                        <option value="bmjua">배민 주아</option>
+                                        <option value="bmhanna">배민 한나</option>
+                                        <option value="bmhannapro">배민 한나 Pro</option>
+                                        <option value="bmhanna11yrs">배민 한나 11주년</option>
+                                        <option value="bmdohyeon">배민 도현</option>
+                                        <option value="bmyeonsung">배민 연성</option>
+                                        <option value="bmeuljirot">배민 을지로</option>
+                                        <option value="bmeuljirobold">배민 을지로 10주년</option>
+                                        <option value="bmeuljirovintage">배민 을지로 빈티지</option>
+                                        <option value="bmkiranghaerang">배민 기랑해랑</option>
+                                        <option value="maruburi">마루부리</option>
+                                        <option value="nanumbarungothic">나눔 바른고딕</option>
+                                        <option value="nanumbarunpen">나눔 바른펜</option>
+                                        <option value="nanumgothic">나눔고딕</option>
+                                        <option value="nanumsquare">나눔스퀘어</option>
+                                    </select>
+                                </div>
+
+                                <!-- 설정 초기화 버튼 -->
+                                <div class="pt-2 border-t border-gray-200 dark:border-gray-600">
+                                    <button id="reset-fonts-btn" class="w-full px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors border border-red-200 dark:border-red-800">
+                                        폰트 설정 초기화
+                                    </button>
                                 </div>
                                 
                                 <!-- Help Button -->

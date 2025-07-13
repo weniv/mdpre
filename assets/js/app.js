@@ -4,7 +4,9 @@ class GitHubMarkdownPresenter {
         this.currentSlide = 0;
         this.isFullscreen = false;
         this.settings = {
-            fontFamily: 'bmjua'
+            headingFont: 'bmjua',
+            bodyFont: 'bmjua',
+            codeFont: 'd2coding'
         };
         this.repoHistory = [];
         this.fileSlideMap = [];
@@ -113,22 +115,29 @@ class GitHubMarkdownPresenter {
             this.closeSettingsDropdown();
         });
 
-        // Settings form - new dropdown
-        document.getElementById('font-family-dropdown').addEventListener('change', (e) => {
-            this.settings.fontFamily = e.target.value;
+        // Individual font settings
+        document.getElementById('heading-font-dropdown').addEventListener('change', (e) => {
+            this.settings.headingFont = e.target.value;
             this.applySettings();
             this.saveSettings();
         });
 
-        // Settings form - old modal (keep for compatibility)
-        const oldFontFamily = document.getElementById('font-family');
-        if (oldFontFamily) {
-            oldFontFamily.addEventListener('change', (e) => {
-                this.settings.fontFamily = e.target.value;
-                this.applySettings();
-                this.saveSettings();
-            });
-        }
+        document.getElementById('body-font-dropdown').addEventListener('change', (e) => {
+            this.settings.bodyFont = e.target.value;
+            this.applySettings();
+            this.saveSettings();
+        });
+
+        document.getElementById('code-font-dropdown').addEventListener('change', (e) => {
+            this.settings.codeFont = e.target.value;
+            this.applySettings();
+            this.saveSettings();
+        });
+
+        // Reset fonts button
+        document.getElementById('reset-fonts-btn').addEventListener('click', () => {
+            this.resetFontSettings();
+        });
     }
 
     setupFullscreenHandling() {
@@ -1184,6 +1193,7 @@ class GitHubMarkdownPresenter {
             }
             
             this.applySyntaxHighlighting();
+            this.applySettings(); // Apply font settings after content update
             
             slideContent.style.opacity = '1';
             slideContent.style.transform = 'translateX(0)';
@@ -1291,8 +1301,11 @@ class GitHubMarkdownPresenter {
     openSettings() {
         document.getElementById('settings-modal').classList.remove('hidden');
         
-        // Update form values
-        document.getElementById('font-family').value = this.settings.fontFamily;
+        // Update form values (keep for compatibility)
+        const oldFontFamily = document.getElementById('font-family');
+        if (oldFontFamily) {
+            oldFontFamily.value = this.settings.headingFont; // Use heading font as fallback
+        }
     }
 
     closeSettings() {
@@ -1302,8 +1315,10 @@ class GitHubMarkdownPresenter {
     toggleSettingsDropdown() {
         const dropdown = document.getElementById('settings-dropdown');
         if (dropdown.classList.contains('hidden')) {
-            // Update dropdown form values
-            document.getElementById('font-family-dropdown').value = this.settings.fontFamily;
+            // Update dropdown values with current settings
+            document.getElementById('heading-font-dropdown').value = this.settings.headingFont;
+            document.getElementById('body-font-dropdown').value = this.settings.bodyFont;
+            document.getElementById('code-font-dropdown').value = this.settings.codeFont;
             dropdown.classList.remove('hidden');
         } else {
             dropdown.classList.add('hidden');
@@ -1358,14 +1373,57 @@ class GitHubMarkdownPresenter {
         });
     }
 
+    getFontFamily(fontKey) {
+        const fontMap = {
+            'default': 'inherit',
+            'bmjua': 'BMJUA, sans-serif',
+            'bmhanna': 'BMHANNA, sans-serif',
+            'bmhannapro': 'BMHANNAPro, sans-serif',
+            'bmhanna11yrs': 'BMHANNA11yrs, sans-serif',
+            'bmdohyeon': 'BMDOHYEON, sans-serif',
+            'bmyeonsung': 'BMYEONSUNG, sans-serif',
+            'bmeuljirot': 'BMEULJIROT, sans-serif',
+            'bmeuljirobold': 'BMEuljiro10yearslater, sans-serif',
+            'bmeuljirovintage': 'BMEuljirooraeorae, sans-serif',
+            'bmkiranghaerang': 'BMKIRANGHAERANG, sans-serif',
+            'maruburi': 'MaruBuri, sans-serif',
+            'd2coding': 'D2Coding, monospace',
+            'nanumbarungothic': 'NanumBarunGothic, sans-serif',
+            'nanumbarunpen': 'NanumBarunpen, sans-serif',
+            'nanumgothic': 'NanumGothic, sans-serif',
+            'nanumsquare': 'NanumSquare, sans-serif'
+        };
+        return fontMap[fontKey] || fontMap['default'];
+    }
+
+    applyFontsToElement(element) {
+        // Apply heading fonts (H1-H6) with !important for PDF
+        const headings = element.querySelectorAll('h1, h2, h3, h4, h5, h6');
+        headings.forEach(heading => {
+            const fontFamily = this.getFontFamily(this.settings.headingFont);
+            heading.style.setProperty('font-family', fontFamily, 'important');
+        });
+
+        // Apply body font to paragraphs, lists, and general text with !important for PDF
+        const bodyElements = element.querySelectorAll('p, li, ul, ol, div:not(.highlight), span:not(.token)');
+        bodyElements.forEach(el => {
+            const fontFamily = this.getFontFamily(this.settings.bodyFont);
+            el.style.setProperty('font-family', fontFamily, 'important');
+        });
+
+        // Apply code font to code blocks and inline code with !important for PDF
+        const codeElements = element.querySelectorAll('pre, code, .token');
+        codeElements.forEach(el => {
+            const fontFamily = this.getFontFamily(this.settings.codeFont);
+            el.style.setProperty('font-family', fontFamily, 'important');
+        });
+    }
+
     applySettings() {
         const slideContent = document.getElementById('slide-content');
+        if (!slideContent) return;
         
-        // Remove existing font family classes
-        slideContent.classList.remove('font-family-default', 'font-family-bmjua', 'font-family-bmhanna', 'font-family-bmdohyeon', 'font-family-bmyeonsung', 'font-family-bmeuljirot', 'font-family-maruburi');
-        
-        // Apply font family
-        slideContent.classList.add(`font-family-${this.settings.fontFamily}`);
+        this.applyFontsToElement(slideContent);
     }
 
     saveSettings() {
@@ -1378,6 +1436,24 @@ class GitHubMarkdownPresenter {
             this.settings = { ...this.settings, ...JSON.parse(saved) };
         }
         this.applySettings();
+    }
+
+    resetFontSettings() {
+        // Reset to default values
+        this.settings.headingFont = 'bmjua';
+        this.settings.bodyFont = 'bmjua';
+        this.settings.codeFont = 'd2coding';
+        
+        // Update UI
+        if (!document.getElementById('settings-dropdown').classList.contains('hidden')) {
+            document.getElementById('heading-font-dropdown').value = this.settings.headingFont;
+            document.getElementById('body-font-dropdown').value = this.settings.bodyFont;
+            document.getElementById('code-font-dropdown').value = this.settings.codeFont;
+        }
+        
+        // Apply and save settings
+        this.applySettings();
+        this.saveSettings();
     }
 
     goHome() {
@@ -2347,9 +2423,8 @@ class GitHubMarkdownPresenter {
         pdfContainer.style.width = '100vw';
         pdfContainer.style.background = 'white';
         
-        // 현재 슬라이드 컨테이너에서 폰트 클래스 가져오기
+        // 현재 폰트 설정 가져오기
         const slideContent = document.getElementById('slide-content');
-        const currentFontClass = Array.from(slideContent.classList).find(cls => cls.startsWith('font-family-'));
         
         // 로고 정보 가져오기
         const logoContainer = document.getElementById('presentation-logo');
@@ -2366,9 +2441,7 @@ class GitHubMarkdownPresenter {
                 slideDiv.classList.add('pdf-slide-first');
             }
             
-            if (currentFontClass) {
-                slideDiv.classList.add(currentFontClass);
-            }
+            // Font settings will be applied after HTML insertion
             
             // 마크다운 원본에서 직접 HTML 생성 (로고 없는 순수 콘텐츠)
             let cleanHTML;
@@ -2414,6 +2487,9 @@ class GitHubMarkdownPresenter {
                 });
             }
             
+            // HTML 삽입 후 폰트 설정 적용
+            this.applyFontsToElement(slideDiv);
+            
             // 각 슬라이드에 동일한 크기의 로고 추가
             if (hasLogo) {
                 const logoClone = document.createElement('div');
@@ -2436,6 +2512,12 @@ class GitHubMarkdownPresenter {
         // PDF 컨테이너를 메인 위치로 이동
         pdfContainer.style.position = 'static';
         pdfContainer.style.left = 'auto';
+        
+        // PDF 전체에서 폰트 재적용 (최종 보장)
+        const pdfSlides = pdfContainer.querySelectorAll('.pdf-slide');
+        pdfSlides.forEach(slide => {
+            this.applyFontsToElement(slide);
+        });
         
         // 짧은 지연 후 인쇄 다이얼로그 열기
         setTimeout(() => {
