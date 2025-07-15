@@ -1164,6 +1164,12 @@ class GitHubMarkdownPresenter {
         document.getElementById('repo-input-section').classList.add('hidden');
         document.getElementById('presentation-section').classList.remove('hidden');
         
+        // Footer 숨기기
+        const footer = document.querySelector('.footer-container');
+        if (footer) {
+            footer.style.display = 'none';
+        }
+        
         this.currentSlide = 0;
         this.renderSlide();
         this.updateNavigation();
@@ -1460,6 +1466,12 @@ class GitHubMarkdownPresenter {
         // Reset to input section
         document.getElementById('presentation-section').classList.add('hidden');
         document.getElementById('repo-input-section').classList.remove('hidden');
+        
+        // Footer 다시 표시
+        const footer = document.querySelector('.footer-container');
+        if (footer) {
+            footer.style.display = '';
+        }
         
         // Exit fullscreen if active
         if (this.isFullscreen) {
@@ -1926,6 +1938,12 @@ class GitHubMarkdownPresenter {
         // Hide presentation section and show repository input section
         document.getElementById('presentation-section').classList.add('hidden');
         document.getElementById('repo-input-section').classList.remove('hidden');
+        
+        // Footer 다시 표시
+        const footer = document.querySelector('.footer-container');
+        if (footer) {
+            footer.style.display = '';
+        }
         
         // Reset slides and file mapping
         this.slides = [];
