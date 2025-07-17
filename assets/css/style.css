@@ -1078,6 +1078,50 @@ pre[class*=language-] {
         max-width: 120px !important;
         max-height: 120px !important;
     }
+
+    /* KaTeX math styling */
+    .math-display {
+        font-size: 1.1em !important;
+        margin: 1rem 0 !important;
+        text-align: center !important;
+        overflow-x: auto !important;
+    }
+
+    .math-inline {
+        font-size: 1em !important;
+        margin: 0 !important;
+        vertical-align: baseline !important;
+    }
+
+    .math-error {
+        color: #d32f2f !important;
+        background-color: #ffebee !important;
+        padding: 0.2rem 0.4rem !important;
+        border-radius: 0.25rem !important;
+        font-family: monospace !important;
+    }
+
+    /* PDF specific math styling */
+    .pdf-slide .math-display {
+        font-size: 1.2em !important;
+        margin: 1.5rem 0 !important;
+        text-align: center !important;
+        overflow-x: visible !important;
+    }
+
+    .pdf-slide .math-inline {
+        font-size: 1em !important;
+        margin: 0 !important;
+        vertical-align: baseline !important;
+    }
+
+    .pdf-slide .math-error {
+        color: #d32f2f !important;
+        background-color: #ffebee !important;
+        padding: 0.2rem 0.4rem !important;
+        border-radius: 0.25rem !important;
+        font-family: monospace !important;
+    }
     
     .pdf-logo-image {
         max-width: 120px !important;

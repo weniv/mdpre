@@ -11,6 +11,7 @@ URL: https://weniv.github.io/mdpre/
 - **GitHub API 연동**: 리포지토리의 마크다운 파일을 자동으로 탐지하고 슬라이드로 변환
 - **실시간 프레젠테이션**: 부드러운 슬라이드 전환과 키보드 단축키 지원
 - **커스텀 텍스트 문법**: 텍스트 중앙정렬, 크기 조정, 강조 등 특별한 마크다운 문법 지원
+- **LaTeX 수학 표현식**: KaTeX를 사용한 수학 공식 렌더링 지원
 - **반응형 디자인**: 모바일, 태블릿, 데스크톱 모든 환경에서 최적화
 - **다중 테마**: 기본, 다크, 학술용 테마 지원
 - **향상된 전체화면 모드**: 완벽한 키보드 지원과 올바른 중앙 정렬
@@ -154,7 +155,76 @@ console.log("Hello, World!");<br>
 | `{highlight}텍스트{/highlight}` | 커스텀 하이라이트 | 🟢 강조된 텍스트 |
 | `{bold}텍스트{/bold}` | 커스텀 굵은 텍스트 | **굵은 텍스트** |
 
+### 🔢 LaTeX 수학 표현식
+
+프레젠테이션에서 LaTeX 문법을 사용하여 수학 표현식을 렌더링할 수 있습니다:
+
+#### 인라인 수학 표현식
+
+```markdown
+이것은 인라인 수학 표현식입니다: $E = mc^2$
+```
+
+#### 블록 수학 표현식
+
+```markdown
+이것은 블록 수학 표현식입니다:
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+$$
+```
+
+#### 수학 표현식 예시
+
+```markdown
+---
+# 수학 공식 예제
+
+인라인 수학: $ax^2 + bx + c = 0$의 해는 다음과 같습니다:
+
+$$
+x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+$$
+
+분수와 극한:
+$$
+\lim_{n \to \infty} \frac{1}{n} = 0
+$$
+
+행렬:
+$$
+\begin{pmatrix}
+a & b \\
+c & d
+\end{pmatrix}
+$$
+
+---
+```
+
+#### 지원되는 LaTeX 문법
+
+- **기본 연산**: `+`, `-`, `*`, `/`, `=`
+- **분수**: `\frac{분자}{분모}`
+- **첨자**: `x^2`, `x_i`
+- **그리스 문자**: `\alpha`, `\beta`, `\gamma`, `\pi`, `\sigma` 등
+- **함수**: `\sin`, `\cos`, `\tan`, `\log`, `\ln`, `\exp` 등
+- **적분**: `\int`, `\sum`, `\prod`
+- **극한**: `\lim`, `\infty`
+- **행렬**: `\begin{matrix}...\end{matrix}`, `\begin{pmatrix}...\end{pmatrix}`
+- **루트**: `\sqrt{x}`, `\sqrt[n]{x}`
+- **기타**: `\pm`, `\mp`, `\cdot`, `\times`, `\div` 등
+
+#### 주의사항
+
+- 수학 표현식이 올바르게 렌더링되지 않는 경우 LaTeX 문법을 확인해주세요
+- 복잡한 수학 표현식은 블록 형태(`$$...$$`)로 사용하는 것을 권장합니다
+- PDF 내보내기 시에도 수학 표현식이 정상적으로 렌더링됩니다
+
+
 ### 로고 추가
+
 
 프레젠테이션에 로고를 추가하려면 다음 이름 중 하나로 이미지 파일을 업로드하세요:
 
@@ -223,6 +293,7 @@ console.log("Hello, World!");<br>
 - **프론트엔드**: Vanilla JavaScript + Tailwind CSS
 - **마크다운 파서**: Marked.js
 - **코드 하이라이팅**: Prism.js
+- **수학 표현식**: KaTeX
 - **API**: GitHub REST API
 - **배포**: GitHub Pages
 
@@ -314,5 +385,6 @@ github-markdown-presenter/
 
 - [Marked.js](https://marked.js.org/) - 마크다운 파싱
 - [Prism.js](https://prismjs.com/) - 코드 문법 강조
+- [KaTeX](https://katex.org/) - 수학 표현식 렌더링
 - [Tailwind CSS](https://tailwindcss.com/) - 유틸리티 CSS 프레임워크
 - [GitHub API](https://docs.github.com/en/rest) - 리포지토리 데이터 접근

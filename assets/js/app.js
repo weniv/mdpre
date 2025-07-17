@@ -21,6 +21,37 @@ class GitHubMarkdownPresenter {
         this.setupKeyboardNavigation();
         this.setupFullscreenHandling();
         this.getCurrentRepoInfo();
+        this.checkKatexLoaded();
+    }
+
+    checkKatexLoaded() {
+        // Check if KaTeX is loaded
+        const checkLoaded = () => {
+            if (typeof katex !== 'undefined') {
+                console.log('KaTeX library loaded successfully');
+                return true;
+            } else {
+                console.log('KaTeX library not yet loaded, waiting...');
+                return false;
+            }
+        };
+        
+        // Check immediately
+        if (!checkLoaded()) {
+            // If not loaded, check every 100ms for up to 5 seconds
+            let attempts = 0;
+            const maxAttempts = 50;
+            
+            const checkInterval = setInterval(() => {
+                attempts++;
+                if (checkLoaded() || attempts >= maxAttempts) {
+                    clearInterval(checkInterval);
+                    if (attempts >= maxAttempts) {
+                        console.error('KaTeX library failed to load after 5 seconds');
+                    }
+                }
+            }, 100);
+        }
     }
 
     bindEvents() {
@@ -1033,6 +1064,9 @@ class GitHubMarkdownPresenter {
             // Process images to use GitHub raw URLs
             let processedContent = this.processImageUrls(content.trim(), owner, repo, folderPath);
             
+            // Process LaTeX expressions before markdown parsing
+            processedContent = this.processLatexExpressions(processedContent);
+            
             // Configure marked with breaks option for line breaks
             const markedOptions = {
                 breaks: true,  // Enable line breaks
@@ -1164,12 +1198,6 @@ class GitHubMarkdownPresenter {
         document.getElementById('repo-input-section').classList.add('hidden');
         document.getElementById('presentation-section').classList.remove('hidden');
         
-        // Footer 숨기기
-        const footer = document.querySelector('.footer-container');
-        if (footer) {
-            footer.style.display = 'none';
-        }
-        
         this.currentSlide = 0;
         this.renderSlide();
         this.updateNavigation();
@@ -1199,6 +1227,7 @@ class GitHubMarkdownPresenter {
             }
             
             this.applySyntaxHighlighting();
+            this.renderMathExpressions(); // Render LaTeX expressions
             this.applySettings(); // Apply font settings after content update
             
             slideContent.style.opacity = '1';
@@ -1211,6 +1240,165 @@ class GitHubMarkdownPresenter {
         if (window.Prism) {
             Prism.highlightAll();
         }
+    }
+
+    processLatexExpressions(content) {
+        // Process LaTeX expressions in markdown content
+        // First, protect code blocks from LaTeX processing
+        const codeBlockRegex = /```[\s\S]*?```|`[^`]*`/g;
+        const codeBlocks = [];
+        let protectedContent = content.replace(codeBlockRegex, (match) => {
+            const placeholder = `__CODE_BLOCK_${codeBlocks.length}__`;
+            codeBlocks.push(match);
+            return placeholder;
+        });
+        
+        // Handle block math ($$...$$) - convert to KaTeX displaymath
+        protectedContent = protectedContent.replace(/\$\$([\s\S]*?)\$\$/g, (match, math) => {
+            // Escape math expression to prevent conflicts
+            const escapedMath = math.trim();
+            return `<div class="math-display" data-math="${this.escapeMath(escapedMath)}"></div>`;
+        });
+        
+        // Handle inline math ($...$) - convert to KaTeX inline
+        // Use a more compatible regex that avoids lookbehind assertions
+        protectedContent = protectedContent.replace(/\$([^$\n\r]+?)\$/g, (match, math) => {
+            // Avoid matching if it's already part of a code block or escaped
+            const escapedMath = math.trim();
+            return `<span class="math-inline" data-math="${this.escapeMath(escapedMath)}"></span>`;
+        });
+        
+        // Restore code blocks
+        protectedContent = protectedContent.replace(/__CODE_BLOCK_(\d+)__/g, (match, index) => {
+            return codeBlocks[parseInt(index)];
+        });
+        
+        return protectedContent;
+    }
+
+    escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, (m) => map[m]);
+    }
+
+    unescapeHtml(text) {
+        const map = {
+            '&amp;': '&',
+            '&lt;': '<',
+            '&gt;': '>',
+            '&quot;': '"',
+            '&#039;': "'"
+        };
+        return text.replace(/&(amp|lt|gt|quot|#039);/g, (m) => map[m]);
+    }
+
+    escapeMath(text) {
+        // Preserve backslashes and other special characters for LaTeX
+        return text.replace(/\\/g, '\\\\').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    unescapeMath(text) {
+        // Restore backslashes and other special characters for LaTeX
+        return text.replace(/\\\\/g, '\\').replace(/&quot;/g, '"').replace(/&#039;/g, "'");
+    }
+
+    renderMathExpressions() {
+        // Render LaTeX expressions using KaTeX
+        // Add a small delay to ensure DOM is updated and KaTeX is loaded
+        setTimeout(() => {
+            if (typeof katex !== 'undefined') {
+                const slideContent = document.getElementById('slide-content');
+                if (slideContent) {
+                    this.renderMathInElement(slideContent);
+                }
+            } else {
+                // If KaTeX is not loaded yet, try again after a longer delay
+                setTimeout(() => {
+                    if (typeof katex !== 'undefined') {
+                        const slideContent = document.getElementById('slide-content');
+                        if (slideContent) {
+                            this.renderMathInElement(slideContent);
+                        }
+                    } else {
+                        console.warn('KaTeX library not loaded. Math expressions will not be rendered.');
+                    }
+                }, 500);
+            }
+        }, 100);
+    }
+
+    renderMathForPDF(element) {
+        // Render LaTeX expressions for PDF export
+        // Use a synchronous approach for PDF rendering
+        if (typeof katex !== 'undefined') {
+            this.renderMathInElement(element);
+        } else {
+            // If KaTeX is not available, show the raw LaTeX
+            const mathElements = element.querySelectorAll('.math-display, .math-inline');
+            mathElements.forEach(el => {
+                const mathContent = this.unescapeMath(el.getAttribute('data-math'));
+                if (el.classList.contains('math-display')) {
+                    el.textContent = `$$${mathContent}$$`;
+                } else {
+                    el.textContent = `$${mathContent}$`;
+                }
+                el.classList.add('math-error');
+            });
+        }
+    }
+
+    renderMathInElement(container) {
+        // Process display math
+        const displayMathElements = container.querySelectorAll('.math-display');
+        console.log(`Found ${displayMathElements.length} display math elements`);
+        
+        displayMathElements.forEach((el, index) => {
+            const mathContent = this.unescapeMath(el.getAttribute('data-math'));
+            console.log(`Rendering display math ${index + 1}:`, mathContent);
+            
+            try {
+                katex.render(mathContent, el, {
+                    displayMode: true,
+                    throwOnError: false,
+                    trust: true
+                });
+                console.log(`Successfully rendered display math ${index + 1}`);
+            } catch (e) {
+                console.warn('KaTeX display math render error:', e);
+                console.log('Failed math content:', mathContent);
+                el.textContent = `$$${mathContent}$$`;
+                el.classList.add('math-error');
+            }
+        });
+
+        // Process inline math
+        const inlineMathElements = container.querySelectorAll('.math-inline');
+        console.log(`Found ${inlineMathElements.length} inline math elements`);
+        
+        inlineMathElements.forEach((el, index) => {
+            const mathContent = this.unescapeMath(el.getAttribute('data-math'));
+            console.log(`Rendering inline math ${index + 1}:`, mathContent);
+            
+            try {
+                katex.render(mathContent, el, {
+                    displayMode: false,
+                    throwOnError: false,
+                    trust: true
+                });
+                console.log(`Successfully rendered inline math ${index + 1}`);
+            } catch (e) {
+                console.warn('KaTeX inline math render error:', e);
+                console.log('Failed math content:', mathContent);
+                el.textContent = `$${mathContent}$`;
+                el.classList.add('math-error');
+            }
+        });
     }
 
     updateNavigation() {
@@ -1466,12 +1654,6 @@ class GitHubMarkdownPresenter {
         // Reset to input section
         document.getElementById('presentation-section').classList.add('hidden');
         document.getElementById('repo-input-section').classList.remove('hidden');
-        
-        // Footer 다시 표시
-        const footer = document.querySelector('.footer-container');
-        if (footer) {
-            footer.style.display = '';
-        }
         
         // Exit fullscreen if active
         if (this.isFullscreen) {
@@ -1939,12 +2121,6 @@ class GitHubMarkdownPresenter {
         document.getElementById('presentation-section').classList.add('hidden');
         document.getElementById('repo-input-section').classList.remove('hidden');
         
-        // Footer 다시 표시
-        const footer = document.querySelector('.footer-container');
-        if (footer) {
-            footer.style.display = '';
-        }
-        
         // Reset slides and file mapping
         this.slides = [];
         this.fileSlideMap = [];
@@ -1999,6 +2175,9 @@ class GitHubMarkdownPresenter {
         return slideContents.map((content, index) => {
             // For local files, keep relative paths as they are
             let processedContent = content.trim();
+            
+            // Process LaTeX expressions before markdown parsing
+            processedContent = this.processLatexExpressions(processedContent);
             
             // Configure marked with breaks option for line breaks
             const markedOptions = {
@@ -2504,6 +2683,9 @@ class GitHubMarkdownPresenter {
                     Prism.highlightElement(block);
                 });
             }
+            
+            // PDF용 LaTeX 수식 렌더링
+            this.renderMathForPDF(slideDiv);
             
             // HTML 삽입 후 폰트 설정 적용
             this.applyFontsToElement(slideDiv);
