@@ -1,6 +1,6 @@
 # WENIV Presenter
 
-[WENIV](http://www.weniv.co.kr/)에서 개발한 GitHub Pages, Notion 기반의 마크다운 프레젠테이션 웹 서비스입니다. 해당 서비스는 Claude Code와 함께 개발되었습니다.
+[WENIV](http://www.weniv.co.kr/)에서 개발한 GitHub Pages, Notion 기반의 마크다운 프레젠테이션 웹 서비스입니다. 해당 서비스는 Claude Code와 함께 개발되었습니다. 이호준도 공헌했어요! hello world!
 
 ## 배포
 
