@@ -11,6 +11,10 @@ class GitHubMarkdownPresenter {
         this.repoHistory = [];
         this.fileSlideMap = [];
         
+        // Preview functionality
+        this.previewSlides = [];
+        this.currentPreviewSlide = 0;
+        
         this.init();
     }
 
@@ -70,6 +74,12 @@ class GitHubMarkdownPresenter {
         // Load direct input button
         document.getElementById('load-direct-input-btn').addEventListener('click', () => this.loadDirectInput());
 
+        // Save markdown button (removed from main form, now in toolbar)
+        const saveBtn = document.getElementById('save-markdown-btn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => this.saveMarkdown());
+        }
+
         // Logo button - go back to home
         document.getElementById('logo-btn').addEventListener('click', () => this.goToHome());
 
@@ -87,6 +97,43 @@ class GitHubMarkdownPresenter {
             e.preventDefault();
             this.loadPresentation();
         });
+
+        // Markdown textarea input event for real-time preview
+        document.getElementById('markdown-textarea').addEventListener('input', () => this.updatePreview());
+        
+        // Keyboard shortcuts for WYSIWYG
+        document.getElementById('markdown-textarea').addEventListener('keydown', (e) => this.handleKeyboardShortcuts(e));
+
+        // Preview navigation - will be dynamically added for thumbnails
+
+        // WYSIWYG toolbar buttons - check if elements exist before adding listeners
+        const toolbarButtons = {
+            'toolbar-bold': () => this.insertMarkdown('**', '**', '굵은 텍스트'),
+            'toolbar-italic': () => this.insertMarkdown('*', '*', '기울임 텍스트'),
+            'toolbar-underline': () => this.insertMarkdown('<u>', '</u>', '밑줄 텍스트'),
+            'toolbar-strike': () => this.insertMarkdown('~~', '~~', '취소선 텍스트'),
+            'toolbar-header': () => this.insertMarkdown('## ', '', '제목'),
+            'toolbar-quote': () => this.insertMarkdown('> ', '', '인용구'),
+            'toolbar-list': () => this.insertMarkdown('- ', '', '리스트 항목'),
+            'toolbar-numbered-list': () => this.insertMarkdown('1. ', '', '번호 리스트 항목'),
+            'toolbar-link': () => this.insertLink(),
+            'toolbar-image': () => this.insertImage(),
+            'toolbar-code': () => this.insertCodeBlock(),
+            'toolbar-slide': () => this.insertNewSlide()
+        };
+        
+        Object.entries(toolbarButtons).forEach(([id, handler]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('click', handler);
+            }
+        });
+        
+        // Save markdown toolbar button - check if exists
+        const saveToolbarBtn = document.getElementById('save-markdown-toolbar-btn');
+        if (saveToolbarBtn) {
+            saveToolbarBtn.addEventListener('click', () => this.saveMarkdown());
+        }
 
         // Slide navigation
         document.getElementById('prev-slide').addEventListener('click', () => this.previousSlide());
@@ -317,6 +364,10 @@ class GitHubMarkdownPresenter {
         searchBtn.classList.remove('hidden'); // 옵션 변경시 폴더 검색 버튼 다시 표시
         document.getElementById('folder-dropdown').innerHTML = '';
         
+        // Initialize preview state
+        this.previewSlides = [];
+        this.currentPreviewSlide = 0;
+        
         if (selectedSource === 'current') {
             customFields.style.display = 'none';
             localFields.classList.add('hidden');
@@ -353,6 +404,9 @@ class GitHubMarkdownPresenter {
             repoUrlInput.disabled = true;
             repoUrlInput.required = false;
             historySection.classList.add('hidden');
+            
+            // Clear preview when switching to direct input
+            this.clearPreview();
         }
     }
 
@@ -2172,30 +2226,96 @@ class GitHubMarkdownPresenter {
         // Split by slide separator (---)
         const slideContents = markdown.split(/^---\s*$/m).filter(content => content.trim());
         
+        // If no slides found, treat entire content as one slide
+        if (slideContents.length === 0) {
+            slideContents.push(markdown);
+        }
+        
         return slideContents.map((content, index) => {
-            // For local files, keep relative paths as they are
-            let processedContent = content.trim();
+            const processedContent = content.trim();
             
-            // Process LaTeX expressions before markdown parsing
-            processedContent = this.processLatexExpressions(processedContent);
+            let htmlContent;
             
-            // Configure marked with breaks option for line breaks
-            const markedOptions = {
-                breaks: true,  // Enable line breaks
-                gfm: true      // GitHub Flavored Markdown
-            };
-            
-            // First parse markdown to HTML with line break support
-            let htmlContent = marked.parse(processedContent, markedOptions);
-            
-            // Then process custom text formatting syntax on HTML
-            htmlContent = this.processCustomSyntax(htmlContent);
+            // Try to use marked.js if available, otherwise fallback to basic processing
+            if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+                try {
+                    // Process LaTeX expressions first if function exists
+                    let contentForParsing = processedContent;
+                    if (typeof this.processLatexExpressions === 'function') {
+                        contentForParsing = this.processLatexExpressions(contentForParsing);
+                    }
+                    
+                    // Configure marked with breaks option for line breaks
+                    const markedOptions = {
+                        breaks: true,  // Enable line breaks
+                        gfm: true      // GitHub Flavored Markdown
+                    };
+                    
+                    htmlContent = marked.parse(contentForParsing, markedOptions);
+                    
+                    // Process custom syntax if function exists
+                    if (typeof this.processCustomSyntax === 'function') {
+                        htmlContent = this.processCustomSyntax(htmlContent);
+                    }
+                } catch (error) {
+                    console.warn('Marked.js parsing failed, using basic parser:', error);
+                    htmlContent = this.basicMarkdownToHtml(processedContent);
+                }
+            } else {
+                // Fallback to basic markdown processing
+                htmlContent = this.basicMarkdownToHtml(processedContent);
+            }
             
             return {
                 content: processedContent,
                 html: htmlContent
             };
         });
+    }
+    
+    basicMarkdownToHtml(markdown) {
+        let html = markdown;
+        
+        // Headers (with proper spacing)
+        html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+        html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+        html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+        
+        // Lists
+        html = html.replace(/^[\s]*[-*+]\s+(.+)$/gm, '<li>$1</li>');
+        html = html.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+        
+        // Images
+        html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto;">');
+        
+        // Links
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+        
+        // Bold and italic
+        html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        
+        // Code blocks
+        html = html.replace(/```[\s\S]*?```/g, '<pre><code>$&</code></pre>');
+        html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+        
+        // Split into paragraphs
+        const paragraphs = html.split(/\n\s*\n/);
+        html = paragraphs.map(p => {
+            p = p.trim();
+            if (!p) return '';
+            
+            // Don't wrap headers, lists, or code blocks in paragraphs
+            if (p.match(/^<(h[1-6]|ul|pre)/)) {
+                return p;
+            }
+            
+            // Replace single line breaks with <br>
+            p = p.replace(/\n/g, '<br>');
+            return `<p>${p}</p>`;
+        }).filter(p => p).join('');
+        
+        return html;
     }
 
     readFileContent(file) {
@@ -2754,6 +2874,309 @@ class GitHubMarkdownPresenter {
             setTimeout(checkPrintDialog, 500);
             
         }, 300);
+    }
+
+    // Preview functionality methods
+    updatePreview() {
+        const textarea = document.getElementById('markdown-textarea');
+        const markdown = textarea.value.trim();
+        
+        if (!markdown) {
+            this.clearPreview();
+            return;
+        }
+        
+        try {
+            // Parse markdown to slides
+            this.previewSlides = this.parseLocalMarkdownToSlides(markdown);
+            this.currentPreviewSlide = 0;
+            
+            // Update preview content
+            this.renderSlideThumbnails();
+        } catch (error) {
+            console.error('Preview parsing error:', error);
+            this.showPreviewError('마크다운 파싱 중 오류가 발생했습니다: ' + error.message);
+        }
+    }
+    
+    clearPreview() {
+        const slideThumbnails = document.getElementById('slide-thumbnails');
+        slideThumbnails.innerHTML = `
+            <div class="text-center text-gray-500 dark:text-gray-400 flex items-center justify-center h-full">
+                <div>
+                    <svg class="mx-auto h-12 w-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <p class="text-sm">마크다운을 입력하면<br>여기에 슬라이드가 표시됩니다</p>
+                </div>
+            </div>
+        `;
+        
+        this.previewSlides = [];
+        this.currentPreviewSlide = 0;
+        this.updateSlideCounter();
+    }
+    
+    showPreviewError(message) {
+        const slideThumbnails = document.getElementById('slide-thumbnails');
+        slideThumbnails.innerHTML = `
+            <div class="text-center text-red-500 dark:text-red-400 flex items-center justify-center h-full">
+                <div>
+                    <svg class="mx-auto h-12 w-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L5.232 15.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                    <p class="text-sm">${message}</p>
+                </div>
+            </div>
+        `;
+    }
+    
+    renderSlideThumbnails() {
+        if (this.previewSlides.length === 0) {
+            this.clearPreview();
+            return;
+        }
+        
+        const slideThumbnails = document.getElementById('slide-thumbnails');
+        slideThumbnails.innerHTML = '';
+        
+        this.previewSlides.forEach((slide, index) => {
+            const slideHtml = slide.html || slide;
+            
+            const thumbnailElement = document.createElement('div');
+            thumbnailElement.className = `slide-thumbnail ${index === this.currentPreviewSlide ? 'active' : ''}`;
+            
+            // Create the inner container with actual HTML content
+            const innerDiv = document.createElement('div');
+            innerDiv.className = 'slide-thumbnail-inner';
+            
+            // Create content container
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'slide-thumbnail-content';
+            contentDiv.innerHTML = slideHtml;
+            
+            // Apply font settings to thumbnail content
+            this.applyFontsToThumbnail(contentDiv);
+            
+            // Add slide number
+            const numberDiv = document.createElement('div');
+            numberDiv.className = 'slide-thumbnail-number';
+            numberDiv.textContent = index + 1;
+            
+            innerDiv.appendChild(contentDiv);
+            thumbnailElement.appendChild(numberDiv);
+            thumbnailElement.appendChild(innerDiv);
+            
+            // Add click event to select slide
+            thumbnailElement.addEventListener('click', () => {
+                this.selectSlide(index);
+            });
+            
+            slideThumbnails.appendChild(thumbnailElement);
+        });
+        
+        this.updateSlideCounter();
+    }
+    
+    applyFontsToThumbnail(element) {
+        // Apply body font to the element
+        element.style.fontFamily = `'${this.settings.bodyFont}', sans-serif`;
+        
+        // Apply heading fonts
+        const headings = element.querySelectorAll('h1, h2, h3, h4, h5, h6');
+        headings.forEach(heading => {
+            heading.style.fontFamily = `'${this.settings.headingFont}', sans-serif`;
+        });
+        
+        // Apply code fonts
+        const codeElements = element.querySelectorAll('code, pre');
+        codeElements.forEach(code => {
+            code.style.fontFamily = `'${this.settings.codeFont}', monospace`;
+        });
+        
+        // Skip KaTeX processing for thumbnails to avoid complexity
+        
+        // Syntax highlighting
+        if (typeof Prism !== 'undefined') {
+            Prism.highlightAllUnder(element);
+        }
+    }
+    
+    selectSlide(index) {
+        if (index >= 0 && index < this.previewSlides.length) {
+            this.currentPreviewSlide = index;
+            
+            // Update active state
+            const thumbnails = document.querySelectorAll('.slide-thumbnail');
+            thumbnails.forEach((thumb, i) => {
+                thumb.classList.toggle('active', i === index);
+            });
+            
+            this.updateSlideCounter();
+        }
+    }
+    
+    updateSlideCounter() {
+        const counter = document.getElementById('preview-slide-counter');
+        const totalSlides = this.previewSlides.length;
+        
+        if (totalSlides === 0) {
+            counter.textContent = '슬라이드 0개';
+        } else {
+            counter.textContent = `슬라이드 ${totalSlides}개`;
+        }
+    }
+    
+    saveMarkdown() {
+        const textarea = document.getElementById('markdown-textarea');
+        const markdown = textarea.value.trim();
+        
+        if (!markdown) {
+            alert('저장할 마크다운 내용이 없습니다.');
+            return;
+        }
+        
+        // Create a blob with the markdown content
+        const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
+        
+        // Create download link
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        
+        // Generate filename with timestamp
+        const now = new Date();
+        const timestamp = now.toISOString().slice(0, 19).replace(/[:-]/g, '');
+        link.download = `presentation_${timestamp}.md`;
+        
+        // Trigger download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up
+        URL.revokeObjectURL(url);
+        
+        console.log('마크다운 파일이 저장되었습니다.');
+    }
+
+    // WYSIWYG functionality methods
+    insertMarkdown(before, after, placeholder) {
+        const textarea = document.getElementById('markdown-textarea');
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selectedText = textarea.value.substring(start, end);
+        
+        let newText;
+        if (selectedText) {
+            newText = before + selectedText + after;
+        } else {
+            newText = before + placeholder + after;
+        }
+        
+        textarea.setRangeText(newText, start, end, 'end');
+        textarea.focus();
+        
+        // Update preview
+        this.updatePreview();
+    }
+    
+    insertNewSlide() {
+        const textarea = document.getElementById('markdown-textarea');
+        const currentValue = textarea.value;
+        const cursorPosition = textarea.selectionStart;
+        
+        // Ensure we have proper spacing before the new slide
+        let slideTemplate = '';
+        
+        // Check if we need to add newlines before the slide separator
+        if (currentValue.length > 0) {
+            // Check how many newlines are before the cursor position
+            let newlinesBefore = 0;
+            let checkPos = cursorPosition - 1;
+            while (checkPos >= 0 && currentValue[checkPos] === '\n') {
+                newlinesBefore++;
+                checkPos--;
+            }
+            
+            // Add newlines if needed to ensure proper spacing
+            if (newlinesBefore < 2) {
+                slideTemplate = '\n'.repeat(2 - newlinesBefore);
+            }
+        }
+        
+        // Add the slide content
+        slideTemplate += '---\n\n## 새 슬라이드\n\n내용을 입력하세요\n\n';
+        
+        // Insert at cursor position
+        textarea.setRangeText(slideTemplate, cursorPosition, cursorPosition, 'end');
+        
+        // Move cursor to the end of the inserted content
+        const newCursorPosition = cursorPosition + slideTemplate.length;
+        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+        textarea.focus();
+        
+        // Update preview
+        this.updatePreview();
+    }
+    
+    insertLink() {
+        const url = prompt('링크 URL을 입력하세요:');
+        if (url) {
+            this.insertMarkdown('[', '](' + url + ')', '링크 텍스트');
+        }
+    }
+    
+    insertImage() {
+        const url = prompt('이미지 URL을 입력하세요:');
+        if (url) {
+            this.insertMarkdown('![', '](' + url + ')', '이미지 설명');
+        }
+    }
+    
+    insertCodeBlock() {
+        const textarea = document.getElementById('markdown-textarea');
+        const cursorPosition = textarea.selectionStart;
+        const currentValue = textarea.value;
+        
+        // Check if we're at the start of a line
+        let needNewlineBefore = cursorPosition > 0 && currentValue[cursorPosition - 1] !== '\n';
+        
+        const codeTemplate = (needNewlineBefore ? '\n' : '') + '```\n코드를 입력하세요\n```\n';
+        
+        textarea.setRangeText(codeTemplate, cursorPosition, cursorPosition, 'end');
+        
+        // Position cursor inside the code block
+        const codeStartPos = cursorPosition + (needNewlineBefore ? 1 : 0) + 4; // After ```\n
+        const codeEndPos = codeStartPos + '코드를 입력하세요'.length;
+        textarea.setSelectionRange(codeStartPos, codeEndPos);
+        textarea.focus();
+        
+        // Update preview
+        this.updatePreview();
+    }
+    
+    handleKeyboardShortcuts(e) {
+        if (e.ctrlKey || e.metaKey) {
+            switch (e.key.toLowerCase()) {
+                case 'b':
+                    e.preventDefault();
+                    this.insertMarkdown('**', '**', '굵은 텍스트');
+                    break;
+                case 'i':
+                    e.preventDefault();
+                    this.insertMarkdown('*', '*', '기울임 텍스트');
+                    break;
+                case 's':
+                    e.preventDefault();
+                    this.saveMarkdown();
+                    break;
+                case 'u':
+                    e.preventDefault();
+                    this.insertMarkdown('<u>', '</u>', '밑줄 텍스트');
+                    break;
+            }
+        }
     }
 }
 

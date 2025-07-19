@@ -252,28 +252,31 @@
     <main class="flex-1">
         <!-- Repository Input Section -->
         <section id="repo-input-section" class="py-12">
-            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">프레젠테이션 불러오기</h2>
+                    <!-- Two Column Layout -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Left Column: Presentation Loading -->
+                        <div class="space-y-6">
                     
                     <!-- Repository Source Selection -->
                     <div class="mb-6">
                         <div class="flex flex-col space-y-2 mb-4">
                             <label class="flex items-center cursor-pointer">
-                                <input type="radio" name="repo-source" value="current" id="current-repo" class="mr-2 text-blue-600" checked>
-                                <span class="text-gray-700 dark:text-gray-300">현재 repo에서 찾기</span>
-                            </label>
-                            <label class="flex items-center cursor-pointer">
-                                <input type="radio" name="repo-source" value="custom" id="custom-repo" class="mr-2 text-blue-600">
-                                <span class="text-gray-700 dark:text-gray-300">다른 repo에서 찾기</span>
-                            </label>
-                            <label class="flex items-center cursor-pointer">
-                                <input type="radio" name="repo-source" value="local" id="local-files" class="mr-2 text-blue-600">
+                                <input type="radio" name="repo-source" value="local" id="local-files" class="mr-2 text-blue-600" checked>
                                 <span class="text-gray-700 dark:text-gray-300">노션 또는 로컬 파일 불러오기</span>
                             </label>
                             <label class="flex items-center cursor-pointer">
                                 <input type="radio" name="repo-source" value="direct" id="direct-input" class="mr-2 text-blue-600">
                                 <span class="text-gray-700 dark:text-gray-300">마크다운 직접 입력하기</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="repo-source" value="current" id="current-repo" class="mr-2 text-blue-600">
+                                <span class="text-gray-700 dark:text-gray-300">현재 repo에서 찾기</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="repo-source" value="custom" id="custom-repo" class="mr-2 text-blue-600">
+                                <span class="text-gray-700 dark:text-gray-300">다른 repo에서 찾기</span>
                             </label>
                         </div>
                     </div>
@@ -344,13 +347,86 @@
                         <!-- Direct Markdown Input -->
                         <div id="direct-input-fields" class="hidden">
                             <div>
-                                <label for="markdown-textarea" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                <label for="markdown-textarea" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     마크다운 입력
                                 </label>
-                                <textarea id="markdown-textarea" rows="10" placeholder="마크다운 내용을 직접 입력하세요..."
-                                          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white resize-vertical"></textarea>
+                                
+                                <!-- WYSIWYG Toolbar -->
+                                <div class="border border-gray-300 dark:border-gray-600 rounded-md overflow-hidden">
+                                    <div class="bg-gray-100 dark:bg-gray-800 border-b border-gray-300 dark:border-gray-600 px-3 py-2">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-1">
+                                                <button type="button" id="toolbar-bold" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="굵게 (Ctrl+B)">
+                                                    <span class="font-bold text-sm">B</span>
+                                                </button>
+                                                <button type="button" id="toolbar-italic" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="기울임 (Ctrl+I)">
+                                                    <span class="italic text-sm">I</span>
+                                                </button>
+                                                <button type="button" id="toolbar-underline" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="밑줄">
+                                                    <span class="underline text-sm">U</span>
+                                                </button>
+                                                <button type="button" id="toolbar-strike" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="취소선">
+                                                    <span class="line-through text-sm">S</span>
+                                                </button>
+                                                <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+                                                <button type="button" id="toolbar-header" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="헤더 추가">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M3 4h2v5h6V4h2v12h-2v-5H5v5H3V4z"/>
+                                                    </svg>
+                                                </button>
+                                                <button type="button" id="toolbar-quote" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="인용구">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h10v10H5V5z" clip-rule="evenodd"/>
+                                                        <path d="M7 7h2v2H7V7zm0 4h6v2H7v-2z"/>
+                                                    </svg>
+                                                </button>
+                                                <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+                                                <button type="button" id="toolbar-list" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="리스트 추가">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M3 4a1 1 0 100 2 1 1 0 000-2zM6 4h11v2H6V4zM3 9a1 1 0 100 2 1 1 0 000-2zM6 9h11v2H6V9zM3 14a1 1 0 100 2 1 1 0 000-2zM6 14h11v2H6v-2z"/>
+                                                    </svg>
+                                                </button>
+                                                <button type="button" id="toolbar-numbered-list" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="번호 리스트 추가">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M2 3h1v2H2V3zm0 4h1v2H2V7zm0 4h1v2H2v-2zm0 4h1v2H2v-2zm4-12h12v2H6V3zm0 4h12v2H6V7zm0 4h12v2H6v-2zm0 4h12v2H6v-2z"/>
+                                                    </svg>
+                                                </button>
+                                                <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+                                                <button type="button" id="toolbar-link" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="링크 추가">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                </button>
+                                                <button type="button" id="toolbar-image" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="이미지 추가">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                </button>
+                                                <button type="button" id="toolbar-code" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="코드 블록">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                </button>
+                                                <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+                                                <button type="button" id="toolbar-slide" class="flex items-center justify-center px-3 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-xs font-medium" title="새 슬라이드 추가">
+                                                    슬라이드
+                                                </button>
+                                            </div>
+                                            <div class="flex items-center space-x-2">
+                                                <button type="button" id="save-markdown-toolbar-btn" class="flex items-center justify-center px-3 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-xs font-medium" title="마크다운 저장">
+                                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"/>
+                                                    </svg>
+                                                    저장
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <textarea id="markdown-textarea" rows="10" placeholder="마크다운 내용을 직접 입력하세요..."
+                                              class="w-full px-3 py-2 focus:outline-none focus:ring-0 dark:bg-gray-700 dark:text-white resize-vertical border-0"></textarea>
+                                </div>
                                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                    마크다운 형식으로 프레젠테이션 내용을 입력하세요. ## 으로 슬라이드를 구분합니다.
+                                    마크다운 형식으로 프레젠테이션 내용을 입력하세요. --- 으로 슬라이드를 구분합니다.
                                 </p>
                             </div>
                         </div>
@@ -379,7 +455,32 @@
                         <button type="submit" id="load-presentation-btn" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors hidden">
                             프레젠테이션 로드
                         </button>
+                        
                     </form>
+                        </div>
+                        
+                        <!-- Right Column: Presentation Preview -->
+                        <div class="space-y-4">
+                            <!-- Slide Thumbnails Container -->
+                            <div id="slide-thumbnails-container" class="bg-gray-50 dark:bg-gray-900 rounded-lg border-2 border-gray-200 dark:border-gray-600 overflow-hidden" style="height: 500px;">
+                                <div id="slide-thumbnails" class="h-full overflow-y-auto p-4 space-y-3" style="overflow-y: auto;">
+                                    <div class="text-center text-gray-500 dark:text-gray-400 flex items-center justify-center h-full">
+                                        <div>
+                                            <svg class="mx-auto h-12 w-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
+                                            <p class="text-sm">마크다운을 입력하면<br>여기에 슬라이드가 표시됩니다</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Slide Counter -->
+                            <div class="text-center">
+                                <span id="preview-slide-counter" class="text-sm text-gray-600 dark:text-gray-400">슬라이드 0개</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

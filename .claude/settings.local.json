@@ -10,7 +10,8 @@
       "Bash(node:*)",
       "WebFetch(domain:docs.anthropic.com)",
       "Bash(claude config list)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(npm start)"
     ],
     "deny": []
   }
