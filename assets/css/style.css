@@ -1815,7 +1815,7 @@ pre[class*=language-] {
     color: white;
 }
 
-/* Preview slide content styling */
+/* Preview slide content styling - match actual slide styles */
 #preview-content .slide-content h1,
 #preview-content .slide-content h2,
 #preview-content .slide-content h3 {
@@ -1823,36 +1823,45 @@ pre[class*=language-] {
 }
 
 #preview-content .slide-content h1 {
-    font-size: 2.5rem;
-    font-weight: bold;
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1.3;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 4px;
 }
 
 #preview-content .slide-content h2 {
-    font-size: 2rem;
-    font-weight: bold;
+    font-size: 0.65rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: #1f2937;
 }
 
 #preview-content .slide-content h3 {
-    font-size: 1.5rem;
-    font-weight: bold;
+    font-size: 0.55rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #374151;
 }
 
 #preview-content .slide-content p {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    margin-bottom: 1rem;
+    font-size: 0.5rem;
+    line-height: 1.8;
+    margin-bottom: 6px;
 }
 
 #preview-content .slide-content ul,
 #preview-content .slide-content ol {
     text-align: left;
-    max-width: 80%;
-    margin: 0 auto 1rem auto;
+    max-width: 90%;
+    margin: 4px auto;
+    padding-left: 16px;
 }
 
 #preview-content .slide-content li {
-    margin-bottom: 0.5rem;
-    font-size: 1.1rem;
+    margin-bottom: 2px;
+    font-size: 0.5rem;
+    line-height: 1.8;
 }
 
 #preview-content .slide-content code {
@@ -1882,8 +1891,8 @@ pre[class*=language-] {
 
 /* Slide Thumbnails Styles */
 .slide-thumbnail {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: 2px solid #e5e7eb;
+    background: white;
+    border: 1px solid #e5e7eb;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -1899,86 +1908,92 @@ pre[class*=language-] {
 
 .slide-thumbnail:hover {
     border-color: #3b82f6;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .slide-thumbnail.active {
     border-color: #3b82f6;
-    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.2);
-    transform: scale(1.02);
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
 }
 
 .slide-thumbnail-inner {
     background: white;
-    width: calc(100% - 8px);
-    height: calc(100% - 8px);
-    border-radius: 4px;
-    padding: 8px;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+    justify-content: flex-start;
+    align-items: flex-start;
+    text-align: left;
     position: relative;
     overflow: hidden;
 }
 
 .slide-thumbnail-content {
-    font-size: 0.65rem;
-    line-height: 1.3;
+    font-size: 0.5rem;
+    line-height: 1.8;
     color: #374151;
     width: 100%;
     height: 100%;
     display: block;
-    padding: 4px;
+    padding: 8px;
     overflow: hidden;
     text-align: left;
 }
 
 .slide-thumbnail-content h1 {
-    font-size: 0.9rem;
-    font-weight: bold;
-    margin: 0 0 4px 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0 0 8px 0;
     color: #1f2937;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 4px;
 }
 
 .slide-thumbnail-content h2 {
-    font-size: 0.8rem;
-    font-weight: bold;
-    margin: 0 0 4px 0;
-    color: #374151;
+    font-size: 0.65rem;
+    font-weight: 600;
+    line-height: 1.35;
+    margin: 8px 0 6px 0;
+    color: #1f2937;
 }
 
 .slide-thumbnail-content h3 {
-    font-size: 0.7rem;
-    font-weight: bold;
-    margin: 0 0 3px 0;
-    color: #4b5563;
+    font-size: 0.55rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 6px 0 4px 0;
+    color: #374151;
 }
 
 .slide-thumbnail-content p {
-    font-size: 0.6rem;
-    margin: 0 0 2px 0;
-    line-height: 1.2;
+    font-size: 0.5rem;
+    margin: 0 0 6px 0;
+    line-height: 1.8;
 }
 
 .slide-thumbnail-content img {
-    max-width: 80%;
-    max-height: 30px;
+    max-width: 60%;
+    max-height: 40px;
     object-fit: contain;
-    margin: 2px auto;
-    border-radius: 2px;
+    margin: 4px auto;
+    border-radius: 4px;
+    display: block;
 }
 
-.slide-thumbnail-content ul {
-    font-size: 0.6rem;
-    margin: 0;
-    padding-left: 12px;
+.slide-thumbnail-content ul, .slide-thumbnail-content ol {
+    font-size: 0.5rem;
+    margin: 4px 0;
+    padding-left: 16px;
+    text-align: left;
 }
 
 .slide-thumbnail-content li {
-    margin: 1px 0;
+    margin: 2px 0;
+    line-height: 1.8;
 }
 
 .slide-thumbnail-number {
@@ -1995,7 +2010,7 @@ pre[class*=language-] {
 
 /* Dark theme for thumbnails */
 .dark .slide-thumbnail {
-    background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+    background: #1f2937;
     border-color: #4b5563;
 }
 
@@ -2005,7 +2020,7 @@ pre[class*=language-] {
 
 .dark .slide-thumbnail.active {
     border-color: #60a5fa;
-    box-shadow: 0 6px 12px rgba(96, 165, 250, 0.2);
+    box-shadow: 0 2px 4px rgba(96, 165, 250, 0.1);
 }
 
 .dark .slide-thumbnail-inner {
@@ -2030,4 +2045,65 @@ pre[class*=language-] {
 
 .dark .slide-thumbnail-number {
     background: #60a5fa;
+}
+
+/* Custom styles for thumbnails */
+.slide-thumbnail-content .text-center {
+    text-align: center;
+    margin: 4px 0;
+}
+
+.slide-thumbnail-content .text-xlarge {
+    font-size: 0.65rem;
+}
+
+.slide-thumbnail-content .text-small {
+    font-size: 0.4rem;
+}
+
+.slide-thumbnail-content .text-highlight {
+    background: linear-gradient(120deg, #a7f3d0 0%, #a7f3d0 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 0.2em;
+    background-position: 0 88%;
+    padding: 1px 2px;
+    border-radius: 2px;
+}
+
+/* Strong tag in thumbnails */
+.slide-thumbnail-content strong {
+    background: linear-gradient(120deg, #a7f3d0 0%, #a7f3d0 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 0.2em;
+    background-position: 0 88%;
+    padding: 1px 2px;
+    border-radius: 2px;
+    font-weight: 700;
+}
+
+.slide-thumbnail-content code {
+    background-color: #f1f5f9;
+    color: #dc2626;
+    padding: 1px 2px;
+    border-radius: 2px;
+    font-size: 0.45rem;
+}
+
+.slide-thumbnail-content pre {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 4px;
+    overflow-x: auto;
+    margin: 4px 0;
+    font-size: 0.45rem;
+}
+
+.slide-thumbnail-content blockquote {
+    border-left: 2px solid #3b82f6;
+    background-color: #eff6ff;
+    padding: 4px;
+    margin: 4px 0;
+    border-radius: 0 4px 4px 0;
+    font-size: 0.5rem;
 }

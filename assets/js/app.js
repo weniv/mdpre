@@ -2222,25 +2222,81 @@ class GitHubMarkdownPresenter {
         }
     }
 
-    parseLocalMarkdownToSlides(markdown) {
-        // Split by slide separator (---)
-        const slideContents = markdown.split(/^---\s*$/m).filter(content => content.trim());
+    parseLocalMarkdownToSlides(markdown, trackPosition = false) {
+        const slides = [];
         
-        // If no slides found, treat entire content as one slide
-        if (slideContents.length === 0) {
-            slideContents.push(markdown);
+        if (trackPosition) {
+            // Track position of each slide in the original markdown
+            const separator = /^---\s*$/m;
+            let currentPosition = 0;
+            let match;
+            let lastIndex = 0;
+            
+            // Use a regex to find all separator positions
+            const regex = new RegExp(separator.source, 'gm');
+            const positions = [];
+            
+            while ((match = regex.exec(markdown)) !== null) {
+                positions.push(match.index);
+            }
+            
+            // Add the end position
+            positions.push(markdown.length);
+            
+            // Extract slides with their positions
+            for (let i = 0; i < positions.length; i++) {
+                const start = i === 0 ? 0 : positions[i - 1] + 3; // +3 to skip the "---"
+                const end = positions[i];
+                const rawContent = markdown.substring(start, end);
+                const content = rawContent.trim();
+                
+                if (content) {
+                    slides.push({
+                        rawMarkdown: rawContent,
+                        startPosition: start,
+                        endPosition: end,
+                        content: content,
+                        index: slides.length
+                    });
+                }
+            }
+            
+            // If no slides found, treat entire content as one slide
+            if (slides.length === 0 && markdown.trim()) {
+                slides.push({
+                    rawMarkdown: markdown,
+                    startPosition: 0,
+                    endPosition: markdown.length,
+                    content: markdown.trim(),
+                    index: 0
+                });
+            }
+        } else {
+            // Original behavior without position tracking
+            const slideContents = markdown.split(/^---\s*$/m).filter(content => content.trim());
+            
+            // If no slides found, treat entire content as one slide
+            if (slideContents.length === 0) {
+                slideContents.push(markdown);
+            }
+            
+            slideContents.forEach((content, index) => {
+                slides.push({
+                    content: content.trim(),
+                    index: index
+                });
+            });
         }
         
-        return slideContents.map((content, index) => {
-            const processedContent = content.trim();
-            
+        // Process each slide to generate HTML
+        return slides.map((slide) => {
             let htmlContent;
             
             // Try to use marked.js if available, otherwise fallback to basic processing
             if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
                 try {
                     // Process LaTeX expressions first if function exists
-                    let contentForParsing = processedContent;
+                    let contentForParsing = slide.content;
                     if (typeof this.processLatexExpressions === 'function') {
                         contentForParsing = this.processLatexExpressions(contentForParsing);
                     }
@@ -2259,15 +2315,16 @@ class GitHubMarkdownPresenter {
                     }
                 } catch (error) {
                     console.warn('Marked.js parsing failed, using basic parser:', error);
-                    htmlContent = this.basicMarkdownToHtml(processedContent);
+                    htmlContent = this.basicMarkdownToHtml(slide.content);
                 }
             } else {
                 // Fallback to basic markdown processing
-                htmlContent = this.basicMarkdownToHtml(processedContent);
+                htmlContent = this.basicMarkdownToHtml(slide.content);
             }
             
+            // Return slide object with all information
             return {
-                content: processedContent,
+                ...slide,
                 html: htmlContent
             };
         });
@@ -2887,8 +2944,8 @@ class GitHubMarkdownPresenter {
         }
         
         try {
-            // Parse markdown to slides
-            this.previewSlides = this.parseLocalMarkdownToSlides(markdown);
+            // Parse markdown to slides with position tracking
+            this.previewSlides = this.parseLocalMarkdownToSlides(markdown, true);
             this.currentPreviewSlide = 0;
             
             // Update preview content
@@ -2953,7 +3010,13 @@ class GitHubMarkdownPresenter {
             // Create content container
             const contentDiv = document.createElement('div');
             contentDiv.className = 'slide-thumbnail-content';
-            contentDiv.innerHTML = slideHtml;
+            
+            // Process custom syntax for the thumbnail
+            let processedHtml = slideHtml;
+            if (typeof this.processCustomSyntax === 'function') {
+                processedHtml = this.processCustomSyntax(processedHtml);
+            }
+            contentDiv.innerHTML = processedHtml;
             
             // Apply font settings to thumbnail content
             this.applyFontsToThumbnail(contentDiv);
@@ -3013,6 +3076,32 @@ class GitHubMarkdownPresenter {
             });
             
             this.updateSlideCounter();
+            
+            // Navigate to the corresponding position in the markdown textarea
+            this.navigateToSlideInMarkdown(index);
+        }
+    }
+    
+    navigateToSlideInMarkdown(slideIndex) {
+        const textarea = document.getElementById('markdown-textarea');
+        
+        // Check if we have position information for this slide
+        if (this.previewSlides[slideIndex] && this.previewSlides[slideIndex].startPosition !== undefined) {
+            const slide = this.previewSlides[slideIndex];
+            const targetPosition = slide.startPosition;
+            
+            // Set cursor position to the start of the slide content
+            textarea.focus();
+            textarea.setSelectionRange(targetPosition, targetPosition);
+            
+            // Scroll the textarea to make the cursor visible
+            const markdown = textarea.value;
+            const textBeforeCursor = markdown.substring(0, targetPosition);
+            const linesBeforeCursor = textBeforeCursor.split('\n').length;
+            const lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight);
+            const scrollPosition = Math.max(0, (linesBeforeCursor - 5) * lineHeight); // -5 to show some context
+            
+            textarea.scrollTop = scrollPosition;
         }
     }
     
@@ -3074,8 +3163,9 @@ class GitHubMarkdownPresenter {
             newText = before + placeholder + after;
         }
         
-        textarea.setRangeText(newText, start, end, 'end');
+        // document.execCommand를 사용하여 브라우저의 실행 취소 스택에 기록
         textarea.focus();
+        document.execCommand('insertText', false, newText);
         
         // Update preview
         this.updatePreview();
@@ -3108,13 +3198,13 @@ class GitHubMarkdownPresenter {
         // Add the slide content
         slideTemplate += '---\n\n## 새 슬라이드\n\n내용을 입력하세요\n\n';
         
-        // Insert at cursor position
-        textarea.setRangeText(slideTemplate, cursorPosition, cursorPosition, 'end');
+        // document.execCommand를 사용하여 브라우저의 실행 취소 스택에 기록
+        textarea.focus();
+        document.execCommand('insertText', false, slideTemplate);
         
         // Move cursor to the end of the inserted content
         const newCursorPosition = cursorPosition + slideTemplate.length;
         textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
         
         // Update preview
         this.updatePreview();
@@ -3144,13 +3234,15 @@ class GitHubMarkdownPresenter {
         
         const codeTemplate = (needNewlineBefore ? '\n' : '') + '```\n코드를 입력하세요\n```\n';
         
-        textarea.setRangeText(codeTemplate, cursorPosition, cursorPosition, 'end');
+        // document.execCommand를 사용하여 브라우저의 실행 취소 스택에 기록
+        textarea.focus();
+        document.execCommand('insertText', false, codeTemplate);
         
-        // Position cursor inside the code block
+        // Position cursor inside the code block after insertion
+        const insertedLength = codeTemplate.length;
         const codeStartPos = cursorPosition + (needNewlineBefore ? 1 : 0) + 4; // After ```\n
         const codeEndPos = codeStartPos + '코드를 입력하세요'.length;
         textarea.setSelectionRange(codeStartPos, codeEndPos);
-        textarea.focus();
         
         // Update preview
         this.updatePreview();
@@ -3174,6 +3266,10 @@ class GitHubMarkdownPresenter {
                 case 'u':
                     e.preventDefault();
                     this.insertMarkdown('<u>', '</u>', '밑줄 텍스트');
+                    break;
+                case 'z':
+                    // Ctrl+Z 실행 취소 기능 - 기본 브라우저 동작을 사용
+                    // preventDefault()를 호출하지 않아 브라우저의 기본 실행 취소 기능이 작동하도록 함
                     break;
             }
         }
