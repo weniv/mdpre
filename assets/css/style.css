@@ -118,7 +118,7 @@
 html, body {
     margin: 0;
     padding: 0;
-    overflow-x: hidden;
+    overflow-x: clip;
     min-height: 100vh;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -1517,6 +1517,11 @@ pre[class*=language-] {
 
 #settings-dropdown.hidden {
     animation: fadeOut 0.2s ease-out;
+}
+
+/* Fix select dropdown cutoff */
+#settings-dropdown select {
+    position: relative;
 }
 
 @keyframes fadeIn {

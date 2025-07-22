@@ -56,7 +56,7 @@
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-300 min-h-screen flex flex-col">
     <!-- Header -->
-    <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+    <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 relative overflow-visible">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center space-x-4">
@@ -91,7 +91,7 @@
                         </button>
                     </h1>
                 </div>
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-4 pr-2">
                     <!-- Dark Mode Toggle -->
                     <button id="theme-toggle" class="relative">
                         <svg width="56" height="33" viewBox="0 0 56 33" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -107,7 +107,7 @@
                     </button>
                     
                     <!-- Settings Button -->
-                    <div class="relative">
+                    <div class="relative" style="margin-right: 20px;">
                         <button id="settings-btn" class="relative">
                             <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <rect id="settings-bg" width="42" height="42" rx="10" fill="white"/>
@@ -118,7 +118,7 @@
                         </button>
                         
                         <!-- Settings Dropdown -->
-                        <div id="settings-dropdown" class="hidden absolute top-full right-0 mt-2 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 p-4 min-w-64">
+                        <div id="settings-dropdown" class="hidden absolute top-full right-4 mt-2 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 p-4" style="min-width: 280px;">
                             <div class="flex items-center justify-between mb-3">
                                 <h3 class="text-sm font-medium text-gray-900 dark:text-white">설정</h3>
                                 <button id="close-settings-dropdown" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
@@ -128,7 +128,7 @@
                                 </button>
                             </div>
                             
-                            <div class="space-y-4">
+                            <div class="space-y-4 overflow-visible">
                                 <!-- 제목 폰트 설정 -->
                                 <div>
                                     <label for="heading-font-dropdown" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -457,7 +457,7 @@
                         <div class="space-y-4">
                             <!-- Slide Thumbnails Container -->
                             <div id="slide-thumbnails-container" class="bg-gray-50 dark:bg-gray-900 rounded-lg border-2 border-gray-200 dark:border-gray-600 overflow-hidden" style="height: 500px;">
-                                <div id="slide-thumbnails" class="h-full overflow-y-auto p-4 space-y-3" style="overflow-y: auto;">
+                                <div id="slide-thumbnails" class="h-full p-4 space-y-3">
                                     <div class="text-center text-gray-500 dark:text-gray-400 flex items-center justify-center h-full">
                                         <div>
                                             <svg class="mx-auto h-12 w-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -84,7 +84,10 @@ class GitHubMarkdownPresenter {
         document.getElementById('logo-btn').addEventListener('click', () => this.goToHome());
 
         // File upload change event
-        document.getElementById('file-upload').addEventListener('change', () => this.handleFileUpload());
+        document.getElementById('file-upload').addEventListener('change', () => {
+            this.handleFileUpload();
+            this.updateFilePreview();
+        });
 
         // File select button event
         document.getElementById('file-select-btn').addEventListener('click', () => this.openFileDialog());
@@ -1897,6 +1900,87 @@ class GitHubMarkdownPresenter {
         }
     }
 
+    async updateFilePreview() {
+        const fileInput = document.getElementById('file-upload');
+        const files = fileInput.files;
+        
+        if (files.length === 0) {
+            this.clearPreview();
+            return;
+        }
+        
+        try {
+            // Check for markdown files
+            const markdownFiles = Array.from(files).filter(file => 
+                file.type === 'text/markdown' || file.name.toLowerCase().endsWith('.md')
+            );
+            
+            // Check for ZIP files
+            const zipFiles = Array.from(files).filter(file => 
+                file.name.toLowerCase().endsWith('.zip')
+            );
+            
+            if (markdownFiles.length > 0) {
+                // Read and combine all markdown files for preview
+                let combinedMarkdown = '';
+                
+                for (const file of markdownFiles) {
+                    const content = await this.readFileContent(file);
+                    if (combinedMarkdown.length > 0) {
+                        combinedMarkdown += '\n\n---\n\n'; // Add slide separator between files
+                    }
+                    combinedMarkdown += content;
+                }
+                
+                // Parse and render preview
+                this.previewSlides = this.parseLocalMarkdownToSlides(combinedMarkdown, true);
+                this.currentPreviewSlide = 0;
+                this.renderSlideThumbnails();
+            } else if (zipFiles.length > 0) {
+                // Process ZIP files for preview
+                this.showPreviewLoading('ZIP 파일 처리 중...');
+                
+                let combinedMarkdown = '';
+                for (const zipFile of zipFiles) {
+                    try {
+                        const markdownContent = await this.processZipFile(zipFile, true); // true for preview mode
+                        if (combinedMarkdown.length > 0) {
+                            combinedMarkdown += '\n\n---\n\n';
+                        }
+                        combinedMarkdown += markdownContent;
+                    } catch (error) {
+                        console.warn(`ZIP 파일 미리보기 실패: ${zipFile.name}`, error);
+                    }
+                }
+                
+                if (combinedMarkdown) {
+                    // Parse and render preview
+                    this.previewSlides = this.parseLocalMarkdownToSlides(combinedMarkdown, true);
+                    this.currentPreviewSlide = 0;
+                    this.renderSlideThumbnails();
+                } else {
+                    this.showPreviewError('ZIP 파일에서 마크다운을 찾을 수 없습니다');
+                }
+            } else {
+                // Show message for other file types
+                const slideThumbnails = document.getElementById('slide-thumbnails');
+                slideThumbnails.innerHTML = `
+                    <div class="text-center text-gray-500 dark:text-gray-400 flex items-center justify-center h-full">
+                        <div>
+                            <svg class="mx-auto h-12 w-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                            </svg>
+                            <p class="text-sm">지원하지 않는 파일 형식입니다</p>
+                        </div>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('File preview error:', error);
+            this.showPreviewError('파일 미리보기 중 오류가 발생했습니다: ' + error.message);
+        }
+    }
+
     displayUploadedFiles(files) {
         const filesList = document.getElementById('uploaded-files-list');
         const fileItems = document.getElementById('file-items');
@@ -2024,11 +2108,13 @@ class GitHubMarkdownPresenter {
             
             fileInput.files = dt.files;
             
-            // Update the display
+            // Update the display and preview
             if (fileInput.files.length > 0) {
                 this.displayUploadedFiles(fileInput.files);
+                this.updateFilePreview(); // Update preview after file removal
             } else {
                 this.hideUploadedFiles();
+                this.clearPreview(); // Clear preview when no files
                 const loadLocalBtn = document.getElementById('load-local-files-btn');
                 if (loadLocalBtn) {
                     loadLocalBtn.classList.add('hidden');
@@ -2444,6 +2530,7 @@ class GitHubMarkdownPresenter {
             if (files.length > 0) {
                 fileUpload.files = files;
                 this.handleFileUpload();
+                this.updateFilePreview();
                 this.showDropSuccessMessage(files.length);
             }
         }, false);
@@ -2504,9 +2591,11 @@ class GitHubMarkdownPresenter {
         }
     }
 
-    async processZipFile(file) {
+    async processZipFile(file, forPreview = false) {
         try {
-            this.showLoading(true, 'Notion zip 파일을 처리하는 중...');
+            if (!forPreview) {
+                this.showLoading(true, 'Notion zip 파일을 처리하는 중...');
+            }
             
             if (!window.JSZip) {
                 throw new Error('JSZip 라이브러리가 로드되지 않았습니다.');
@@ -2596,6 +2685,10 @@ class GitHubMarkdownPresenter {
         } catch (error) {
             console.error('ZIP 파일 처리 실패:', error);
             throw new Error(`ZIP 파일을 처리할 수 없습니다: ${error.message}`);
+        } finally {
+            if (!forPreview) {
+                this.showLoading(false);
+            }
         }
     }
 
@@ -2958,6 +3051,10 @@ class GitHubMarkdownPresenter {
     
     clearPreview() {
         const slideThumbnails = document.getElementById('slide-thumbnails');
+        
+        // Remove overflow-y-auto class when clearing
+        slideThumbnails.classList.remove('overflow-y-auto');
+        
         slideThumbnails.innerHTML = `
             <div class="text-center text-gray-500 dark:text-gray-400 flex items-center justify-center h-full">
                 <div>
@@ -2976,11 +3073,34 @@ class GitHubMarkdownPresenter {
     
     showPreviewError(message) {
         const slideThumbnails = document.getElementById('slide-thumbnails');
+        
+        // Remove overflow-y-auto class for error state
+        slideThumbnails.classList.remove('overflow-y-auto');
+        
         slideThumbnails.innerHTML = `
             <div class="text-center text-red-500 dark:text-red-400 flex items-center justify-center h-full">
                 <div>
                     <svg class="mx-auto h-12 w-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L5.232 15.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                    <p class="text-sm">${message}</p>
+                </div>
+            </div>
+        `;
+    }
+    
+    showPreviewLoading(message) {
+        const slideThumbnails = document.getElementById('slide-thumbnails');
+        
+        // Remove overflow-y-auto class for loading state
+        slideThumbnails.classList.remove('overflow-y-auto');
+        
+        slideThumbnails.innerHTML = `
+            <div class="text-center text-gray-500 dark:text-gray-400 flex items-center justify-center h-full">
+                <div>
+                    <svg class="animate-spin h-12 w-12 mb-3 mx-auto" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
                     <p class="text-sm">${message}</p>
                 </div>
@@ -2996,6 +3116,9 @@ class GitHubMarkdownPresenter {
         
         const slideThumbnails = document.getElementById('slide-thumbnails');
         slideThumbnails.innerHTML = '';
+        
+        // Add overflow-y-auto class when there are slides
+        slideThumbnails.classList.add('overflow-y-auto');
         
         this.previewSlides.forEach((slide, index) => {
             const slideHtml = slide.html || slide;
