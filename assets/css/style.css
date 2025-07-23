@@ -402,7 +402,8 @@ html, body {
     color: #dc2626;
     padding: 0.125rem 0.25rem;
     border-radius: 0.25rem;
-    font-size: 1.75em; /* 200% of 0.875em */
+    font-size: inherit; /* 본문 폰트 크기와 동일 */
+    font-family: inherit; /* 본문 폰트와 동일 */
 }
 
 .dark #slide-content code {
@@ -621,6 +622,11 @@ pre[class*=language-] {
     transform: translateX(-100%);
     opacity: 0;
     transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+/* mermaid scale 조정 */
+.mermaid > svg {
+    transform: scale(1.5) translate(20%, 20%) !important;
 }
 
 
@@ -1118,6 +1124,7 @@ pre[class*=language-] {
     .mermaid-container svg {
         max-width: 100% !important;
         height: auto !important;
+        
     }
 
     .mermaid-error {
