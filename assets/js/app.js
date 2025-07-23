@@ -26,6 +26,7 @@ class GitHubMarkdownPresenter {
         this.setupFullscreenHandling();
         this.getCurrentRepoInfo();
         this.checkKatexLoaded();
+        this.checkMermaidLoaded();
     }
 
     checkKatexLoaded() {
@@ -52,6 +53,49 @@ class GitHubMarkdownPresenter {
                     clearInterval(checkInterval);
                     if (attempts >= maxAttempts) {
                         console.error('KaTeX library failed to load after 5 seconds');
+                    }
+                }
+            }, 100);
+        }
+    }
+
+    checkMermaidLoaded() {
+        // Check if Mermaid is loaded
+        const checkLoaded = () => {
+            if (typeof mermaid !== 'undefined') {
+                console.log('Mermaid library loaded successfully');
+                // Initialize mermaid with configuration
+                mermaid.initialize({ 
+                    startOnLoad: false,
+                    theme: 'default',
+                    themeVariables: {
+                        primaryColor: '#007bff',
+                        primaryTextColor: '#fff',
+                        primaryBorderColor: '#0056b3',
+                        lineColor: '#333',
+                        secondaryColor: '#e9ecef',
+                        tertiaryColor: '#f8f9fa'
+                    }
+                });
+                return true;
+            } else {
+                console.log('Mermaid library not yet loaded, waiting...');
+                return false;
+            }
+        };
+        
+        // Check immediately
+        if (!checkLoaded()) {
+            // If not loaded, check every 100ms for up to 5 seconds
+            let attempts = 0;
+            const maxAttempts = 50;
+            
+            const checkInterval = setInterval(() => {
+                attempts++;
+                if (checkLoaded() || attempts >= maxAttempts) {
+                    clearInterval(checkInterval);
+                    if (attempts >= maxAttempts) {
+                        console.error('Mermaid library failed to load after 5 seconds');
                     }
                 }
             }, 100);
@@ -1287,6 +1331,11 @@ class GitHubMarkdownPresenter {
             this.renderMathExpressions(); // Render LaTeX expressions
             this.applySettings(); // Apply font settings after content update
             
+            // Add a delay for Mermaid to ensure DOM is fully ready
+            setTimeout(() => {
+                this.renderMermaidDiagrams(); // Render Mermaid diagrams
+            }, 300);
+            
             slideContent.style.opacity = '1';
             slideContent.style.transform = 'translateX(0)';
         }, 150);
@@ -1456,6 +1505,84 @@ class GitHubMarkdownPresenter {
                 el.classList.add('math-error');
             }
         });
+    }
+
+    renderMermaidDiagrams() {
+        // Check if Mermaid is available
+        if (typeof mermaid !== 'undefined') {
+            // Find and render all mermaid blocks
+            const slideContent = document.getElementById('slide-content');
+            if (slideContent) {
+                // Look for code blocks with language-mermaid class
+                const mermaidBlocks = slideContent.querySelectorAll('code.language-mermaid');
+                console.log(`Found ${mermaidBlocks.length} mermaid blocks`);
+                
+                mermaidBlocks.forEach((block, index) => {
+                    try {
+                        // Get the mermaid code
+                        const mermaidCode = block.textContent;
+                        
+                        // Create a unique ID for this diagram
+                        const mermaidId = `mermaid-diagram-${Date.now()}-${index}`;
+                        
+                        // Create a container for the diagram
+                        const container = document.createElement('div');
+                        container.className = 'mermaid-container';
+                        
+                        // Create inner div for mermaid content
+                        const mermaidDiv = document.createElement('div');
+                        mermaidDiv.className = 'mermaid';
+                        mermaidDiv.textContent = mermaidCode;
+                        container.appendChild(mermaidDiv);
+                        
+                        // Find the parent pre element
+                        const preElement = block.parentElement;
+                        let targetElement = preElement && preElement.tagName === 'PRE' ? preElement : block;
+                        
+                        // Check if the parent has text-center class (from {center} syntax)
+                        let parentWithCenter = targetElement.parentElement;
+                        console.log(`Checking for text-center class. Starting from:`, targetElement.parentElement);
+                        
+                        while (parentWithCenter && !parentWithCenter.classList.contains('text-center') && parentWithCenter.id !== 'slide-content') {
+                            console.log(`Checking parent:`, parentWithCenter.tagName, parentWithCenter.className);
+                            parentWithCenter = parentWithCenter.parentElement;
+                        }
+                        
+                        if (parentWithCenter && parentWithCenter.classList.contains('text-center')) {
+                            console.log(`Found text-center class on:`, parentWithCenter.tagName);
+                            // Add inline styles for centering only when inside {center}
+                            container.style.display = 'flex';
+                            container.style.justifyContent = 'center';
+                            container.style.alignItems = 'center';
+                            container.style.width = '100%';
+                            console.log(`Applied center alignment to mermaid container`);
+                        } else {
+                            console.log(`No text-center class found in parent hierarchy`);
+                            // Default styles for non-centered mermaid
+                            container.style.display = 'block';
+                            container.style.width = '100%';
+                        }
+                        
+                        // Replace the code block with the container
+                        targetElement.parentNode.replaceChild(container, targetElement);
+                        
+                        // Use mermaid.init to render
+                        console.log(`Attempting to render mermaid diagram ${index + 1} with code:`, mermaidCode);
+                        try {
+                            mermaid.init(undefined, mermaidDiv);
+                            console.log(`Successfully initialized mermaid diagram ${index + 1}`);
+                        } catch (error) {
+                            console.error('Mermaid init error:', error);
+                            container.innerHTML = `<div class="mermaid-error">Mermaid 다이어그램 렌더링 오류: ${error.message || error}</div>`;
+                        }
+                    } catch (e) {
+                        console.error('Mermaid processing error:', e);
+                    }
+                });
+            }
+        } else {
+            console.warn('Mermaid library not loaded. Diagrams will not be rendered.');
+        }
     }
 
     updateNavigation() {

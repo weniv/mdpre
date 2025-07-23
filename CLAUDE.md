@@ -49,6 +49,7 @@ WENIV Presenter는 Marp의 대안으로 제작된 GitHub Pages 기반 마크다�
 - **Marked.js**: 마크다운 파싱 (CDN)
 - **Prism.js**: 코드 문법 강조 (CDN)
 - **KaTeX**: LaTeX 수학 표현식 렌더링 (CDN)
+- **Mermaid**: 다이어그램 렌더링 (CDN)
 - **GitHub REST API**: 저장소 콘텐츠 접근용
 
 ## 개발 가이드라인
@@ -92,3 +93,6 @@ WENIV Presenter는 Marp의 대안으로 제작된 GitHub Pages 기반 마크다�
 - **LaTeX 구문**:
   - `$수식$` - 인라인 수학 표현식
   - `$$수식$$` - 블록 수학 표현식
+- **Mermaid 구문**:
+  - ` ```mermaid ` - Mermaid 다이어그램 블록
+  - 지원 다이어그램: flowchart, sequenceDiagram, classDiagram, stateDiagram-v2, erDiagram, gantt, pie, journey

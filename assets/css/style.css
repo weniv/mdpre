@@ -1101,6 +1101,35 @@ pre[class*=language-] {
         font-family: monospace !important;
     }
 
+    /* Mermaid diagram styles */
+    .mermaid-container {
+        display: block;
+        margin: 2rem 0;
+        padding: 1rem;
+        width: 100%;
+        overflow: auto;
+    }
+    
+    /* Ensure mermaid div inside container is properly styled */
+    .mermaid-container .mermaid {
+        margin: 0 auto !important;
+    }
+
+    .mermaid-container svg {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    .mermaid-error {
+        color: #d32f2f;
+        background-color: #ffebee;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #ffcdd2;
+        font-family: 'D2Coding', 'Courier New', monospace;
+        text-align: center;
+    }
+
     /* PDF specific math styling */
     .pdf-slide .math-display {
         font-size: 1.2em !important;
