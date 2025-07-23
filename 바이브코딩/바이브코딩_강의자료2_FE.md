@@ -1,0 +1,193 @@
+
+{center}
+프론트 엔드
+{/center}
+
+---
+
+# 개발 프로세스
+
+```mermaid
+
+flowchart TD
+    A[1. 요구사항 분석] --> A1[사용자 니즈 파악]
+    A --> A2[기능 정의]
+    A --> A3[기술 스펙 작성]
+    
+    A1 --> B[2. 디자인]
+    A2 --> B
+    A3 --> B
+    
+    B --> B1[UI/UX 설계]
+    B --> B2[와이어프레임 작성]
+    B --> B3[프로토타입 제작]
+    
+    B1 --> C[3. 프론트엔드 개발]
+    B2 --> C
+    B3 --> C
+    
+    C --> C1[화면 구현]
+    C --> C2[사용자 인터페이스 개발]
+    C --> C3[반응형 웹 구현]
+    
+    C1 --> D[4. 백엔드 개발]
+    C2 --> D
+    C3 --> D
+    
+    D --> D1[서버 로직 구현]
+    D --> D2[데이터베이스 설계]
+    D --> D3[API 개발]
+    
+    D1 --> E[5. 배포]
+    D2 --> E
+    D3 --> E
+    
+    E --> E1[테스트 환경 배포]
+    E --> E2[운영 환경 배포]
+    E --> E3[모니터링 & 유지보수]
+    
+    E1 --> F{배포 완료}
+    E2 --> F
+    E3 --> F
+    
+    F --> G[제품 출시 🎉]
+    
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style C fill:#e8f5e8
+    style D fill:#fff3e0
+    style E fill:#fce4ec
+    style F fill:#f1f8e9
+    style G fill:#ffecb3
+```
+
+---
+
+뷰가 좋은 카페가 있습니다. 이 카페에 들어가 여러분이 보는 메뉴판은 프론트엔드이고, 여러분이 주문한 음료를 만드는 주방은 백엔드입니다. 프론트엔드는 사용자와 직접 상호작용하는 부분이고, 백엔드는 그 뒤에서 데이터를 처리하고 곳입니다.
+
+---
+
+Front-end 구성요소
+
+* HTML: 구조/뼈대
+* CSS: 디자인/스타일링
+* JavaScript: 동작/상호작용
+
+---
+
+![HTML, CSS, JavaScript](https://www.books.weniv.co.kr/images/basecamp-html-css/chapter01/01-5.gif)
+
+---
+
+로또 번호 바꾸기 실습
+
+* 재미로 하는 것 아니고, 실제로 여러분이 쓰셔야 하는 기능입니다. 
+
+---
+
+# HTML
+
+```html
+<h1>안녕하세요.</h1>
+<p>이것은 HTML 문서입니다.</p>
+```
+
+---
+
+# CSS
+
+```css
+<style>
+h1 {
+    color: blue;
+}
+</style>
+```
+
+---
+
+# JavaScript
+
+```javascript
+<script>
+alert("안녕하세요!!");
+</script>
+```
+
+---
+
+# 프론트엔드 개발자가 하는 일
+* 화면 설계 구현
+* 사용자 경험(UX) 개선
+* 반응형 웹 개발
+* 백엔드 데이터 연결
+
+---
+
+# 백엔드 데이터 연결
+프롬프트: `https://dev.wenivops.co.kr/services/fastapi-crud/1/product`에 아래와 같은 데이터 구조를 가진 데이터가 있습니다. 이 데이터를 화면에 출력하는 HTML, CSS, JS코드를 아주 쉽게 작성해주세요.
+
+```
+[
+  {
+    id: int, // 상품 id
+    productName: string, // 상품명
+    price: int, // 가격
+    stockCount: int, // 재고
+    thumbnailImg: string, // 썸네일 이미지 경로
+    option: [ // 상품 옵션(array)
+      {
+        id: int, // 옵션 id
+        optionName: string, // 옵션명
+        additionalFee: int // 옵션 추가금
+      },
+      ...
+    ],
+    discountRate: int, // 할인율
+    shippingFee: int, // 배송비
+    detailInfoImage: [string, string, ...], // 상품 상세 이미지 경로(array)
+    viewCount: int, // 조회수
+    pubDate: str, // 작성일자
+    modDate: str, // 수정일자
+  },
+...
+]
+```
+
+---
+
+
+{center}
+[프롬프트로 만든 페이지 바로가기](./바이브코딩/001.html)
+{/center}
+
+---
+
+# 전통 개발 과정
+
+1. 기획, 스토리보드
+2. 피그마 디자인
+3. HTML
+4. CSS
+5. JavaScript
+
+---
+
+# 바이브 코딩
+
+1. 기획
+2. AI를 통한 프로토타입
+3. 발주처와 대화하면서 실시간 수정
+4. 디자이너가 다듬기
+5. 최종 수정
+
+---
+
+# 바이브 코딩 기술 선택
+* (추천) HTML/CSS/JavaScript: 기본기 중요, 모든 프레임워크의 기초
+* (추천) Tailwind CSS: 유틸리티 기반 CSS 프레임워크
+* (초급자가 하기 어려움 2) React: 컴포넌트 기반, 재사용성 높음
+* (초급자가 하기 어려움 1) Vue.js: 학습 곡선 완만, 한국에서 인기
+* (초급자가 하기 매우 어려움) Next.js: React 기반 풀스택 프레임워크
+* (초급자가 하기 매우 어려움) TypeScript: JavaScript의 상위 집합, 타입 안정성 제공
+* (어려운 것은 아님) Bootstrap: 빠른 프로토타이핑, 반응형 디자인 지원
