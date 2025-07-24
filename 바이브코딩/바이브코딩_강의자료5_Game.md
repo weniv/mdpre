@@ -23,6 +23,11 @@
 
 ---
 
+소스코드: https://github.com/weniv/game-with-phaser
+에셋: https://github.com/weniv/game-with-phaser/tree/main/23_ch27_final/src/assets
+
+---
+
 # 바이브 코딩 게임 개발 기술 스택
 
 * (추천) **Phaser.js**: 2D 웹 게임 개발의 최고 선택
