@@ -107,7 +107,7 @@ alert("안녕하세요!!");
 # 이미지 추가
 
 ```html
-<img src="./asset/image.jpg" alt="이미지 설명">
+<img src="경로명" alt="이미지 설명">
 ```
 
 ---
