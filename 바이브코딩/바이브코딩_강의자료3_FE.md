@@ -9,6 +9,13 @@
 
 ---
 
+개념 훑어보기
+* URL: 이름
+* PORT: 문
+* IP: 주소
+
+---
+
 ![프론트엔드와 백엔드](./images/fevsbe.png)
 
 ---
@@ -59,8 +66,6 @@ flowchart TD
     style C fill:#e8f5e8
     style D fill:#fff3e0
     style E fill:#fce4ec
-    style F fill:#f1f8e9
-    style G fill:#ffecb3
 ```
 
 ---
@@ -79,7 +84,9 @@ Front-end 구성요소
 
 로또 번호 바꾸기 실습
 
-* 재미로 하는 것 아니고, 실제로 여러분이 쓰셔야 하는 기능입니다. 
+* 재미로 하는 것 아니고, 실제로 여러분이 쓰셔야 하는 기능입니다.
+* 개발자 도구에 대한 강의는 강의 쿠폰을 지급이 됩니다.
+* elements, console, application, network 탭을 주로 사용합니다.
 
 ---
 
@@ -177,6 +184,10 @@ alert("안녕하세요!!");
 3. 발주처와 대화하면서 실시간 수정
 4. 디자이너가 다듬기
 5. 최종 수정
+
+---
+
+아무것도 모르고 '아몰랑 자연어 개발'도 가능합니다.
 
 ---
 
