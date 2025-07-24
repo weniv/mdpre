@@ -8,7 +8,7 @@ class GitHubMarkdownPresenter {
             bodyFont: 'bmjua',
             codeFont: 'd2coding'
         };
-        this.repoHistory = [];
+        this.recentItems = [];
         this.fileSlideMap = [];
         
         // Preview functionality
@@ -21,7 +21,7 @@ class GitHubMarkdownPresenter {
     init() {
         this.bindEvents();
         this.loadSettings();
-        this.loadRepoHistory();
+        this.loadRecentItems();
         this.setupKeyboardNavigation();
         this.setupFullscreenHandling();
         this.getCurrentRepoInfo();
@@ -396,7 +396,6 @@ class GitHubMarkdownPresenter {
         const localFields = document.getElementById('local-file-fields');
         const directFields = document.getElementById('direct-input-fields');
         const repoUrlInput = document.getElementById('repo-url');
-        const historySection = document.getElementById('repo-history');
         const folderSelection = document.getElementById('folder-selection');
         const loadBtn = document.getElementById('load-presentation-btn');
         const searchBtn = document.getElementById('search-folders-btn');
@@ -422,10 +421,7 @@ class GitHubMarkdownPresenter {
             searchBtn.classList.remove('hidden');
             repoUrlInput.disabled = true;
             repoUrlInput.required = false;
-            if (this.repoHistory.length > 0) {
-                historySection.classList.remove('hidden');
-                this.renderRepoHistory();
-            }
+            // Current repo selected - no additional fields needed
         } else if (selectedSource === 'custom') {
             customFields.style.display = 'block';
             localFields.classList.add('hidden');
@@ -433,7 +429,6 @@ class GitHubMarkdownPresenter {
             searchBtn.classList.remove('hidden');
             repoUrlInput.disabled = false;
             repoUrlInput.required = true;
-            historySection.classList.add('hidden');
         } else if (selectedSource === 'local') {
             customFields.style.display = 'none';
             localFields.classList.remove('hidden');
@@ -441,7 +436,6 @@ class GitHubMarkdownPresenter {
             searchBtn.classList.add('hidden');
             repoUrlInput.disabled = true;
             repoUrlInput.required = false;
-            historySection.classList.add('hidden');
         } else if (selectedSource === 'direct') {
             customFields.style.display = 'none';
             localFields.classList.add('hidden');
@@ -450,25 +444,57 @@ class GitHubMarkdownPresenter {
             loadDirectBtn.classList.remove('hidden');
             repoUrlInput.disabled = true;
             repoUrlInput.required = false;
-            historySection.classList.add('hidden');
             
             // Clear preview when switching to direct input
             this.clearPreview();
         }
     }
 
-    renderRepoHistory() {
-        const historyList = document.getElementById('history-list');
-        historyList.innerHTML = '';
+    renderRecentItems() {
+        const recentItemsList = document.getElementById('recent-items-list');
+        const recentItemsSection = document.getElementById('recent-items-section');
         
-        this.repoHistory.forEach((repo, index) => {
-            const historyItem = document.createElement('div');
-            historyItem.className = 'history-item';
-            historyItem.innerHTML = `
-                <div class="history-item-info">
-                    <div class="history-item-url">${repo.owner}/${repo.repo}</div>
-                    <div class="history-item-folder">${repo.folder || '폴더 지정 없음'}</div>
-                </div>
+        if (this.recentItems.length === 0) {
+            recentItemsSection.classList.add('hidden');
+            return;
+        }
+        
+        recentItemsSection.classList.remove('hidden');
+        recentItemsList.innerHTML = '';
+        
+        this.recentItems.forEach((item, index) => {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'history-item';
+            
+            let itemInfo = '';
+            if (item.type === 'repo') {
+                itemInfo = `
+                    <div class="history-item-info">
+                        <div class="history-item-url">${item.owner}/${item.repo}</div>
+                        <div class="history-item-folder">${item.folder || '폴더 지정 없음'}</div>
+                        <div class="text-xs text-gray-500">저장소</div>
+                    </div>
+                `;
+            } else if (item.type === 'local') {
+                itemInfo = `
+                    <div class="history-item-info">
+                        <div class="history-item-url">${item.fileName}</div>
+                        <div class="text-xs text-gray-500">로컬 파일</div>
+                    </div>
+                `;
+            } else if (item.type === 'direct') {
+                const preview = item.content.substring(0, 50) + (item.content.length > 50 ? '...' : '');
+                itemInfo = `
+                    <div class="history-item-info">
+                        <div class="history-item-url">직접 입력</div>
+                        <div class="history-item-folder text-sm text-gray-600">${preview}</div>
+                        <div class="text-xs text-gray-500">마크다운 직접 입력</div>
+                    </div>
+                `;
+            }
+            
+            itemElement.innerHTML = `
+                ${itemInfo}
                 <button class="history-item-delete" data-index="${index}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -476,22 +502,244 @@ class GitHubMarkdownPresenter {
                 </button>
             `;
             
-            // Add click handler for loading this repo
-            historyItem.addEventListener('click', (e) => {
+            // Add click handler for loading this item
+            itemElement.addEventListener('click', (e) => {
                 if (!e.target.closest('.history-item-delete')) {
-                    this.loadFromHistory(repo);
+                    this.loadFromRecentItem(item);
                 }
             });
             
             // Add delete handler
-            const deleteBtn = historyItem.querySelector('.history-item-delete');
+            const deleteBtn = itemElement.querySelector('.history-item-delete');
             deleteBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                this.deleteFromHistory(index);
+                this.deleteFromRecentItems(index);
             });
             
-            historyList.appendChild(historyItem);
+            recentItemsList.appendChild(itemElement);
         });
+    }
+
+    async loadFromRecentItem(item) {
+        if (item.type === 'repo') {
+            // Set the radio button to correct source
+            const sourceRadio = item.owner === 'weniv' && item.repo === 'weniv_presentation' 
+                ? document.getElementById('current-repo')
+                : document.getElementById('custom-repo');
+            sourceRadio.checked = true;
+            this.handleRepoSourceChange();
+            
+            // Set repo URL if custom
+            if (item.owner !== 'weniv' || item.repo !== 'weniv_presentation') {
+                document.getElementById('repo-url').value = `https://github.com/${item.owner}/${item.repo}`;
+            }
+            
+            // Search for folders first
+            await this.searchFolders();
+            
+            // Wait a bit for the UI to update
+            setTimeout(() => {
+                // Select the folder if it exists
+                if (item.folder) {
+                    const folderDropdown = document.getElementById('folder-dropdown');
+                    for (let i = 0; i < folderDropdown.options.length; i++) {
+                        if (folderDropdown.options[i].value === item.folder) {
+                            folderDropdown.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+                
+                // Show the load button (it should already be visible after searchFolders)
+                const loadBtn = document.getElementById('load-presentation-btn');
+                if (loadBtn) {
+                    loadBtn.classList.remove('hidden');
+                }
+            }, 100);
+        } else if (item.type === 'local') {
+            // Set radio to local files
+            document.getElementById('local-files').checked = true;
+            this.handleRepoSourceChange();
+            
+            // Check if we have stored content
+            if (item.content) {
+                console.log('Loading from stored content, size:', new Blob([item.content]).size);
+                try {
+                    let decompressedContent = item.content;
+                    
+                    // Try to decompress if LZString is available
+                    if (typeof LZString !== 'undefined') {
+                        try {
+                            const decompressed = LZString.decompressFromUTF16(item.content);
+                            if (decompressed) {
+                                decompressedContent = decompressed;
+                                console.log('Successfully decompressed content');
+                            }
+                        } catch (e) {
+                            console.log('Content was not compressed or decompression failed, using as-is');
+                        }
+                    }
+                    
+                    const storedData = JSON.parse(decompressedContent);
+                    
+                    // Restore the slides and file map
+                    this.slides = storedData.slides || [];
+                    this.fileSlideMap = storedData.fileSlideMap || [];
+                    
+                    // Restore logo if available
+                    if (storedData.logo) {
+                        const logoElement = document.getElementById('presentation-logo');
+                        logoElement.src = storedData.logo;
+                        logoElement.classList.remove('hidden');
+                    }
+                    
+                    // Show uploaded files info
+                    const filesList = document.getElementById('uploaded-files-list');
+                    const fileItems = document.getElementById('file-items');
+                    
+                    if (filesList && fileItems) {
+                        fileItems.innerHTML = `
+                            <div class="file-item flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                                <div class="flex items-center space-x-2">
+                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">${item.fileName}</span>
+                                </div>
+                            </div>
+                        `;
+                        filesList.classList.remove('hidden');
+                    }
+                    
+                    // Show preview section
+                    const previewSection = document.getElementById('preview-section');
+                    if (previewSection) {
+                        previewSection.classList.remove('hidden');
+                        
+                        // Update preview manually
+                        const previewSlides = document.getElementById('preview-slides');
+                        if (previewSlides && this.slides.length > 0) {
+                            // Show first slide as preview
+                            const firstSlide = this.slides[0];
+                            previewSlides.innerHTML = `
+                                <div class="preview-slide p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+                                    ${firstSlide.content}
+                                </div>
+                            `;
+                        }
+                    }
+                    
+                    // Show load button
+                    const loadLocalBtn = document.getElementById('load-local-files-btn');
+                    if (loadLocalBtn) {
+                        loadLocalBtn.classList.remove('hidden');
+                        
+                        // Set a flag to indicate we're loading from recent items
+                        this.loadingFromRecentItem = true;
+                        this.recentItemData = storedData;
+                    }
+                    
+                } catch (e) {
+                    console.error('Failed to restore local file content:', e);
+                    // Fall back to re-upload message
+                    this.showReuploadMessage(item);
+                }
+            } else {
+                // No content stored, show re-upload message
+                this.showReuploadMessage(item);
+            }
+        } else if (item.type === 'direct') {
+            // Set radio to direct input
+            document.getElementById('direct-input').checked = true;
+            this.handleRepoSourceChange();
+            
+            // Set the content (decompress if needed)
+            const markdownTextarea = document.getElementById('markdown-textarea');
+            if (markdownTextarea) {
+                let content = item.content;
+                
+                // Decompress if needed
+                if (item.compressed && typeof LZString !== 'undefined') {
+                    try {
+                        content = LZString.decompressFromUTF16(item.content);
+                        console.log('Decompressed direct input content');
+                    } catch (e) {
+                        console.warn('Failed to decompress direct input:', e);
+                    }
+                }
+                
+                markdownTextarea.value = content;
+                
+                // Show the load button
+                const loadDirectBtn = document.getElementById('load-direct-input-btn');
+                if (loadDirectBtn) {
+                    loadDirectBtn.classList.remove('hidden');
+                }
+                
+                // Show preview
+                const previewSection = document.getElementById('preview-section');
+                const previewSlides = document.getElementById('preview-slides');
+                
+                if (previewSection && previewSlides) {
+                    previewSection.classList.remove('hidden');
+                    
+                    // Parse and preview the markdown (decompress if needed)
+                    let contentToParse = content; // Use already decompressed content
+                    const slides = this.parseLocalMarkdownToSlides(contentToParse);
+                    if (slides.length > 0) {
+                        // Show first slide as preview
+                        const firstSlide = slides[0];
+                        previewSlides.innerHTML = `
+                            <div class="preview-slide p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+                                ${firstSlide.content}
+                            </div>
+                        `;
+                    }
+                }
+            }
+        }
+    }
+
+    showReuploadMessage(item) {
+        // Show uploaded files info
+        const filesList = document.getElementById('uploaded-files-list');
+        const fileItems = document.getElementById('file-items');
+        
+        if (filesList && fileItems) {
+            fileItems.innerHTML = `
+                <div class="file-item flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <span class="text-sm text-gray-700 dark:text-gray-300">${item.fileName}</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">(다시 업로드 필요)</span>
+                    </div>
+                </div>
+            `;
+            filesList.classList.remove('hidden');
+        }
+        
+        // Show preview area with message
+        const previewSection = document.getElementById('preview-section');
+        const previewSlides = document.getElementById('preview-slides');
+        
+        if (previewSection && previewSlides) {
+            previewSection.classList.remove('hidden');
+            previewSlides.innerHTML = `
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-8 text-center">
+                    <svg class="mx-auto h-16 w-16 text-yellow-600 dark:text-yellow-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">파일 재업로드 필요</h3>
+                    <p class="text-gray-600 dark:text-gray-400">보안상의 이유로 로컬 파일은 저장되지 않습니다.</p>
+                    <p class="text-gray-600 dark:text-gray-400">동일한 파일을 다시 업로드해주세요.</p>
+                </div>
+            `;
+        }
+        
+        // Show alert as well
+        alert('로컬 파일은 다시 업로드해야 합니다.');
     }
 
     async loadFromHistory(repo) {
@@ -525,41 +773,94 @@ class GitHubMarkdownPresenter {
         }
     }
 
-    deleteFromHistory(index) {
-        this.repoHistory.splice(index, 1);
-        this.saveRepoHistory();
-        this.renderRepoHistory();
-        
-        if (this.repoHistory.length === 0) {
-            document.getElementById('repo-history').classList.add('hidden');
-        }
+    deleteFromRecentItems(index) {
+        this.recentItems.splice(index, 1);
+        this.saveRecentItems();
+        this.renderRecentItems();
     }
 
-    addToHistory(owner, repo, folder) {
-        // Remove if already exists
-        this.repoHistory = this.repoHistory.filter(item => 
-            !(item.owner === owner && item.repo === repo && item.folder === folder)
-        );
+    addToRecentItems(item) {
+        // Check storage size before adding
+        const itemSize = new Blob([JSON.stringify(item)]).size;
+        const currentSize = new Blob([JSON.stringify(this.recentItems)]).size;
+        const maxSize = 5 * 1024 * 1024; // 5MB limit
+        
+        // For local files, check if content size is acceptable
+        if (item.type === 'local' && item.content) {
+            const contentSize = new Blob([item.content]).size;
+            console.log('Local file content size:', contentSize, 'bytes (', (contentSize / 1024 / 1024).toFixed(2), 'MB)');
+            // If content is too large (> 4.5MB after compression), don't store it
+            // Note: LZ-string compression typically reduces size by 50-80%
+            if (contentSize > 4.5 * 1024 * 1024) {
+                console.warn('Local file content too large (>4.5MB compressed), storing metadata only');
+                item = {
+                    type: item.type,
+                    fileName: item.fileName,
+                    timestamp: item.timestamp
+                };
+            } else {
+                console.log('Content size is acceptable, will store with content');
+            }
+        }
+        
+        // Check if the new item would exceed storage limit
+        if (currentSize + itemSize > maxSize) {
+            console.warn('Storage limit would be exceeded, not adding to recent items');
+            return;
+        }
+        
+        // Remove if already exists (based on type and identifying properties)
+        this.recentItems = this.recentItems.filter(existingItem => {
+            if (item.type === 'repo') {
+                return !(existingItem.type === 'repo' && 
+                        existingItem.owner === item.owner && 
+                        existingItem.repo === item.repo && 
+                        existingItem.folder === item.folder);
+            } else if (item.type === 'local') {
+                return !(existingItem.type === 'local' && 
+                        existingItem.fileName === item.fileName);
+            } else if (item.type === 'direct') {
+                return !(existingItem.type === 'direct' && 
+                        existingItem.content === item.content);
+            }
+            return true;
+        });
         
         // Add to beginning
-        this.repoHistory.unshift({ owner, repo, folder, timestamp: Date.now() });
+        this.recentItems.unshift({ ...item, timestamp: Date.now() });
         
-        // Keep only last 5 items
-        if (this.repoHistory.length > 5) {
-            this.repoHistory = this.repoHistory.slice(0, 5);
+        // Keep only last 10 items
+        if (this.recentItems.length > 10) {
+            this.recentItems = this.recentItems.slice(0, 10);
         }
         
-        this.saveRepoHistory();
+        this.saveRecentItems();
+        this.renderRecentItems();
     }
 
-    saveRepoHistory() {
-        localStorage.setItem('github-presenter-history', JSON.stringify(this.repoHistory));
+    saveRecentItems() {
+        try {
+            localStorage.setItem('github-presenter-recent-items', JSON.stringify(this.recentItems));
+        } catch (e) {
+            console.error('Failed to save recent items to localStorage:', e);
+            // If storage is full, remove oldest items and try again
+            if (e.name === 'QuotaExceededError' && this.recentItems.length > 1) {
+                this.recentItems.pop();
+                this.saveRecentItems();
+            }
+        }
     }
 
-    loadRepoHistory() {
-        const saved = localStorage.getItem('github-presenter-history');
-        if (saved) {
-            this.repoHistory = JSON.parse(saved);
+    loadRecentItems() {
+        try {
+            const saved = localStorage.getItem('github-presenter-recent-items');
+            if (saved) {
+                this.recentItems = JSON.parse(saved);
+                this.renderRecentItems();
+            }
+        } catch (e) {
+            console.error('Failed to load recent items:', e);
+            this.recentItems = [];
         }
         this.handleRepoSourceChange(); // Update UI based on initial state
     }
@@ -1066,8 +1367,13 @@ class GitHubMarkdownPresenter {
             // Try to load logo
             await this.loadPresentationLogo(owner, repo, folderName);
 
-            // Add to history
-            this.addToHistory(owner, repo, folderName);
+            // Add to recent items
+            this.addToRecentItems({
+                type: 'repo',
+                owner: owner,
+                repo: repo,
+                folder: folderName
+            });
 
             // Show presentation
             this.showPresentation();
@@ -2267,6 +2573,39 @@ class GitHubMarkdownPresenter {
     }
 
     async loadLocalFiles() {
+        // Check if we're loading from recent items
+        if (this.loadingFromRecentItem && this.recentItemData) {
+            try {
+                this.showLoading(true);
+                
+                // Use stored data
+                this.slides = this.recentItemData.slides || [];
+                this.fileSlideMap = this.recentItemData.fileSlideMap || [];
+                
+                // Restore logo if available
+                if (this.recentItemData.logo) {
+                    const logoElement = document.getElementById('presentation-logo');
+                    logoElement.src = this.recentItemData.logo;
+                    logoElement.classList.remove('hidden');
+                }
+                
+                // Reset flags
+                this.loadingFromRecentItem = false;
+                this.recentItemData = null;
+                
+                // Show presentation
+                this.showPresentation();
+                return;
+            } catch (error) {
+                console.error('Failed to load from recent item:', error);
+                this.loadingFromRecentItem = false;
+                this.recentItemData = null;
+            } finally {
+                this.showLoading(false);
+            }
+        }
+        
+        // Normal file upload flow
         const fileInput = document.getElementById('file-upload');
         const files = fileInput.files;
         
@@ -2300,6 +2639,39 @@ class GitHubMarkdownPresenter {
             if (zipFiles.length === 0) {
                 await this.loadLocalLogo(files);
             }
+            
+            // Add to recent items with content
+            const fileNames = Array.from(files).map(f => f.name).join(', ');
+            
+            // Try to store the content in localStorage
+            let contentToStore = null;
+            try {
+                // For simplicity, store the current slides as content
+                const dataToStore = JSON.stringify({
+                    slides: this.slides,
+                    fileSlideMap: this.fileSlideMap,
+                    logo: document.getElementById('presentation-logo').src || null
+                });
+                
+                // Compress the data if LZString is available
+                if (typeof LZString !== 'undefined') {
+                    contentToStore = LZString.compressToUTF16(dataToStore);
+                    const originalSize = new Blob([dataToStore]).size;
+                    const compressedSize = new Blob([contentToStore]).size;
+                    console.log(`Compressed local file content: ${(originalSize / 1024).toFixed(1)}KB → ${(compressedSize / 1024).toFixed(1)}KB (${Math.round(compressedSize / originalSize * 100)}%)`);
+                } else {
+                    contentToStore = dataToStore;
+                    console.log('LZString not available, storing uncompressed. Size:', new Blob([contentToStore]).size);
+                }
+            } catch (e) {
+                console.warn('Could not serialize content for storage:', e);
+            }
+            
+            this.addToRecentItems({
+                type: 'local',
+                fileName: fileNames,
+                content: contentToStore
+            });
             
             this.showPresentation();
             
@@ -2371,6 +2743,20 @@ class GitHubMarkdownPresenter {
             
             // Hide logo for direct input
             document.getElementById('presentation-logo').classList.add('hidden');
+            
+            // Add to recent items with compression if available
+            let contentToStore = markdown;
+            if (typeof LZString !== 'undefined' && markdown.length > 1024) {
+                // Compress if content is larger than 1KB
+                contentToStore = LZString.compressToUTF16(markdown);
+                console.log(`Compressed direct input: ${(markdown.length / 1024).toFixed(1)}KB → ${(contentToStore.length / 1024).toFixed(1)}KB`);
+            }
+            
+            this.addToRecentItems({
+                type: 'direct',
+                content: contentToStore,
+                compressed: typeof LZString !== 'undefined' && markdown.length > 1024
+            });
             
             // Show the presentation
             this.showPresentation();

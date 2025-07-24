@@ -12,7 +12,8 @@
       "Bash(claude config list)",
       "Bash(sed:*)",
       "Bash(npm start)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": []
   }

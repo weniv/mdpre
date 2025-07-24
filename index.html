@@ -54,6 +54,9 @@
     <!-- Mermaid for diagram rendering -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
     
+    <!-- LZ-string for compression -->
+    <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
+    
     <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" rel="stylesheet">
     <link href="./assets/css/style.css" rel="stylesheet">
 </head>
@@ -262,6 +265,14 @@
                         <!-- Left Column: Presentation Loading -->
                         <div class="space-y-6">
                     
+                    <!-- Recent Items Section -->
+                    <div id="recent-items-section" class="mb-6 hidden">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-3">최근 사용한 항목</h3>
+                        <div id="recent-items-list" class="space-y-2 mb-4">
+                            <!-- Recent items will be inserted here -->
+                        </div>
+                    </div>
+
                     <!-- Repository Source Selection -->
                     <div class="mb-6">
                         <div class="flex flex-col space-y-2 mb-4">
@@ -275,20 +286,12 @@
                             </label>
                             <label class="flex items-center cursor-pointer">
                                 <input type="radio" name="repo-source" value="current" id="current-repo" class="mr-2 text-blue-600">
-                                <span class="text-gray-700 dark:text-gray-300">현재 repo에서 찾기</span>
+                                <span class="text-gray-700 dark:text-gray-300">배포 repo에서 찾기</span>
                             </label>
                             <label class="flex items-center cursor-pointer">
                                 <input type="radio" name="repo-source" value="custom" id="custom-repo" class="mr-2 text-blue-600">
                                 <span class="text-gray-700 dark:text-gray-300">다른 repo에서 찾기</span>
                             </label>
-                        </div>
-                    </div>
-
-                    <!-- Repository History -->
-                    <div id="repo-history" class="mb-6 hidden">
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-3">최근 사용한 리포지토리</h3>
-                        <div id="history-list" class="space-y-2 mb-4">
-                            <!-- History items will be inserted here -->
                         </div>
                     </div>
 
