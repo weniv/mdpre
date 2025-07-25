@@ -417,6 +417,27 @@ html, body {
     padding: 0;
 }
 
+/* Links/Anchor tags */
+#slide-content a {
+    color: #2563eb; /* Blue color for links */
+    text-decoration: none; /* Remove underline */
+    transition: color 0.2s ease;
+}
+
+#slide-content a:hover {
+    color: #1d4ed8; /* Darker blue on hover */
+    text-decoration: underline; /* Show underline on hover */
+}
+
+.dark #slide-content a {
+    color: #60a5fa; /* Light blue for dark mode */
+}
+
+.dark #slide-content a:hover {
+    color: #93bbfc; /* Lighter blue on hover in dark mode */
+    text-decoration: underline; /* Show underline on hover in dark mode */
+}
+
 /* Code block font size adjustment */
 code[class*=language-], 
 pre[class*=language-] {
@@ -988,11 +1009,25 @@ pre[class*=language-] {
         line-height: 1.3 !important;
     }
     
-    .pdf-slide code,
-    .pdf-slide pre {
+    /* Code blocks should use code font */
+    .pdf-slide pre,
+    .pdf-slide pre code {
         font-size: 1.2rem !important;
         line-height: 1.4 !important;
         font-family: 'Courier New', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important;
+    }
+    
+    /* Inline code should inherit from parent (body font) */
+    .pdf-slide code {
+        font-size: inherit !important;
+        line-height: inherit !important;
+        /* Font-family will be set by JavaScript */
+    }
+    
+    /* Links in PDF */
+    .pdf-slide a {
+        color: #2563eb !important;
+        text-decoration: none !important;
     }
     
     /* PDF에서 코드 하이라이팅 보존 */
@@ -1253,6 +1288,7 @@ pre[class*=language-] {
 
 .history-item-info {
     flex-grow: 1;
+    min-width: 0; /* Important for text truncation */
 }
 
 .history-item-url {
@@ -1260,6 +1296,9 @@ pre[class*=language-] {
     color: #1f2937;
     margin-bottom: 0.25rem;
     font-size: 0.875rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .dark .history-item-url {
@@ -1269,6 +1308,9 @@ pre[class*=language-] {
 .history-item-folder {
     font-size: 0.75rem;
     color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .dark .history-item-folder {
@@ -2147,4 +2189,15 @@ pre[class*=language-] {
     margin: 4px 0;
     border-radius: 0 4px 4px 0;
     font-size: 0.5rem;
+}
+
+/* Links in thumbnails */
+.slide-thumbnail-content a {
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 0.5rem;
+}
+
+.dark .slide-thumbnail-content a {
+    color: #60a5fa;
 }

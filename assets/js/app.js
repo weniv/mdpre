@@ -10,6 +10,8 @@ class GitHubMarkdownPresenter {
         };
         this.recentItems = [];
         this.fileSlideMap = [];
+        this.originalMarkdownContent = '';
+        this.currentFileName = '';
         
         // Preview functionality
         this.previewSlides = [];
@@ -204,6 +206,9 @@ class GitHubMarkdownPresenter {
 
         // PDF export button
         document.getElementById('pdf-export-btn').addEventListener('click', () => this.exportToPDF());
+
+        // Markdown export button
+        document.getElementById('markdown-export-btn').addEventListener('click', () => this.exportToMarkdown());
 
         // Page input navigation
         document.getElementById('page-input').addEventListener('change', (e) => this.goToPageInput(e.target.value));
@@ -1436,12 +1441,26 @@ class GitHubMarkdownPresenter {
     async loadMarkdownFiles(owner, repo, files) {
         this.slides = [];
         this.fileSlideMap = [];
+        this.originalMarkdownContent = '';
+        this.currentFileName = '';
         
         for (const file of files) {
             try {
                 const response = await fetch(file.download_url);
                 if (response.ok) {
                     const content = await response.text();
+                    
+                    // Store the markdown content
+                    if (this.originalMarkdownContent.length > 0) {
+                        this.originalMarkdownContent += '\n\n---\n\n';
+                    }
+                    this.originalMarkdownContent += content;
+                    
+                    // Store the first file name
+                    if (!this.currentFileName) {
+                        this.currentFileName = file.name;
+                    }
+                    
                     // Get the folder path from the file path
                     const folderPath = file.path.includes('/') ? file.path.substring(0, file.path.lastIndexOf('/')) : '';
                     const slides = this.parseMarkdownToSlides(content, owner, repo, folderPath);
@@ -1494,6 +1513,28 @@ class GitHubMarkdownPresenter {
     }
 
     processImageUrls(content, owner, repo, folderPath = '') {
+        // First, protect code blocks from processing
+        const codeBlocks = [];
+        let codeBlockIndex = 0;
+        
+        // Replace code blocks with placeholders
+        content = content.replace(/```[\s\S]*?```/g, (match) => {
+            const placeholder = `__CODE_BLOCK_${codeBlockIndex}__`;
+            codeBlocks[codeBlockIndex] = match;
+            codeBlockIndex++;
+            return placeholder;
+        });
+        
+        // Also protect inline code
+        const inlineCode = [];
+        let inlineCodeIndex = 0;
+        content = content.replace(/`[^`]+`/g, (match) => {
+            const placeholder = `__INLINE_CODE_${inlineCodeIndex}__`;
+            inlineCode[inlineCodeIndex] = match;
+            inlineCodeIndex++;
+            return placeholder;
+        });
+        
         // Convert relative image paths to GitHub raw URLs for markdown images
         content = content.replace(
             /!\[([^\]]*)\]\((?!https?:\/\/)([^)]+)\)/g,
@@ -1514,6 +1555,16 @@ class GitHubMarkdownPresenter {
                 return `<img${beforeSrc} src="${newSrc}"${afterSrc}>`;
             }
         );
+        
+        // Restore inline code
+        inlineCode.forEach((code, index) => {
+            content = content.replace(`__INLINE_CODE_${index}__`, code);
+        });
+        
+        // Restore code blocks
+        codeBlocks.forEach((block, index) => {
+            content = content.replace(`__CODE_BLOCK_${index}__`, block);
+        });
         
         return content;
     }
@@ -2022,11 +2073,6 @@ class GitHubMarkdownPresenter {
             // Show popup and populate with file list
             this.populateFileListPopup(content);
             popup.classList.remove('hidden');
-            
-            // Auto-hide after 3 seconds
-            setTimeout(() => {
-                popup.classList.add('hidden');
-            }, 3000);
         } else {
             popup.classList.add('hidden');
         }
@@ -2095,9 +2141,31 @@ class GitHubMarkdownPresenter {
             el.style.setProperty('font-family', fontFamily, 'important');
         });
 
-        // Apply code font to code blocks and inline code with !important for PDF
-        const codeElements = element.querySelectorAll('pre, code, .token');
-        codeElements.forEach(el => {
+        // Apply code font to code blocks (pre elements and code inside pre) with !important for PDF
+        const preElements = element.querySelectorAll('pre');
+        preElements.forEach(el => {
+            const fontFamily = this.getFontFamily(this.settings.codeFont);
+            el.style.setProperty('font-family', fontFamily, 'important');
+            // Also apply to code elements inside pre
+            const innerCode = el.querySelectorAll('code');
+            innerCode.forEach(code => {
+                code.style.setProperty('font-family', fontFamily, 'important');
+            });
+        });
+        
+        // Apply body font to inline code (code elements NOT inside pre) with !important for PDF
+        const allCodeElements = element.querySelectorAll('code');
+        allCodeElements.forEach(el => {
+            // Check if this code element is NOT inside a pre element
+            if (!el.closest('pre')) {
+                const fontFamily = this.getFontFamily(this.settings.bodyFont);
+                el.style.setProperty('font-family', fontFamily, 'important');
+            }
+        });
+        
+        // Apply code font to syntax highlighted tokens
+        const tokenElements = element.querySelectorAll('.token');
+        tokenElements.forEach(el => {
             const fontFamily = this.getFontFamily(this.settings.codeFont);
             el.style.setProperty('font-family', fontFamily, 'important');
         });
@@ -2732,6 +2800,10 @@ class GitHubMarkdownPresenter {
                 throw new Error('유효한 마크다운 슬라이드를 찾을 수 없습니다.');
             }
             
+            // Store the original markdown content
+            this.originalMarkdownContent = markdown;
+            this.currentFileName = 'direct_input';
+            
             // Reset slides and file mapping
             this.slides = slides;
             this.fileSlideMap = [{
@@ -2792,15 +2864,31 @@ class GitHubMarkdownPresenter {
     async loadLocalMarkdownFiles(files) {
         this.slides = [];
         this.fileSlideMap = [];
+        this.originalMarkdownContent = '';
         
         const fileArray = Array.from(files);
         // Sort files by name
         fileArray.sort((a, b) => a.name.localeCompare(b.name));
         
+        let isFirstFile = true;
+        
         for (const file of fileArray) {
             if (file.type === 'text/markdown' || file.name.endsWith('.md')) {
                 try {
                     const content = await this.readFileContent(file);
+                    
+                    // Store the combined markdown content
+                    if (!isFirstFile) {
+                        this.originalMarkdownContent += '\n\n---\n\n';
+                    }
+                    this.originalMarkdownContent += content;
+                    isFirstFile = false;
+                    
+                    // Store the first markdown file name
+                    if (!this.currentFileName) {
+                        this.currentFileName = file.name;
+                    }
+                    
                     // For local files, we need to handle image paths differently
                     const slides = this.parseLocalMarkdownToSlides(content);
                     
@@ -3539,6 +3627,62 @@ class GitHubMarkdownPresenter {
         }, 300);
     }
 
+    exportToMarkdown() {
+        if (this.slides.length === 0) {
+            alert('먼저 슬라이드를 로드해주세요.');
+            return;
+        }
+
+        let markdownContent = '';
+        
+        // Check if we have the original markdown content stored
+        if (this.originalMarkdownContent) {
+            markdownContent = this.originalMarkdownContent;
+        } else {
+            // Reconstruct markdown from slides if original content is not available
+            this.slides.forEach((slide, index) => {
+                if (index > 0) {
+                    markdownContent += '\n\n---\n\n';
+                }
+                
+                // Get the slide content
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = slide.html || slide;
+                
+                // Convert HTML back to markdown (basic conversion)
+                let slideMarkdown = tempDiv.innerText || tempDiv.textContent || '';
+                
+                // Preserve some formatting
+                slideMarkdown = slideMarkdown.replace(/\n{3,}/g, '\n\n');
+                
+                markdownContent += slideMarkdown;
+            });
+        }
+
+        // Create a Blob with the markdown content
+        const blob = new Blob([markdownContent], { type: 'text/markdown;charset=utf-8' });
+        
+        // Create a download link
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        
+        // Generate filename with timestamp
+        const now = new Date();
+        const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+        
+        // Use current file name if available
+        const baseName = this.currentFileName ? this.currentFileName.replace(/\.[^/.]+$/, '') : 'presentation';
+        link.download = `${baseName}_${timestamp}.md`;
+        
+        // Trigger download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up the URL object
+        setTimeout(() => URL.revokeObjectURL(link.href), 100);
+    }
+
     // Preview functionality methods
     updatePreview() {
         const textarea = document.getElementById('markdown-textarea');
@@ -3687,10 +3831,24 @@ class GitHubMarkdownPresenter {
             heading.style.fontFamily = `'${this.settings.headingFont}', sans-serif`;
         });
         
-        // Apply code fonts
-        const codeElements = element.querySelectorAll('code, pre');
-        codeElements.forEach(code => {
-            code.style.fontFamily = `'${this.settings.codeFont}', monospace`;
+        // Apply code font to code blocks (pre elements)
+        const preElements = element.querySelectorAll('pre');
+        preElements.forEach(pre => {
+            pre.style.fontFamily = `'${this.settings.codeFont}', monospace`;
+            // Also apply to code elements inside pre
+            const innerCode = pre.querySelectorAll('code');
+            innerCode.forEach(code => {
+                code.style.fontFamily = `'${this.settings.codeFont}', monospace`;
+            });
+        });
+        
+        // Apply body font to inline code (code elements NOT inside pre)
+        const allCodeElements = element.querySelectorAll('code');
+        allCodeElements.forEach(code => {
+            // Check if this code element is NOT inside a pre element
+            if (!code.closest('pre')) {
+                code.style.fontFamily = `'${this.settings.bodyFont}', sans-serif`;
+            }
         });
         
         // Skip KaTeX processing for thumbnails to avoid complexity
