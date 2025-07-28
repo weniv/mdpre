@@ -29,6 +29,14 @@ class GitHubMarkdownPresenter {
         this.getCurrentRepoInfo();
         this.checkKatexLoaded();
         this.checkMermaidLoaded();
+        
+        // 초기 로딩 후 잠시 기다렸다가 자동으로 폴더 검색
+        setTimeout(() => {
+            const currentRepoRadio = document.getElementById('current-repo');
+            if (currentRepoRadio && currentRepoRadio.checked) {
+                this.searchFolders();
+            }
+        }, 1000);
     }
 
     checkKatexLoaded() {
@@ -391,12 +399,21 @@ class GitHubMarkdownPresenter {
         if (this.currentRepo) {
             const currentRepoRadio = document.getElementById('current-repo');
             const label = currentRepoRadio.nextElementSibling;
-            label.innerHTML = `배포 repo에서 찾기 <span class="text-sm text-gray-500">(${this.currentRepo.owner}/${this.currentRepo.repo})</span>`;
+            label.innerHTML = `발표자료 선택 <span class="text-sm text-gray-500">(${this.currentRepo.owner}/${this.currentRepo.repo})</span>`;
         }
     }
 
     handleRepoSourceChange() {
-        const selectedSource = document.querySelector('input[name="repo-source"]:checked').value;
+        const selectedSource = document.querySelector('input[name="repo-source"]:checked');
+        if (!selectedSource) {
+            // 모바일에서는 기본값으로 current-repo를 선택
+            const currentRepoOption = document.getElementById('current-repo');
+            if (currentRepoOption) {
+                currentRepoOption.checked = true;
+            }
+            return;
+        }
+        const sourceValue = selectedSource.value;
         const customFields = document.getElementById('custom-repo-fields');
         const localFields = document.getElementById('local-file-fields');
         const directFields = document.getElementById('direct-input-fields');
@@ -419,29 +436,30 @@ class GitHubMarkdownPresenter {
         this.previewSlides = [];
         this.currentPreviewSlide = 0;
         
-        if (selectedSource === 'current') {
+        if (sourceValue === 'current') {
             customFields.style.display = 'none';
             localFields.classList.add('hidden');
             directFields.classList.add('hidden');
-            searchBtn.classList.remove('hidden');
+            searchBtn.classList.add('hidden'); // URL 입력창 숨기고 바로 폴더 검색
             repoUrlInput.disabled = true;
             repoUrlInput.required = false;
-            // Current repo selected - no additional fields needed
-        } else if (selectedSource === 'custom') {
+            // Current repo selected - automatically search folders
+            this.searchFolders();
+        } else if (sourceValue === 'custom') {
             customFields.style.display = 'block';
             localFields.classList.add('hidden');
             directFields.classList.add('hidden');
             searchBtn.classList.remove('hidden');
             repoUrlInput.disabled = false;
             repoUrlInput.required = true;
-        } else if (selectedSource === 'local') {
+        } else if (sourceValue === 'local') {
             customFields.style.display = 'none';
             localFields.classList.remove('hidden');
             directFields.classList.add('hidden');
             searchBtn.classList.add('hidden');
             repoUrlInput.disabled = true;
             repoUrlInput.required = false;
-        } else if (selectedSource === 'direct') {
+        } else if (sourceValue === 'direct') {
             customFields.style.display = 'none';
             localFields.classList.add('hidden');
             directFields.classList.remove('hidden');
@@ -1656,9 +1674,17 @@ class GitHubMarkdownPresenter {
         document.getElementById('repo-input-section').classList.add('hidden');
         document.getElementById('presentation-section').classList.remove('hidden');
         
+        // Hide footer in presentation mode
+        const footer = document.querySelector('.footer-container');
+        if (footer) {
+            footer.style.display = 'none';
+        }
+        
         this.currentSlide = 0;
         this.renderSlide();
         this.updateNavigation();
+        
+        // Removed auto fullscreen for better UX
     }
 
     renderSlide() {
@@ -2846,6 +2872,12 @@ class GitHubMarkdownPresenter {
         document.getElementById('presentation-section').classList.add('hidden');
         document.getElementById('repo-input-section').classList.remove('hidden');
         
+        // Show footer again when leaving presentation mode (desktop only)
+        const footer = document.querySelector('.footer-container');
+        if (footer && window.innerWidth > 640) {
+            footer.style.display = '';
+        }
+        
         // Reset slides and file mapping
         this.slides = [];
         this.fileSlideMap = [];
@@ -3490,6 +3522,7 @@ class GitHubMarkdownPresenter {
         pdfContainer.style.top = '0';
         pdfContainer.style.width = '100vw';
         pdfContainer.style.background = 'white';
+        pdfContainer.style.color = 'black'; // 텍스트 색상 검정으로 강제 설정
         
         // 현재 폰트 설정 가져오기
         const slideContent = document.getElementById('slide-content');
@@ -3590,6 +3623,12 @@ class GitHubMarkdownPresenter {
             this.applyFontsToElement(slide);
         });
         
+        // 다크모드 상태 저장 및 임시로 비활성화
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        if (isDarkMode) {
+            document.documentElement.classList.remove('dark');
+        }
+        
         // 짧은 지연 후 인쇄 다이얼로그 열기
         setTimeout(() => {
             const originalTitle = document.title;
@@ -3603,6 +3642,11 @@ class GitHubMarkdownPresenter {
                 document.title = originalTitle;
                 slideContainer.style.display = originalDisplay;
                 document.body.removeChild(pdfContainer);
+                
+                // 다크모드 복원
+                if (isDarkMode) {
+                    document.documentElement.classList.add('dark');
+                }
                 
                 // 원래 슬라이드로 복원
                 this.currentSlide = currentSlideIndex;

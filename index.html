@@ -41,6 +41,11 @@
     <link rel="icon" href="./assets/images/fav.svg" type="image/x-icon">
     <link rel="apple-touch-icon" href="./assets/images/fav.svg">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
@@ -99,7 +104,7 @@
                 </div>
                 <div class="flex items-center space-x-4 pr-2">
                     <!-- Dark Mode Toggle -->
-                    <button id="theme-toggle" class="relative">
+                    <button id="theme-toggle" class="relative hidden sm:block">
                         <svg width="56" height="33" viewBox="0 0 56 33" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <!-- Background track -->
                             <rect y="0.828003" width="56" height="32" rx="16" fill="#2E6FF2"/>
@@ -127,7 +132,7 @@
                         <div id="settings-dropdown" class="hidden absolute top-full right-4 mt-2 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 p-4" style="min-width: 280px;">
                             <div class="flex items-center justify-between mb-3">
                                 <h3 class="text-sm font-medium text-gray-900 dark:text-white">설정</h3>
-                                <button id="close-settings-dropdown" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                                <button id="close-settings-dropdown" class="text-gray-500 hover:text-gray-700 dark:text-gray-200 dark:hover:text-gray-200">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                     </svg>
@@ -137,7 +142,7 @@
                             <div class="space-y-4 overflow-visible">
                                 <!-- 제목 폰트 설정 -->
                                 <div>
-                                    <label for="heading-font-dropdown" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    <label for="heading-font-dropdown" class="block text-xs font-medium text-gray-700 dark:text-white mb-1">
                                         제목 폰트 (H1~H6)
                                     </label>
                                     <select id="heading-font-dropdown" class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
@@ -162,7 +167,7 @@
 
                                 <!-- 본문 폰트 설정 -->
                                 <div>
-                                    <label for="body-font-dropdown" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    <label for="body-font-dropdown" class="block text-xs font-medium text-gray-700 dark:text-white mb-1">
                                         본문 폰트
                                     </label>
                                     <select id="body-font-dropdown" class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
@@ -187,7 +192,7 @@
 
                                 <!-- 코드 폰트 설정 -->
                                 <div>
-                                    <label for="code-font-dropdown" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    <label for="code-font-dropdown" class="block text-xs font-medium text-gray-700 dark:text-white mb-1">
                                         코드 폰트
                                     </label>
                                     <select id="code-font-dropdown" class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
@@ -276,21 +281,21 @@
                     <!-- Repository Source Selection -->
                     <div class="mb-6">
                         <div class="flex flex-col space-y-2 mb-4">
-                            <label class="flex items-center cursor-pointer">
+                            <label class="hidden sm:flex items-center cursor-pointer">
                                 <input type="radio" name="repo-source" value="local" id="local-files" class="mr-2 text-blue-600" checked>
-                                <span class="text-gray-700 dark:text-gray-300">노션 또는 로컬 파일 불러오기</span>
+                                <span class="text-gray-700 dark:text-white">노션 또는 로컬 파일 불러오기</span>
                             </label>
-                            <label class="flex items-center cursor-pointer">
+                            <label class="hidden sm:flex items-center cursor-pointer">
                                 <input type="radio" name="repo-source" value="direct" id="direct-input" class="mr-2 text-blue-600">
-                                <span class="text-gray-700 dark:text-gray-300">마크다운 직접 입력하기</span>
+                                <span class="text-gray-700 dark:text-white">마크다운 직접 입력하기</span>
                             </label>
                             <label class="flex items-center cursor-pointer">
                                 <input type="radio" name="repo-source" value="current" id="current-repo" class="mr-2 text-blue-600">
-                                <span class="text-gray-700 dark:text-gray-300">발표자료 선택</span>
+                                <span class="text-gray-700 dark:text-white">발표자료 선택</span>
                             </label>
                             <label class="flex items-center cursor-pointer">
                                 <input type="radio" name="repo-source" value="custom" id="custom-repo" class="mr-2 text-blue-600">
-                                <span class="text-gray-700 dark:text-gray-300">다른 URL에서 발표자료 선택</span>
+                                <span class="text-gray-700 dark:text-white">다른 URL에서 발표자료 선택</span>
                             </label>
                         </div>
                     </div>
@@ -299,7 +304,7 @@
                     <form id="repo-form" class="space-y-4">
                         <div id="custom-repo-fields">
                             <div>
-                                <label for="repo-url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                <label for="repo-url" class="block text-sm font-medium text-gray-700 dark:text-white mb-1">
                                     GitHub 리포지토리 URL
                                 </label>
                                 <input type="url" id="repo-url" placeholder="https://github.com/username/repository" 
@@ -312,16 +317,16 @@
                             <div>
                                 
                                 <!-- Drag and Drop Zone (Always Visible) -->
-                                <div id="drop-zone" class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 p-8 text-center transition-colors duration-200 hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-gray-600">
+                                <div id="drop-zone" class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 p-8 text-center transition-colors duration-200 hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-gray-700">
                                     <div class="space-y-3">
-                                        <svg class="mx-auto h-16 w-16 text-gray-400 dark:text-gray-500" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                        <svg class="mx-auto h-16 w-16 text-gray-400 dark:text-gray-300" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                                             <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                         </svg>
                                         <div>
-                                            <p class="text-lg font-medium text-gray-700 dark:text-gray-300">파일을 드래그하여 업로드</p>
+                                            <p class="text-lg font-medium text-gray-700 dark:text-white">파일을 드래그하여 업로드</p>
                                             <p class="text-sm text-gray-500 dark:text-gray-400">또는</p>
                                         </div>
-                                        <button type="button" id="file-select-btn" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                        <button type="button" id="file-select-btn" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-white bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                                             <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                                             </svg>
@@ -335,7 +340,7 @@
                                 
                                 <!-- File List Display -->
                                 <div id="uploaded-files-list" class="hidden mt-4">
-                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">업로드된 파일:</h4>
+                                    <h4 class="text-sm font-medium text-gray-700 dark:text-white mb-2">업로드된 파일:</h4>
                                     <div id="file-items" class="space-y-2 max-h-32 overflow-y-auto">
                                         <!-- File items will be inserted here -->
                                     </div>
@@ -356,64 +361,64 @@
                                     <div class="bg-gray-100 dark:bg-gray-800 border-b border-gray-300 dark:border-gray-600 px-3 py-2">
                                         <div class="flex items-center justify-between">
                                             <div class="flex items-center space-x-1">
-                                                <button type="button" id="toolbar-bold" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="굵게 (Ctrl+B)">
+                                                <button type="button" id="toolbar-bold" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="굵게 (Ctrl+B)">
                                                     <span class="font-bold text-sm">B</span>
                                                 </button>
-                                                <button type="button" id="toolbar-italic" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="기울임 (Ctrl+I)">
+                                                <button type="button" id="toolbar-italic" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="기울임 (Ctrl+I)">
                                                     <span class="italic text-sm">I</span>
                                                 </button>
-                                                <button type="button" id="toolbar-underline" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="밑줄">
+                                                <button type="button" id="toolbar-underline" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="밑줄">
                                                     <span class="underline text-sm">U</span>
                                                 </button>
-                                                <button type="button" id="toolbar-strike" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="취소선">
+                                                <button type="button" id="toolbar-strike" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="취소선">
                                                     <span class="line-through text-sm">S</span>
                                                 </button>
                                                 <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
-                                                <button type="button" id="toolbar-header" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="헤더 추가">
+                                                <button type="button" id="toolbar-header" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="헤더 추가">
                                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                         <path d="M3 4h2v5h6V4h2v12h-2v-5H5v5H3V4z"/>
                                                     </svg>
                                                 </button>
-                                                <button type="button" id="toolbar-quote" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="인용구">
+                                                <button type="button" id="toolbar-quote" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="인용구">
                                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                         <path fill-rule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h10v10H5V5z" clip-rule="evenodd"/>
                                                         <path d="M7 7h2v2H7V7zm0 4h6v2H7v-2z"/>
                                                     </svg>
                                                 </button>
                                                 <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
-                                                <button type="button" id="toolbar-list" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="리스트 추가">
+                                                <button type="button" id="toolbar-list" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="리스트 추가">
                                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                         <path d="M3 4a1 1 0 100 2 1 1 0 000-2zM6 4h11v2H6V4zM3 9a1 1 0 100 2 1 1 0 000-2zM6 9h11v2H6V9zM3 14a1 1 0 100 2 1 1 0 000-2zM6 14h11v2H6v-2z"/>
                                                     </svg>
                                                 </button>
-                                                <button type="button" id="toolbar-numbered-list" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="번호 리스트 추가">
+                                                <button type="button" id="toolbar-numbered-list" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="번호 리스트 추가">
                                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                         <path d="M2 3h1v2H2V3zm0 4h1v2H2V7zm0 4h1v2H2v-2zm0 4h1v2H2v-2zm4-12h12v2H6V3zm0 4h12v2H6V7zm0 4h12v2H6v-2zm0 4h12v2H6v-2z"/>
                                                     </svg>
                                                 </button>
                                                 <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
-                                                <button type="button" id="toolbar-link" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="링크 추가">
+                                                <button type="button" id="toolbar-link" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="링크 추가">
                                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                         <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd"/>
                                                     </svg>
                                                 </button>
-                                                <button type="button" id="toolbar-image" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="이미지 추가">
+                                                <button type="button" id="toolbar-image" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="이미지 추가">
                                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                         <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
                                                     </svg>
                                                 </button>
-                                                <button type="button" id="toolbar-code" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="코드 블록">
+                                                <button type="button" id="toolbar-code" class="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors" title="코드 블록">
                                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                         <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
                                                     </svg>
                                                 </button>
                                                 <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
-                                                <button type="button" id="toolbar-slide" class="flex items-center justify-center px-3 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-xs font-medium" title="새 슬라이드 추가">
+                                                <button type="button" id="toolbar-slide" class="flex items-center justify-center px-3 h-8 text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-xs font-medium" title="새 슬라이드 추가">
                                                     Slide
                                                 </button>
                                             </div>
                                             <div class="flex items-center space-x-2">
-                                                <button type="button" id="save-markdown-toolbar-btn" class="flex items-center justify-center px-3 h-8 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-xs font-medium" title="마크다운 저장">
+                                                <button type="button" id="save-markdown-toolbar-btn" class="flex items-center justify-center px-3 h-8 text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-xs font-medium" title="마크다운 저장">
                                                     <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                         <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"/>
                                                     </svg>
@@ -433,7 +438,7 @@
                         
                         <!-- Folder Selection -->
                         <div id="folder-selection" class="hidden">
-                            <label for="folder-dropdown" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label for="folder-dropdown" class="block text-sm font-medium text-gray-700 dark:text-white mb-1">
                                 폴더 선택
                             </label>
                             <select id="folder-dropdown" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
@@ -460,11 +465,11 @@
                         </div>
                         
                         <!-- Right Column: Presentation Preview -->
-                        <div class="space-y-4">
+                        <div class="space-y-4 hidden lg:block">
                             <!-- Slide Thumbnails Container -->
-                            <div id="slide-thumbnails-container" class="bg-gray-50 dark:bg-gray-900 rounded-lg border-2 border-gray-200 dark:border-gray-600 overflow-hidden" style="height: 500px;">
+                            <div id="slide-thumbnails-container" class="bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-gray-200 dark:border-gray-600 overflow-hidden" style="height: 500px;">
                                 <div id="slide-thumbnails" class="h-full p-4 space-y-3">
-                                    <div class="text-center text-gray-500 dark:text-gray-400 flex items-center justify-center h-full">
+                                    <div class="text-center text-gray-500 dark:text-gray-200 flex items-center justify-center h-full">
                                         <div>
                                             <svg class="mx-auto h-12 w-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -493,8 +498,8 @@
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 p-2 h-16 flex items-center">
                     <div class="flex items-center space-x-2">
                         <!-- Home Button -->
-                        <button id="home-button" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white relative" data-tooltip="홈">
-                            <svg width="28" height="27" viewBox="0 0 28 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <button id="home-button" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white relative flex items-center justify-center" data-tooltip="홈">
+                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M16.8001 16.9231C16.8001 15.3767 15.5465 14.1231 14.0001 14.1231C12.4537 14.1231 11.2001 15.3767 11.2001 16.9231V24.5231H16.8001V16.9231ZM19.2001 24.5231H22.8001C24.3465 24.5231 25.6001 23.2695 25.6001 21.7231V12.427C25.6001 11.5839 25.2201 10.7853 24.5657 10.2536L15.7657 3.10359C14.7371 2.26794 13.2632 2.26794 12.2345 3.10359L3.4345 10.2536C2.78011 10.7853 2.40012 11.5839 2.40012 12.427V21.7231C2.40012 23.2695 3.65372 24.5231 5.20012 24.5231H8.80012V16.9231C8.80013 14.0513 11.1282 11.7231 14.0001 11.7231C16.872 11.7231 19.2001 14.0513 19.2001 16.9231V24.5231ZM28.0001 21.7231C28.0001 24.595 25.672 26.9231 22.8001 26.9231H5.20012C2.32824 26.9231 0.00012207 24.595 0.00012207 21.7231V12.427C0.0001223 10.8612 0.705923 9.37852 1.92122 8.39109L10.7212 1.24109C12.6316 -0.310996 15.3686 -0.310994 17.279 1.24109L26.079 8.39109C27.2943 9.37852 28.0001 10.8612 28.0001 12.427V21.7231Z" fill="#8D9299"/>
                             </svg>
                         </button>
@@ -503,12 +508,12 @@
                         <div class="w-px h-8 bg-gray-200 dark:bg-gray-600"></div>
                         
                         <!-- File Navigation Toggle -->
-                        <div class="relative">
-                            <button id="file-nav-toggle" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white relative" data-tooltip="파일 목록">
-                                <svg width="28" height="19" viewBox="0 0 28 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M26.8 10.7001L1.2 10.7001C0.537258 10.7001 -1.91709e-08 10.1628 -4.28193e-08 9.50007C-6.64678e-08 8.83733 0.537258 8.30007 1.2 8.30007L26.8 8.30007C27.4627 8.30007 28 8.83733 28 9.50007C28 10.1628 27.4627 10.7001 26.8 10.7001Z" fill="#8D9299"/>
-                                    <path d="M26.8 2.70007L1.2 2.70007C0.537258 2.70007 -1.91709e-08 2.16281 -4.28193e-08 1.50007C-6.64678e-08 0.837332 0.537258 0.300073 1.2 0.300073L26.8 0.300072C27.4627 0.300072 28 0.83733 28 1.50007C28 2.16281 27.4627 2.70007 26.8 2.70007Z" fill="#8D9299"/>
-                                    <path d="M26.8 18.7001L1.2 18.7001C0.537258 18.7001 -2.68392e-08 18.1628 -5.9947e-08 17.5001C-9.30549e-08 16.8373 0.537258 16.3001 1.2 16.3001L26.8 16.3001C27.4627 16.3001 28 16.8373 28 17.5001C28 18.1628 27.4627 18.7001 26.8 18.7001Z" fill="#8D9299"/>
+                        <div class="relative flex items-center">
+                            <button id="file-nav-toggle" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white relative flex items-center justify-center" data-tooltip="파일 목록">
+                                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M26.8 14L1.2 14C0.537258 14 0 13.4627 0 12.8C0 12.1373 0.537258 11.6 1.2 11.6L26.8 11.6C27.4627 11.6 28 12.1373 28 12.8C28 13.4627 27.4627 14 26.8 14Z" fill="#8D9299"/>
+                                    <path d="M26.8 7L1.2 7C0.537258 7 0 6.46274 0 5.8C0 5.13726 0.537258 4.6 1.2 4.6L26.8 4.6C27.4627 4.6 28 5.13726 28 5.8C28 6.46274 27.4627 7 26.8 7Z" fill="#8D9299"/>
+                                    <path d="M26.8 21L1.2 21C0.537258 21 0 20.4627 0 19.8C0 19.1373 0.537258 18.6 1.2 18.6L26.8 18.6C27.4627 18.6 28 19.1373 28 19.8C28 20.4627 27.4627 21 26.8 21Z" fill="#8D9299"/>
                                 </svg>
                             </button>
                             
@@ -523,24 +528,24 @@
                         </div>
                         
                         <!-- PDF Export Button -->
-                        <button id="pdf-export-btn" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white relative" data-tooltip="PDF 다운로드">
-                            <svg width="32" height="33" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <button id="pdf-export-btn" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white relative flex items-center justify-center" data-tooltip="PDF 다운로드">
+                            <svg width="28" height="28" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M5.60024 6.22483C4.9375 6.22483 4.40024 6.76209 4.40024 7.42483V25.0248C4.40024 26.1294 5.29567 27.0248 6.40024 27.0248H25.6002C26.7048 27.0248 27.6002 26.1294 27.6002 25.0248V10.6248C27.6002 9.96209 27.063 9.42483 26.4002 9.42483H18.0002C16.8671 9.42483 15.8001 8.89133 15.1202 7.98483L14.1602 6.70483C13.9336 6.40266 13.578 6.22483 13.2002 6.22483H5.60024ZM2.00024 7.42483C2.00024 5.4366 3.61202 3.82483 5.60024 3.82483H13.2002C14.3334 3.82483 15.4004 4.35833 16.0802 5.26483L17.0402 6.54483C17.2669 6.847 17.6225 7.02483 18.0002 7.02483H26.4002C28.3885 7.02483 30.0002 8.6366 30.0002 10.6248V25.0248C30.0002 27.4549 28.0303 29.4248 25.6002 29.4248H6.40024C3.97019 29.4248 2.00024 27.4549 2.00024 25.0248V7.42483Z" fill="#8D9299"/>
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M16.0001 12.6249C16.6628 12.6249 17.2001 13.1621 17.2001 13.8249V19.097L19.1892 17.2736C19.6777 16.8258 20.4368 16.8588 20.8846 17.3473C21.3325 17.8359 21.2995 18.595 20.8109 19.0428L16.8109 22.7095C16.3521 23.13 15.648 23.13 15.1892 22.7095L11.1892 19.0428C10.7006 18.595 10.6676 17.8359 11.1155 17.3473C11.5633 16.8588 12.3224 16.8258 12.8109 17.2736L14.8001 19.097V13.8249C14.8001 13.1621 15.3373 12.6249 16.0001 12.6249Z" fill="#8D9299"/>
                             </svg>
                         </button>
                         
                         <!-- Markdown Export Button -->
-                        <button id="markdown-export-btn" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white relative" data-tooltip="마크다운 다운로드">
-                            <svg width="32" height="33" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <button id="markdown-export-btn" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white relative flex items-center justify-center" data-tooltip="마크다운 다운로드">
+                            <svg width="28" height="28" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M5.60024 6.22483C4.9375 6.22483 4.40024 6.76209 4.40024 7.42483V25.0248C4.40024 26.1294 5.29567 27.0248 6.40024 27.0248H25.6002C26.7048 27.0248 27.6002 26.1294 27.6002 25.0248V10.6248C27.6002 9.96209 27.063 9.42483 26.4002 9.42483H18.0002C16.8671 9.42483 15.8001 8.89133 15.1202 7.98483L14.1602 6.70483C13.9336 6.40266 13.578 6.22483 13.2002 6.22483H5.60024ZM2.00024 7.42483C2.00024 5.4366 3.61202 3.82483 5.60024 3.82483H13.2002C14.3334 3.82483 15.4004 4.35833 16.0802 5.26483L17.0402 6.54483C17.2669 6.847 17.6225 7.02483 18.0002 7.02483H26.4002C28.3885 7.02483 30.0002 8.6366 30.0002 10.6248V25.0248C30.0002 27.4549 28.0303 29.4248 25.6002 29.4248H6.40024C3.97019 29.4248 2.00024 27.4549 2.00024 25.0248V7.42483Z" fill="#8D9299"/>
                                 <text x="16" y="22" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#8D9299" text-anchor="middle">MD</text>
                             </svg>
                         </button>
                         
                         <!-- Fullscreen Toggle -->
-                        <button id="fullscreen-toggle" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white relative" data-tooltip="전체화면">
-                            <svg width="32" height="33" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <button id="fullscreen-toggle" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white relative flex items-center justify-center" data-tooltip="전체화면">
+                            <svg width="28" height="28" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M2.77734 5.64653C2.77734 4.18597 3.96136 3.00195 5.42192 3.00195H26.5786C28.0391 3.00195 29.2231 4.18597 29.2231 5.64653V26.8032C29.2231 28.2637 28.0391 29.4478 26.5786 29.4478H5.42192C3.96136 29.4478 2.77734 28.2637 2.77734 26.8032V5.64653ZM5.42192 5.26874C5.21327 5.26874 5.04413 5.43788 5.04413 5.64653V26.8032C5.04413 27.0118 5.21327 27.181 5.42192 27.181H26.5786C26.7872 27.181 26.9564 27.0118 26.9564 26.8032V5.64653C26.9564 5.43788 26.7872 5.26874 26.5786 5.26874H5.42192Z" fill="#8D9299"/>
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M19.0225 5.26874C18.8139 5.26874 18.6447 5.43788 18.6447 5.64653V7.53552C18.6447 8.16147 18.1373 8.66891 17.5113 8.66891C16.8854 8.66891 16.3779 8.16147 16.3779 7.53552V5.64653C16.3779 4.18597 17.5619 3.00195 19.0225 3.00195H20.9115C21.5375 3.00195 22.0449 3.50939 22.0449 4.13534C22.0449 4.7613 21.5375 5.26874 20.9115 5.26874H19.0225ZM23.5561 4.13534C23.5561 3.50939 24.0635 3.00195 24.6895 3.00195H26.5785C28.039 3.00195 29.223 4.18597 29.223 5.64653V7.53552C29.223 8.16147 28.7156 8.66891 28.0896 8.66891C27.4637 8.66891 26.9563 8.16147 26.9563 7.53552V5.64653C26.9563 5.43788 26.7871 5.26874 26.5785 5.26874H24.6895C24.0635 5.26874 23.5561 4.7613 23.5561 4.13534ZM17.5113 10.1801C18.1373 10.1801 18.6447 10.6875 18.6447 11.3135V13.2025C18.6447 13.4111 18.8139 13.5803 19.0225 13.5803H20.9115C21.5375 13.5803 22.0449 14.0877 22.0449 14.7137C22.0449 15.3396 21.5375 15.8471 20.9115 15.8471H19.0225C17.5619 15.8471 16.3779 14.663 16.3779 13.2025V11.3135C16.3779 10.6875 16.8854 10.1801 17.5113 10.1801ZM28.0896 10.1801C28.7156 10.1801 29.223 10.6875 29.223 11.3135V13.2025C29.223 14.663 28.039 15.8471 26.5785 15.8471H24.6895C24.0635 15.8471 23.5561 15.3396 23.5561 14.7137C23.5561 14.0877 24.0635 13.5803 24.6895 13.5803H26.5785C26.7871 13.5803 26.9563 13.4111 26.9563 13.2025V11.3135C26.9563 10.6875 27.4637 10.1801 28.0896 10.1801Z" fill="#8D9299"/>
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M8.0474 24.285C7.60479 23.8423 7.60479 23.1247 8.0474 22.6821L12.1564 18.5731L9.51382 18.6355C8.88804 18.6502 8.36878 18.1549 8.35402 17.5291C8.33925 16.9034 8.83458 16.3841 9.46036 16.3693L14.9323 16.2403C15.2421 16.2329 15.5413 16.3528 15.7605 16.5719C15.9796 16.791 16.0994 17.0903 16.0921 17.4001L15.963 22.872C15.9483 23.4978 15.429 23.9931 14.8032 23.9783C14.1774 23.9636 13.6821 23.4443 13.6969 22.8185L13.7592 20.176L9.65026 24.285C9.20765 24.7276 8.49002 24.7276 8.0474 24.285Z" fill="#8D9299"/>
@@ -556,7 +561,7 @@
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 p-2 h-16 flex items-center">
                     <div class="flex items-center space-x-2">
                         <!-- Previous Button -->
-                        <button id="prev-slide" class="p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white disabled:opacity-50">
+                        <button id="prev-slide" class="p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white disabled:opacity-50">
                             <svg width="32" height="33" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <rect x="0.000488281" y="0.463013" width="32" height="32" rx="10" fill="white"/>
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M19.1976 9.46328C19.5099 9.77565 19.5099 10.2821 19.1976 10.5945L13.3642 16.4279L19.1976 22.2613C19.5099 22.5737 19.5099 23.0801 19.1976 23.3925C18.8852 23.7048 18.3788 23.7048 18.0664 23.3925L11.6674 16.9935C11.355 16.6811 11.355 16.1747 11.6674 15.8623L18.0664 9.46328C18.3788 9.15091 18.8852 9.15091 19.1976 9.46328Z" fill="#8D9299"/>
@@ -567,12 +572,12 @@
                         <div class="flex items-center space-x-1">
                             <input type="number" id="page-input" min="1" max="1" value="1" 
                                        class="w-7 h-4 px-0 py-0 text-sm text-center bg-transparent border-none outline-none text-gray-900 dark:text-white leading-none">
-                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">/</span>
-                            <span id="total-pages" class="text-sm font-medium text-gray-700 dark:text-gray-300">1</span>
+                            <span class="text-sm font-medium text-gray-700 dark:text-white">/</span>
+                            <span id="total-pages" class="text-sm font-medium text-gray-700 dark:text-white">1</span>
                         </div>
                         
                         <!-- Next Button -->
-                        <button id="next-slide" class="p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white disabled:opacity-50">
+                        <button id="next-slide" class="p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white disabled:opacity-50">
                             <svg width="33" height="33" viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <rect x="0.613281" y="0.463013" width="32" height="32" rx="10" fill="white"/>
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M13.3466 23.3926C13.0342 23.0802 13.0342 22.5737 13.3466 22.2614L19.18 16.428L13.3466 10.5946C13.0342 10.2822 13.0342 9.77573 13.3466 9.46336C13.659 9.15099 14.1654 9.15099 14.4778 9.46336L20.8768 15.8624C21.1892 16.1747 21.1892 16.6812 20.8768 16.9936L14.4778 23.3926C14.1654 23.7049 13.659 23.7049 13.3466 23.3926Z" fill="#8D9299"/>
@@ -586,7 +591,7 @@
             <div id="file-nav-sidebar" class="fixed top-20 left-56 z-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 max-w-xs w-64 max-h-96 overflow-y-auto hidden">
                 <div class="flex items-center justify-between mb-3">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">파일 목록</h3>
-                    <button id="close-file-nav" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <button id="close-file-nav" class="text-gray-500 hover:text-gray-700 dark:text-gray-200 dark:hover:text-gray-200">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
@@ -616,7 +621,7 @@
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">설정</h3>
-                <button id="close-settings" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                <button id="close-settings" class="text-gray-500 hover:text-gray-700 dark:text-gray-200 dark:hover:text-gray-200">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -625,7 +630,7 @@
             
             <div class="space-y-4">
                 <div>
-                    <label for="font-family" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label for="font-family" class="block text-sm font-medium text-gray-700 dark:text-white mb-1">
                         폰트
                     </label>
                     <select id="font-family" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white">
@@ -648,7 +653,7 @@
             <!-- Modal Header -->
             <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-600">
                 <h2 class="text-xl font-bold text-gray-900 dark:text-white">사용법 안내</h2>
-                <button id="close-help-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">
+                <button id="close-help-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-200 dark:hover:text-gray-200 transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -669,7 +674,7 @@
                                 </svg>
                             </button>
                             <div id="upload-section" class="help-accordion-content hidden p-4 bg-white dark:bg-gray-800">
-                                <div class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                                <div class="space-y-3 text-sm text-gray-700 dark:text-white">
                                     <h4 class="font-medium text-gray-900 dark:text-white">마크다운 파일 업로드</h4>
                                     <ul class="list-disc pl-5 space-y-1">
                                         <li>"노션 또는 로컬 파일 불러오기" 선택 후 파일 선택 버튼 클릭</li>
@@ -697,7 +702,7 @@
                                 </svg>
                             </button>
                             <div id="navigation-section" class="help-accordion-content hidden p-4 bg-white dark:bg-gray-800">
-                                <div class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                                <div class="space-y-3 text-sm text-gray-700 dark:text-white">
                                     <h4 class="font-medium text-gray-900 dark:text-white">키보드 단축키</h4>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                         <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded">
@@ -746,7 +751,7 @@
                                 </svg>
                             </button>
                             <div id="features-section" class="help-accordion-content hidden p-4 bg-white dark:bg-gray-800">
-                                <div class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                                <div class="space-y-3 text-sm text-gray-700 dark:text-white">
                                     <ul class="list-disc pl-5 space-y-2">
                                         <li><strong>페이지 입력:</strong> 하단 입력창에 페이지 번호 입력하여 직접 이동</li>
                                         <li><strong>파일 목록:</strong> 여러 파일 업로드 시 파일 간 빠른 전환</li>
@@ -767,7 +772,7 @@
                                 </svg>
                             </button>
                             <div id="markdown-section" class="help-accordion-content hidden p-4 bg-white dark:bg-gray-800">
-                                <div class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                                <div class="space-y-3 text-sm text-gray-700 dark:text-white">
                                     <h4 class="font-medium text-gray-900 dark:text-white">기본 마크다운 문법</h4>
                                     <div class="space-y-2">
                                         <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded font-mono text-xs">
@@ -817,7 +822,7 @@
                                 </svg>
                             </button>
                             <div id="images-section" class="help-accordion-content hidden p-4 bg-white dark:bg-gray-800">
-                                <div class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                                <div class="space-y-3 text-sm text-gray-700 dark:text-white">
                                     <h4 class="font-medium text-gray-900 dark:text-white">로컬 파일 이미지</h4>
                                     <ul class="list-disc pl-5 space-y-1">
                                         <li>마크다운 파일과 같은 폴더에 이미지 파일 배치</li>
@@ -861,7 +866,7 @@
     </div>
 
     <!-- Footer -->
-    <footer class="footer-container">
+    <footer class="footer-container hidden sm:block">
         <div class="footer-content">
             <!-- Left Text Section -->
             <div class="footer-text">

@@ -240,6 +240,40 @@ html, body {
     border-color: #6b7280 !important;
 }
 
+/* Dark mode all input, textarea, and select styles */
+.dark input[type="text"],
+.dark input[type="url"],
+.dark input[type="email"],
+.dark input[type="number"],
+.dark input[type="search"],
+.dark textarea,
+.dark select {
+    background-color: #374151 !important;
+    color: #f9fafb !important;
+    border-color: #6b7280 !important;
+}
+
+.dark input[type="text"]:focus,
+.dark input[type="url"]:focus,
+.dark input[type="email"]:focus,
+.dark input[type="number"]:focus,
+.dark input[type="search"]:focus,
+.dark textarea:focus,
+.dark select:focus {
+    background-color: #374151 !important;
+    color: #f9fafb !important;
+    border-color: #60a5fa !important;
+}
+
+.dark input[type="text"]::placeholder,
+.dark input[type="url"]::placeholder,
+.dark input[type="email"]::placeholder,
+.dark input[type="number"]::placeholder,
+.dark input[type="search"]::placeholder,
+.dark textarea::placeholder {
+    color: #9ca3af !important;
+}
+
 /* Slide content styling */
 #slide-content {
     transition: all 0.3s ease-in-out;
@@ -574,7 +608,7 @@ pre[class*=language-] {
     width: 100vw !important;
     height: 100vh !important;
     z-index: 9999 !important;
-    background: #fff;
+    background: #fff !important;
     padding: 2rem !important;
     overflow: auto;
     display: flex !important;
@@ -583,7 +617,43 @@ pre[class*=language-] {
 }
 
 .dark .fullscreen {
-    background: #111827;
+    background: #111827 !important;
+}
+
+/* Fullscreen API native mode - ensure white background */
+#slide-container:fullscreen {
+    background: #fff !important;
+}
+
+.dark #slide-container:fullscreen {
+    background: #111827 !important;
+}
+
+/* Webkit prefix */
+#slide-container:-webkit-full-screen {
+    background: #fff !important;
+}
+
+.dark #slide-container:-webkit-full-screen {
+    background: #111827 !important;
+}
+
+/* Mozilla prefix */
+#slide-container:-moz-full-screen {
+    background: #fff !important;
+}
+
+.dark #slide-container:-moz-full-screen {
+    background: #111827 !important;
+}
+
+/* MS prefix */
+#slide-container:-ms-fullscreen {
+    background: #fff !important;
+}
+
+.dark #slide-container:-ms-fullscreen {
+    background: #111827 !important;
 }
 
 .fullscreen #slide-content {
@@ -650,6 +720,143 @@ pre[class*=language-] {
     transform: scale(1.5) translate(20%, 20%) !important;
 }
 
+
+/* Presentation mode adjustments for all devices */
+#presentation-section {
+    /* Force landscape orientation for better presentation viewing */
+    position: relative;
+}
+
+/* Force landscape mode on mobile in presentation */
+@media (max-width: 768px) and (orientation: portrait) {
+    #presentation-section {
+        transform: rotate(90deg);
+        transform-origin: center;
+        width: 100vh;
+        height: 100vw;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        margin-top: -50vw;
+        margin-left: -50vh;
+    }
+}
+
+/* Hide footer in presentation mode for all devices */
+body:has(#presentation-section:not(.hidden)) .footer-container {
+    display: none !important;
+}
+
+/* Hide header in presentation mode on mobile only */
+@media (max-width: 768px) {
+    #presentation-section header {
+        display: none !important;
+    }
+}
+
+/* Make presentation fullscreen on mobile only */
+@media (max-width: 768px) {
+    #presentation-section #slide-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        padding: 2rem;
+        z-index: 9999;
+        background: white;
+    }
+
+    .dark #presentation-section #slide-container {
+        background: #111827;
+    }
+}
+
+/* Desktop presentation mode - normal layout */
+@media (min-width: 769px) {
+    #presentation-section #slide-container {
+        position: relative;
+        width: 100%;
+        height: auto;
+        min-height: calc(100vh - 200px);
+        padding: 2rem;
+        background: transparent;
+    }
+}
+
+/* Bottom navigation always visible in presentation */
+#presentation-section #bottom-nav-container {
+    position: fixed !important;
+    bottom: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 10000 !important;
+    display: flex !important;
+}
+
+/* Force bottom navigation to be visible on mobile in presentation */
+@media (max-width: 768px) {
+    #presentation-section #bottom-nav-container {
+        position: fixed !important;
+        bottom: 10px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        z-index: 99999 !important;
+        display: flex !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    
+    /* Hide unnecessary buttons on mobile */
+    #presentation-section #pdf-export-btn,
+    #presentation-section #markdown-export-btn,
+    #presentation-section #fullscreen-toggle {
+        display: none !important;
+    }
+    
+    /* Ensure navigation container is always visible on mobile */
+    #bottom-nav-container {
+        position: fixed !important;
+        bottom: 10px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        z-index: 99999 !important;
+        display: flex !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    
+    /* Hide logo on mobile with stronger rules */
+    #presentation-logo,
+    #presentation-section #presentation-logo {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }
+}
+
+/* Hide elements on mobile */
+@media (max-width: 640px) {
+    #local-file-fields {
+        display: none !important;
+    }
+    
+    .footer-container {
+        display: none !important;
+    }
+    
+    /* Hide specific buttons on mobile */
+    #pdf-export-btn,
+    #markdown-export-btn,
+    #fullscreen-toggle {
+        display: none !important;
+    }
+    
+    /* Hide logo on mobile */
+    #presentation-logo {
+        display: none !important;
+    }
+}
 
 /* Responsive design */
 @media (max-width: 768px) {
@@ -779,6 +986,17 @@ pre[class*=language-] {
         color-adjust: exact !important;
     }
     
+    /* Force light mode styles for PDF printing */
+    body {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    .dark {
+        background-color: white !important;
+        color: black !important;
+    }
+    
     @font-face {
         font-family: 'BMJUA';
         src: url('../../font/BMJUA_ttf.ttf') format('truetype');
@@ -877,6 +1095,7 @@ pre[class*=language-] {
         padding: 1.5cm !important;
         margin: 0 !important;
         background: white !important;
+        color: black !important;
         position: relative !important;
         font-family: inherit !important;
     }
@@ -891,6 +1110,7 @@ pre[class*=language-] {
     .pdf-slide,
     .pdf-slide *:not(code):not(pre):not([class*="language-"]):not(.token) {
         font-family: inherit !important;
+        color: black !important;
     }
     
     .pdf-slide.font-family-bmjua,
@@ -934,6 +1154,7 @@ pre[class*=language-] {
         line-height: 1.2 !important;
         margin: 0.8rem 0 !important;
         text-align: center !important;
+        color: black !important;
     }
     
     .pdf-slide h2 {
@@ -941,6 +1162,7 @@ pre[class*=language-] {
         line-height: 1.3 !important;
         margin: 0.7rem 0 !important;
         text-align: center !important;
+        color: black !important;
     }
     
     .pdf-slide h3 {
@@ -948,6 +1170,7 @@ pre[class*=language-] {
         line-height: 1.4 !important;
         margin: 0.5rem 0 !important;
         text-align: center !important;
+        color: black !important;
     }
     
     .pdf-slide h4,
@@ -957,6 +1180,7 @@ pre[class*=language-] {
         line-height: 1.4 !important;
         margin: 0.4rem 0 !important;
         text-align: center !important;
+        color: black !important;
     }
     
     .pdf-slide p {
@@ -964,12 +1188,14 @@ pre[class*=language-] {
         line-height: 1.5 !important;
         margin: 0.6rem 0 !important;
         text-align: center !important;
+        color: black !important;
     }
     
     .pdf-slide li {
         font-size: 2.5rem !important;
         line-height: 1.5 !important;
         margin: 0.3rem 0 !important;
+        color: black !important;
     }
     
     .pdf-slide ul,
@@ -990,6 +1216,7 @@ pre[class*=language-] {
         margin: 0.8rem auto !important;
         font-size: 2.5rem !important;
         line-height: 1.5 !important;
+        color: black !important;
     }
     
     .pdf-slide .text-center p {
@@ -997,16 +1224,19 @@ pre[class*=language-] {
         line-height: 1.5 !important;
         margin: 0.4rem 0 !important;
         text-align: center !important;
+        color: black !important;
     }
     
     .pdf-slide .text-large {
         font-size: 1.9rem !important;
         line-height: 1.4 !important;
+        color: black !important;
     }
     
     .pdf-slide .text-xlarge {
         font-size: 2.4rem !important;
         line-height: 1.3 !important;
+        color: black !important;
     }
     
     /* Code blocks should use code font */
@@ -1740,12 +1970,14 @@ pre[class*=language-] {
 /* Footer Styles */
 .footer-container {
     background-color: #F3F5FA;
-    height: 188px;
+    height: auto;
+    min-height: 188px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-top: 1px solid #E5E7EB;
     margin-top: auto;
+    padding: 40px 0;
 }
 
 .footer-content {
@@ -2093,7 +2325,7 @@ pre[class*=language-] {
 
 /* Dark theme for thumbnails */
 .dark .slide-thumbnail {
-    background: #1f2937;
+    background: #374151;
     border-color: #4b5563;
 }
 
@@ -2107,7 +2339,7 @@ pre[class*=language-] {
 }
 
 .dark .slide-thumbnail-inner {
-    background: #1f2937;
+    background: #374151;
 }
 
 .dark .slide-thumbnail-content {
@@ -2172,6 +2404,11 @@ pre[class*=language-] {
     font-size: 0.45rem;
 }
 
+.dark .slide-thumbnail-content code {
+    background-color: #4b5563;
+    color: #fca5a5;
+}
+
 .slide-thumbnail-content pre {
     background-color: #f8fafc;
     border: 1px solid #e2e8f0;
@@ -2182,6 +2419,11 @@ pre[class*=language-] {
     font-size: 0.45rem;
 }
 
+.dark .slide-thumbnail-content pre {
+    background-color: #4b5563;
+    border-color: #6b7280;
+}
+
 .slide-thumbnail-content blockquote {
     border-left: 2px solid #3b82f6;
     background-color: #eff6ff;
@@ -2189,6 +2431,12 @@ pre[class*=language-] {
     margin: 4px 0;
     border-radius: 0 4px 4px 0;
     font-size: 0.5rem;
+}
+
+.dark .slide-thumbnail-content blockquote {
+    border-left-color: #60a5fa;
+    background-color: #374151;
+    color: #e5e7eb;
 }
 
 /* Links in thumbnails */
