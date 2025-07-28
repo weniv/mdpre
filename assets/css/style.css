@@ -727,20 +727,7 @@ pre[class*=language-] {
     position: relative;
 }
 
-/* Force landscape mode on mobile in presentation */
-@media (max-width: 768px) and (orientation: portrait) {
-    #presentation-section {
-        transform: rotate(90deg);
-        transform-origin: center;
-        width: 100vh;
-        height: 100vw;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        margin-top: -50vw;
-        margin-left: -50vh;
-    }
-}
+/* Remove forced landscape mode - let mobile users view in portrait naturally */
 
 /* Hide footer in presentation mode for all devices */
 body:has(#presentation-section:not(.hidden)) .footer-container {
