@@ -389,6 +389,52 @@ html, body {
     margin-bottom: 1.5rem; /* 단락 간격 확대 */
 }
 
+/* 마지막 p 태그의 하단 여백 제거 */
+#slide-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* 단일 p 태그만 있을 때 하단 여백 제거 */
+#slide-content p:only-child {
+    margin-bottom: 0;
+}
+
+/* 슬라이드의 마지막 요소 하단 여백 제거 */
+#slide-content > *:last-child {
+    margin-bottom: 0;
+}
+
+/* 빈 p 태그 숨기기 (중앙 정렬 시 생성되는 빈 태그 처리) */
+#slide-content p:empty {
+    display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 0 !important;
+    line-height: 0 !important;
+}
+
+/* 공백만 있는 p 태그 처리 */
+#slide-content p {
+    min-height: 0;
+}
+
+/* 빈 p 태그가 인라인 스타일을 가지고 있어도 숨기기 */
+#slide-content p[style]:empty {
+    display: none !important;
+}
+
+/* text-center 내부의 빈 p 태그 처리 */
+.text-center p:empty {
+    display: none !important;
+}
+
+/* br 태그만 있는 p 태그도 최소 높이로 처리 */
+#slide-content p:has(br):not(:has(text)) {
+    margin: 0;
+    padding: 0;
+    height: 0.5em;
+}
+
 /* Dark mode heading colors */
 .dark #slide-content h1 {
     border-bottom-color: #4b5563;
@@ -804,7 +850,7 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     /* Ensure navigation container is always visible on mobile */
     #bottom-nav-container {
         position: fixed !important;
-        bottom: 10px !important;
+        bottom: 30px !important; /* 기존 10px에서 30px로 변경하여 바닥과의 간격 증가 */
         left: 50% !important;
         transform: translateX(-50%) !important;
         z-index: 99999 !important;
@@ -904,11 +950,12 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         scale: 0.9;
     }
     
-    #home-button {
+    /* 홈 버튼이 bottom-nav-container 안에 있으므로 절대 위치 지정 제거 */
+    /* #home-button {
         top: 10px;
         left: 10px;
         scale: 0.9;
-    }
+    } */
     
     #fullscreen-toggle {
         top: 10px;

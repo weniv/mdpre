@@ -493,14 +493,14 @@
         <!-- Presentation Section -->
         <section id="presentation-section" class="hidden">
             <!-- Bottom Navigation Container -->
-            <div id="bottom-nav-container" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 flex items-center space-x-4">
+            <div id="bottom-nav-container" class="fixed bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 z-50 flex items-center space-x-4">
                 <!-- Control Buttons Box -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 p-2 h-16 flex items-center">
                     <div class="flex items-center space-x-2">
                         <!-- Home Button -->
-                        <button id="home-button" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white relative flex items-center justify-center" data-tooltip="홈">
-                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M16.8001 16.9231C16.8001 15.3767 15.5465 14.1231 14.0001 14.1231C12.4537 14.1231 11.2001 15.3767 11.2001 16.9231V24.5231H16.8001V16.9231ZM19.2001 24.5231H22.8001C24.3465 24.5231 25.6001 23.2695 25.6001 21.7231V12.427C25.6001 11.5839 25.2201 10.7853 24.5657 10.2536L15.7657 3.10359C14.7371 2.26794 13.2632 2.26794 12.2345 3.10359L3.4345 10.2536C2.78011 10.7853 2.40012 11.5839 2.40012 12.427V21.7231C2.40012 23.2695 3.65372 24.5231 5.20012 24.5231H8.80012V16.9231C8.80013 14.0513 11.1282 11.7231 14.0001 11.7231C16.872 11.7231 19.2001 14.0513 19.2001 16.9231V24.5231ZM28.0001 21.7231C28.0001 24.595 25.672 26.9231 22.8001 26.9231H5.20012C2.32824 26.9231 0.00012207 24.595 0.00012207 21.7231V12.427C0.0001223 10.8612 0.705923 9.37852 1.92122 8.39109L10.7212 1.24109C12.6316 -0.310996 15.3686 -0.310994 17.279 1.24109L26.079 8.39109C27.2943 9.37852 28.0001 10.8612 28.0001 12.427V21.7231Z" fill="#8D9299"/>
+                        <button id="home-button" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white relative flex items-center justify-center h-12 w-12" data-tooltip="홈">
+                            <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M18.8001 18.9231C18.8001 17.3767 17.5465 16.1231 16.0001 16.1231C14.4537 16.1231 13.2001 17.3767 13.2001 18.9231V26.5231H18.8001V18.9231ZM21.2001 26.5231H24.8001C26.3465 26.5231 27.6001 25.2695 27.6001 23.7231V14.427C27.6001 13.5839 27.2201 12.7853 26.5657 12.2536L17.7657 5.10359C16.7371 4.26794 15.2632 4.26794 14.2345 5.10359L5.4345 12.2536C4.78011 12.7853 4.40012 13.5839 4.40012 14.427V23.7231C4.40012 25.2695 5.65372 26.5231 7.20012 26.5231H10.8001V18.9231C10.8001 16.0513 13.1282 13.7231 16.0001 13.7231C18.872 13.7231 21.2001 16.0513 21.2001 18.9231V26.5231ZM30.0001 23.7231C30.0001 26.595 27.672 28.9231 24.8001 28.9231H7.20012C4.32824 28.9231 2.00012 26.595 2.00012 23.7231V14.427C2.00012 12.8612 2.70592 11.3785 3.92122 10.3911L12.7212 3.24109C14.6316 1.68901 17.3686 1.68901 19.279 3.24109L28.079 10.3911C29.2943 11.3785 30.0001 12.8612 30.0001 14.427V23.7231Z" fill="#8D9299"/>
                             </svg>
                         </button>
                         
@@ -509,11 +509,11 @@
                         
                         <!-- File Navigation Toggle -->
                         <div class="relative flex items-center">
-                            <button id="file-nav-toggle" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white relative flex items-center justify-center" data-tooltip="파일 목록">
-                                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M26.8 14L1.2 14C0.537258 14 0 13.4627 0 12.8C0 12.1373 0.537258 11.6 1.2 11.6L26.8 11.6C27.4627 11.6 28 12.1373 28 12.8C28 13.4627 27.4627 14 26.8 14Z" fill="#8D9299"/>
-                                    <path d="M26.8 7L1.2 7C0.537258 7 0 6.46274 0 5.8C0 5.13726 0.537258 4.6 1.2 4.6L26.8 4.6C27.4627 4.6 28 5.13726 28 5.8C28 6.46274 27.4627 7 26.8 7Z" fill="#8D9299"/>
-                                    <path d="M26.8 21L1.2 21C0.537258 21 0 20.4627 0 19.8C0 19.1373 0.537258 18.6 1.2 18.6L26.8 18.6C27.4627 18.6 28 19.1373 28 19.8C28 20.4627 27.4627 21 26.8 21Z" fill="#8D9299"/>
+                            <button id="file-nav-toggle" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white relative flex items-center justify-center h-12 w-12" data-tooltip="파일 목록">
+                                <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M29.8 16L3.2 16C2.53726 16 2 15.4627 2 14.8C2 14.1373 2.53726 13.6 3.2 13.6L29.8 13.6C30.4627 13.6 31 14.1373 31 14.8C31 15.4627 30.4627 16 29.8 16Z" fill="#8D9299"/>
+                                    <path d="M29.8 9L3.2 9C2.53726 9 2 8.46274 2 7.8C2 7.13726 2.53726 6.6 3.2 6.6L29.8 6.6C30.4627 6.6 31 7.13726 31 7.8C31 8.46274 30.4627 9 29.8 9Z" fill="#8D9299"/>
+                                    <path d="M29.8 23L3.2 23C2.53726 23 2 22.4627 2 21.8C2 21.1373 2.53726 20.6 3.2 20.6L29.8 20.6C30.4627 20.6 31 21.1373 31 21.8C31 22.4627 30.4627 23 29.8 23Z" fill="#8D9299"/>
                                 </svg>
                             </button>
                             
@@ -528,7 +528,7 @@
                         </div>
                         
                         <!-- PDF Export Button -->
-                        <button id="pdf-export-btn" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white relative flex items-center justify-center" data-tooltip="PDF 다운로드">
+                        <button id="pdf-export-btn" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white relative flex items-center justify-center h-12 w-12" data-tooltip="PDF 다운로드">
                             <svg width="28" height="28" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M5.60024 6.22483C4.9375 6.22483 4.40024 6.76209 4.40024 7.42483V25.0248C4.40024 26.1294 5.29567 27.0248 6.40024 27.0248H25.6002C26.7048 27.0248 27.6002 26.1294 27.6002 25.0248V10.6248C27.6002 9.96209 27.063 9.42483 26.4002 9.42483H18.0002C16.8671 9.42483 15.8001 8.89133 15.1202 7.98483L14.1602 6.70483C13.9336 6.40266 13.578 6.22483 13.2002 6.22483H5.60024ZM2.00024 7.42483C2.00024 5.4366 3.61202 3.82483 5.60024 3.82483H13.2002C14.3334 3.82483 15.4004 4.35833 16.0802 5.26483L17.0402 6.54483C17.2669 6.847 17.6225 7.02483 18.0002 7.02483H26.4002C28.3885 7.02483 30.0002 8.6366 30.0002 10.6248V25.0248C30.0002 27.4549 28.0303 29.4248 25.6002 29.4248H6.40024C3.97019 29.4248 2.00024 27.4549 2.00024 25.0248V7.42483Z" fill="#8D9299"/>
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M16.0001 12.6249C16.6628 12.6249 17.2001 13.1621 17.2001 13.8249V19.097L19.1892 17.2736C19.6777 16.8258 20.4368 16.8588 20.8846 17.3473C21.3325 17.8359 21.2995 18.595 20.8109 19.0428L16.8109 22.7095C16.3521 23.13 15.648 23.13 15.1892 22.7095L11.1892 19.0428C10.7006 18.595 10.6676 17.8359 11.1155 17.3473C11.5633 16.8588 12.3224 16.8258 12.8109 17.2736L14.8001 19.097V13.8249C14.8001 13.1621 15.3373 12.6249 16.0001 12.6249Z" fill="#8D9299"/>
@@ -536,7 +536,7 @@
                         </button>
                         
                         <!-- Markdown Export Button -->
-                        <button id="markdown-export-btn" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white relative flex items-center justify-center" data-tooltip="마크다운 다운로드">
+                        <button id="markdown-export-btn" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white relative flex items-center justify-center h-12 w-12" data-tooltip="마크다운 다운로드">
                             <svg width="28" height="28" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M5.60024 6.22483C4.9375 6.22483 4.40024 6.76209 4.40024 7.42483V25.0248C4.40024 26.1294 5.29567 27.0248 6.40024 27.0248H25.6002C26.7048 27.0248 27.6002 26.1294 27.6002 25.0248V10.6248C27.6002 9.96209 27.063 9.42483 26.4002 9.42483H18.0002C16.8671 9.42483 15.8001 8.89133 15.1202 7.98483L14.1602 6.70483C13.9336 6.40266 13.578 6.22483 13.2002 6.22483H5.60024ZM2.00024 7.42483C2.00024 5.4366 3.61202 3.82483 5.60024 3.82483H13.2002C14.3334 3.82483 15.4004 4.35833 16.0802 5.26483L17.0402 6.54483C17.2669 6.847 17.6225 7.02483 18.0002 7.02483H26.4002C28.3885 7.02483 30.0002 8.6366 30.0002 10.6248V25.0248C30.0002 27.4549 28.0303 29.4248 25.6002 29.4248H6.40024C3.97019 29.4248 2.00024 27.4549 2.00024 25.0248V7.42483Z" fill="#8D9299"/>
                                 <text x="16" y="22" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#8D9299" text-anchor="middle">MD</text>
@@ -544,7 +544,7 @@
                         </button>
                         
                         <!-- Fullscreen Toggle -->
-                        <button id="fullscreen-toggle" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white relative flex items-center justify-center" data-tooltip="전체화면">
+                        <button id="fullscreen-toggle" class="control-btn p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white relative flex items-center justify-center h-12 w-12" data-tooltip="전체화면">
                             <svg width="28" height="28" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M2.77734 5.64653C2.77734 4.18597 3.96136 3.00195 5.42192 3.00195H26.5786C28.0391 3.00195 29.2231 4.18597 29.2231 5.64653V26.8032C29.2231 28.2637 28.0391 29.4478 26.5786 29.4478H5.42192C3.96136 29.4478 2.77734 28.2637 2.77734 26.8032V5.64653ZM5.42192 5.26874C5.21327 5.26874 5.04413 5.43788 5.04413 5.64653V26.8032C5.04413 27.0118 5.21327 27.181 5.42192 27.181H26.5786C26.7872 27.181 26.9564 27.0118 26.9564 26.8032V5.64653C26.9564 5.43788 26.7872 5.26874 26.5786 5.26874H5.42192Z" fill="#8D9299"/>
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M19.0225 5.26874C18.8139 5.26874 18.6447 5.43788 18.6447 5.64653V7.53552C18.6447 8.16147 18.1373 8.66891 17.5113 8.66891C16.8854 8.66891 16.3779 8.16147 16.3779 7.53552V5.64653C16.3779 4.18597 17.5619 3.00195 19.0225 3.00195H20.9115C21.5375 3.00195 22.0449 3.50939 22.0449 4.13534C22.0449 4.7613 21.5375 5.26874 20.9115 5.26874H19.0225ZM23.5561 4.13534C23.5561 3.50939 24.0635 3.00195 24.6895 3.00195H26.5785C28.039 3.00195 29.223 4.18597 29.223 5.64653V7.53552C29.223 8.16147 28.7156 8.66891 28.0896 8.66891C27.4637 8.66891 26.9563 8.16147 26.9563 7.53552V5.64653C26.9563 5.43788 26.7871 5.26874 26.5785 5.26874H24.6895C24.0635 5.26874 23.5561 4.7613 23.5561 4.13534ZM17.5113 10.1801C18.1373 10.1801 18.6447 10.6875 18.6447 11.3135V13.2025C18.6447 13.4111 18.8139 13.5803 19.0225 13.5803H20.9115C21.5375 13.5803 22.0449 14.0877 22.0449 14.7137C22.0449 15.3396 21.5375 15.8471 20.9115 15.8471H19.0225C17.5619 15.8471 16.3779 14.663 16.3779 13.2025V11.3135C16.3779 10.6875 16.8854 10.1801 17.5113 10.1801ZM28.0896 10.1801C28.7156 10.1801 29.223 10.6875 29.223 11.3135V13.2025C29.223 14.663 28.039 15.8471 26.5785 15.8471H24.6895C24.0635 15.8471 23.5561 15.3396 23.5561 14.7137C23.5561 14.0877 24.0635 13.5803 24.6895 13.5803H26.5785C26.7871 13.5803 26.9563 13.4111 26.9563 13.2025V11.3135C26.9563 10.6875 27.4637 10.1801 28.0896 10.1801Z" fill="#8D9299"/>
