@@ -8,14 +8,41 @@
 
 ---
 
-게임을 만드는 것은 마치 영화를 만드는 것과 비슷합니다. 시나리오가 있고, 캐릭터가 있고, 무대가 있고, 관객이 참여할 수 있는 인터랙션이 있습니다. 전통적으로는 유니티나 언리얼 같은 무거운 엔진을 배워야 했지만, 바이브 코딩에서는 더 간단하고 빠른 도구들을 사용합니다.
+Front-end만으로도 훌륭한 게임과 광고를 붙어 수익을 창출할 수 있습니다. 이미 그렇게 하고 있으신 대표님도 많으십니다.
+
+---
+
+전통적으로는 유니티나 언리얼 같은 무거운 엔진을 배워야 했지만, 바이브 코딩에서는 더 간단하고 빠른 도구들을 사용해서 훌륭한 게임을 만들 수도 있습니다.
+
+---
+
+게임은 시나리오, 캐릭터, 무대, 사용자 반응 등 고려해야 할 요소가 단순 Front-end보다 더 많습니다.
 
 ---
 
 간단한 개념 훑어보기
-* Sprite: 캐릭터나 오브젝트의 이미지
-* Physics engine: 물리 법칙을 적용해 움직임을 자연스럽게 만드는 시스템
-* Game loop: 게임의 핵심, 매 프레임마다 업데이트와 렌더링을 반복
+* 스프라이트: 캐릭터나 오브젝트의 이미지
+* 물리엔진: 물리 법칙을 적용해 움직임을 자연스럽게 만드는 시스템
+* 게임 루프: 게임의 핵심, 매 프레임마다 업데이트와 렌더링을 반복
+
+---
+
+스프라이트
+
+* 몹
+![몹1](images/mob1.png)
+
+* 빌런
+![빌런1](images/lion.png)
+
+* 주인공
+![주인공1](images/player.png)
+
+---
+
+배경
+
+![배경1](images/background.png)
 
 ---
 
@@ -23,8 +50,12 @@
 
 ---
 
-소스코드: https://github.com/weniv/game-with-phaser
-에셋: https://github.com/weniv/game-with-phaser/tree/main/23_ch27_final/src/assets
+* 소스코드: https://github.com/weniv/game-with-phaser
+* 에셋: https://github.com/weniv/game-with-phaser/tree/main/23_ch27_final/src/assets
+
+---
+
+에셋은 허락없이 사용하셔도 됩니다.
 
 ---
 
@@ -36,9 +67,9 @@
 
 ---
 
-pygame: https://inf.run/rfDm7
-threejs: https://inf.run/A8hBr
-phaser: https://inf.run/3b2a1
+* pygame: https://inf.run/rfDm7
+* threejs: https://inf.run/A8hBr
+* phaser: https://inf.run/3b2a1
 
 ---
 
@@ -46,13 +77,11 @@ Asset은 구매할 수도 있고, 저희 회사 Asset 쓰셔도 됩니다.
 
 ---
 
-# 무료 게임 에셋 사이트
+무료 에셋 사이트도 있지만 상업 용도로 쓰실거면 에셋은 구매하시는 것을 권합니다.
 
-* OpenGameArt.org
-* Itch.io (무료 섹션)
-* Freesound.org (사운드)
-* Pixabay (이미지)
-* AI 생성 도구 활용
+---
+
+https://assetstore.unity.com/
 
 ---
 
