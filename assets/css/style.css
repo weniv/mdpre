@@ -283,7 +283,9 @@ html, body {
     word-wrap: break-word;
     font-size: 3rem; /* 기본 텍스트 크기를 {large} 수준(3rem)으로 변경 */
     line-height: 1.8; /* 줄간격 개선 */
-    display: block; /* flexbox 제거하여 일반 블록 요소로 설정 */
+    display: flex; /* flexbox로 설정 */
+    flex-direction: column; /* 세로 방향 정렬 */
+    gap: 1.5rem; /* 요소 간 간격 설정 */
 }
 
 /* Slide container viewport control */
@@ -399,9 +401,9 @@ html, body {
     margin-bottom: 0;
 }
 
-/* 슬라이드의 마지막 요소 하단 여백 제거 */
+/* 슬라이드의 마지막 요소 하단 여백 */
 #slide-content > *:last-child {
-    margin-bottom: 0;
+    margin-bottom: 2rem;
 }
 
 /* 빈 p 태그 숨기기 (중앙 정렬 시 생성되는 빈 태그 처리) */
@@ -428,11 +430,10 @@ html, body {
     display: none !important;
 }
 
-/* br 태그만 있는 p 태그도 최소 높이로 처리 */
+/* br 태그만 있는 p 태그 처리 - 높이 제한 제거 */
 #slide-content p:has(br):not(:has(text)) {
     margin: 0;
     padding: 0;
-    height: 0.5em;
 }
 
 /* Dark mode heading colors */
@@ -529,8 +530,9 @@ pre[class*=language-] {
     max-width: 100%;
     height: auto;
     border-radius: 0.5rem;
-    margin: 1rem auto;
+    margin: 0 auto;
     display: block;
+    flex-shrink: 0; /* 이미지 크기 유지 */
 }
 
 /* Fix flex layout for image + source combination */
@@ -580,6 +582,12 @@ pre[class*=language-] {
     list-style-position: outside;
     font-size: 3rem; /* 기본 텍스트 크기를 {large} 수준(3rem)으로 변경 */
     line-height: 1.8; /* 줄간격 개선 */
+}
+
+/* 리스트 아이템 내부의 이미지 */
+#slide-content li img {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 /* Override prose styles that might remove list markers */
@@ -762,8 +770,18 @@ pre[class*=language-] {
 }
 
 /* mermaid scale 조정 */
+.mermaid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
 .mermaid > svg {
-    transform: scale(1.5) translate(20%, 20%) !important;
+    max-width: 100%;
+    height: auto;
 }
 
 
