@@ -22,11 +22,11 @@ Claude Code와 연결해서 진행할 수도 있지만,
 
 # URL과 IP 기초 개념
 
-## URL (Uniform Resource Locator)
+**URL (Uniform Resource Locator)**
 * 웹사이트의 주소를 사람이 이해하기 쉽게 표현한 것
 * 예: www.google.com, www.naver.com
 
-## IP (Internet Protocol)
+**IP (Internet Protocol)**
 * 컴퓨터가 실제로 이해하는 숫자로 된 주소
 * 예: 172.217.25.110 (구글의 IP 주소 중 하나)
 

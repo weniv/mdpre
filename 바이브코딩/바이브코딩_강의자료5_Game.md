@@ -67,6 +67,8 @@ Front-end만으로도 훌륭한 게임과 광고를 붙어 수익을 창출할 �
 
 ---
 
+무엇인지만 살짝 보세요. 게임 개발은 필요하신 분에게만 pygame, three.js 쿠폰을 드립니다. phaser는 따로 쿠폰으로 제공하고 있진 않아요.
+
 * pygame: https://inf.run/rfDm7
 * threejs: https://inf.run/A8hBr
 * phaser: https://inf.run/3b2a1
