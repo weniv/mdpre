@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-이 파일은 Claude Code (claude.ai/code)가 이 저장소에서 코드 작업을 할 때 가이드를 제공합니다.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## 프로젝트 개요
 
@@ -96,3 +96,39 @@ WENIV Presenter는 Marp의 대안으로 제작된 GitHub Pages 기반 마크다�
 - **Mermaid 구문**:
   - ` ```mermaid ` - Mermaid 다이어그램 블록
   - 지원 다이어그램: flowchart, sequenceDiagram, classDiagram, stateDiagram-v2, erDiagram, gantt, pie, journey
+
+## 주요 메서드 및 API
+
+### GitHubMarkdownPresenter 클래스
+- `processCustomMarkdown(markdown)` - 커스텀 마크다운 문법 처리
+- `renderLaTeX(content)` - KaTeX를 사용한 수학 표현식 렌더링
+- `renderMermaid()` - Mermaid 다이어그램 렌더링
+- `searchMarkdownFiles(files, logoUrl)` - 마크다운 파일 탐색 및 로드
+- `exportToPDF()` - PDF로 내보내기 (브라우저 인쇄 기능 사용)
+- `togglePreview()` - 미리보기 모드 토글
+- `showTimer()` - 프레젠테이션 타이머 표시
+
+### GitHub API 사용
+- GitHub REST API를 통한 저장소 콘텐츠 접근
+- Rate limiting 고려 필요 (시간당 60회 미인증 요청)
+- 파일 탐색은 재귀적으로 디렉토리 구조 탐색
+
+## 테스트 및 디버깅
+
+- 특히 Tailwind CSS를 주로 사용하고 CSS를 최소화 하는 방식으로 개발되었는지 확인
+
+### 로컬 테스트
+- 브라우저 콘솔에서 에러 확인
+- Network 탭에서 GitHub API 호출 상태 확인
+- LaTeX/Mermaid 렌더링 실패 시 콘솔 로그 확인
+
+### 일반적인 문제 해결
+- CORS 에러: 로컬 서버에서 실행 필요
+- GitHub API rate limit: 1시간 대기 또는 인증 토큰 사용
+- 폰트 로딩 실패: `/font/` 디렉토리 경로 확인
+
+## 배포 시 주의사항
+- GitHub Pages 설정에서 올바른 브랜치 선택
+- `index.html`이 루트에 있는지 확인
+- 폰트 파일이 정상적으로 포함되었는지 확인
+- CDN 링크가 모두 HTTPS인지 확인
