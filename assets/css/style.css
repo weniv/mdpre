@@ -114,200 +114,50 @@
 }
 
 
-/* Body and html styling for viewport control */
-html, body {
-    margin: 0;
-    padding: 0;
-    overflow-x: clip;
-    min-height: 100vh;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
 
-/* Dark mode body styling */
-.dark body {
-    background-color: #111827;
-    color: #f9fafb;
-}
 
-/* Dark mode slide container */
-.dark #slide-container {
-    background-color: #111827;
-}
-
-/* Dark mode main background */
-.dark main {
-    background-color: #111827;
-}
-
-/* Force dark mode styles with higher specificity */
-.dark header {
-    background-color: #1f2937 !important;
-}
-
-.dark #slide-content {
-    background-color: #1f2937 !important;
-    color: #f9fafb !important;
-}
-
-.dark #repo-input-section {
-    background-color: #111827 !important;
-}
-
-.dark #repo-input-section .bg-white {
-    background-color: #1f2937 !important;
-}
-
-/* Dark mode navigation styles */
-.dark #slide-nav {
-    background-color: #1f2937 !important;
-}
-
-.dark #home-button {
-    background-color: #1f2937 !important;
-}
-
-.dark #fullscreen-toggle {
-    background-color: #1f2937 !important;
-}
+/* Dark mode styles - now handled by Tailwind classes in HTML */
 
 
 /* Help modal responsive and accessibility styles */
+/* Help modal - convert to Tailwind */
 #help-modal {
     backdrop-filter: blur(4px);
 }
 
 .help-accordion-btn:focus {
-    outline: 2px solid #2563eb;
-    outline-offset: 2px;
+    @apply outline-2 outline-blue-600 outline-offset-2;
 }
 
 .help-accordion-icon.rotated {
-    transform: rotate(180deg);
+    @apply rotate-180;
 }
 
-/* Mobile responsiveness for help modal */
-@media (max-width: 768px) {
-    #help-modal .max-w-4xl {
-        max-width: 95vw;
-        margin: 1rem;
-    }
-    
-    #help-modal .grid-cols-1.md\\:grid-cols-2 {
-        grid-template-columns: 1fr;
-    }
-    
-    #help-modal .p-6 {
-        padding: 1rem;
-    }
-    
-    #help-modal .space-y-4 > * + * {
-        margin-top: 0.75rem;
-    }
-}
 
-/* Smooth accordion animation */
+/* Help modal animations */
 .help-accordion-content {
-    transition: all 0.3s ease;
-    max-height: 0;
-    overflow: hidden;
+    @apply transition-all duration-300 ease-out max-h-0 overflow-hidden;
 }
 
 .help-accordion-content.open {
     max-height: 2000px;
 }
 
-/* Code block styling in help */
 .help-accordion-content .font-mono {
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    @apply font-mono;
 }
 
-.dark #file-nav-toggle {
-    background-color: #1f2937 !important;
-}
+/* Dark mode form elements - now handled by Tailwind classes */
 
-.dark #pdf-export-btn {
-    background-color: #1f2937 !important;
-}
 
-.dark #file-nav-sidebar {
-    background-color: #1f2937 !important;
-}
-
-/* Dark mode input styles */
-.dark #slide-nav input {
-    background-color: #374151 !important;
-    color: #f9fafb !important;
-    border-color: #6b7280 !important;
-}
-
-/* Dark mode all input, textarea, and select styles */
-.dark input[type="text"],
-.dark input[type="url"],
-.dark input[type="email"],
-.dark input[type="number"],
-.dark input[type="search"],
-.dark textarea,
-.dark select {
-    background-color: #374151 !important;
-    color: #f9fafb !important;
-    border-color: #6b7280 !important;
-}
-
-.dark input[type="text"]:focus,
-.dark input[type="url"]:focus,
-.dark input[type="email"]:focus,
-.dark input[type="number"]:focus,
-.dark input[type="search"]:focus,
-.dark textarea:focus,
-.dark select:focus {
-    background-color: #374151 !important;
-    color: #f9fafb !important;
-    border-color: #60a5fa !important;
-}
-
-.dark input[type="text"]::placeholder,
-.dark input[type="url"]::placeholder,
-.dark input[type="email"]::placeholder,
-.dark input[type="number"]::placeholder,
-.dark input[type="search"]::placeholder,
-.dark textarea::placeholder {
-    color: #9ca3af !important;
-}
-
-/* Slide content styling */
-#slide-content {
-    transition: all 0.3s ease-in-out;
-    max-width: 90vw;
-    width: 100%;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    font-size: 3rem; /* 기본 텍스트 크기를 {large} 수준(3rem)으로 변경 */
-    line-height: 1.8; /* 줄간격 개선 */
-    display: flex; /* flexbox로 설정 */
-    flex-direction: column; /* 세로 방향 정렬 */
-    gap: 1.5rem; /* 요소 간 간격 설정 */
-}
-
-/* Slide container viewport control */
 #slide-container {
-    min-height: calc(100vh - 64px); /* Account for header height */
-    max-height: calc(100vh - 64px);
-    overflow-y: auto;
-    overflow-x: hidden;
-    display: flex;
-    align-items: center; /* 중앙정렬 */
-    justify-content: center;
-    padding: 2rem 1rem;
-    scroll-behavior: smooth; /* 부드러운 스크롤 */
-    -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
-    scrollbar-width: thin; /* Firefox 스크롤바 얇게 */
-    scrollbar-color: rgba(156, 163, 175, 0.5) transparent; /* Firefox 스크롤바 색상 */
+    /* Custom scrollbar styles */
+    background-color: white !important;
 }
 
-/* Center slide content properly */
-#slide-container #slide-content {
-    margin: auto;
-    align-self: center;
+/* dark mode styles */
+.dark #slide-container {
+    background-color: #1e293b !important;
 }
 
 /* Webkit scrollbar styling */
@@ -408,11 +258,11 @@ html, body {
 
 /* 빈 p 태그 숨기기 (중앙 정렬 시 생성되는 빈 태그 처리) */
 #slide-content p:empty {
-    display: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    height: 0 !important;
-    line-height: 0 !important;
+    display: none;
+    margin: 0;
+    padding: 0;
+    height: 0;
+    line-height: 0;
 }
 
 /* 공백만 있는 p 태그 처리 */
@@ -422,12 +272,12 @@ html, body {
 
 /* 빈 p 태그가 인라인 스타일을 가지고 있어도 숨기기 */
 #slide-content p[style]:empty {
-    display: none !important;
+    display: none;
 }
 
 /* text-center 내부의 빈 p 태그 처리 */
 .text-center p:empty {
-    display: none !important;
+    display: none;
 }
 
 /* br 태그만 있는 p 태그 처리 - 높이 제한 제거 */
@@ -522,7 +372,7 @@ html, body {
 /* Code block font size adjustment */
 code[class*=language-], 
 pre[class*=language-] {
-    font-size: 0.7em !important;
+    font-size: 0.7em;
 }
 
 /* Images */
@@ -593,17 +443,17 @@ pre[class*=language-] {
 /* Override prose styles that might remove list markers */
 .prose ul li,
 .prose ol li {
-    list-style: inherit !important;
-    display: list-item !important;
-    margin: 0.5rem 0 !important;
+    list-style: inherit;
+    display: list-item;
+    margin: 0.5rem 0;
 }
 
 .prose ul {
-    list-style-type: disc !important;
+    list-style-type: disc;
 }
 
 .prose ol {
-    list-style-type: decimal !important;
+    list-style-type: decimal;
 }
 
 /* Blockquotes */
@@ -654,119 +504,53 @@ pre[class*=language-] {
     background-color: #374151;
 }
 
-/* Fullscreen mode */
+/* Fullscreen mode - use Tailwind classes in JS */
 .fullscreen {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    z-index: 9999 !important;
-    background: #fff !important;
-    padding: 2rem !important;
-    overflow: auto;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    /* Fullscreen styles now handled by Tailwind classes added via JavaScript */
 }
 
-.dark .fullscreen {
-    background: #111827 !important;
+/* Fullscreen API native mode - very high specificity to override Tailwind */
+body #presentation-section #slide-container:fullscreen,
+body #slide-container:fullscreen,
+body #slide-container:-webkit-full-screen,
+body #slide-container:-moz-full-screen,
+body #slide-container:-ms-fullscreen {
+    background-color: #ffffff;
 }
 
-/* Fullscreen API native mode - ensure white background */
-#slide-container:fullscreen {
-    background: #fff !important;
+body.dark #presentation-section #slide-container:fullscreen,
+body.dark #slide-container:fullscreen,
+body.dark #slide-container:-webkit-full-screen,
+body.dark #slide-container:-moz-full-screen,
+body.dark #slide-container:-ms-fullscreen {
+    background-color: #111827;
 }
 
-.dark #slide-container:fullscreen {
-    background: #111827 !important;
+/* Fallback fullscreen mode for browsers without fullscreen API */
+body #slide-container.fullscreen-fallback {
+    background-color: #ffffff;
 }
 
-/* Webkit prefix */
-#slide-container:-webkit-full-screen {
-    background: #fff !important;
+body.dark #slide-container.fullscreen-fallback {
+    background-color: #111827;
 }
 
-.dark #slide-container:-webkit-full-screen {
-    background: #111827 !important;
-}
-
-/* Mozilla prefix */
-#slide-container:-moz-full-screen {
-    background: #fff !important;
-}
-
-.dark #slide-container:-moz-full-screen {
-    background: #111827 !important;
-}
-
-/* MS prefix */
-#slide-container:-ms-fullscreen {
-    background: #fff !important;
-}
-
-.dark #slide-container:-ms-fullscreen {
-    background: #111827 !important;
-}
-
-.fullscreen #slide-content {
-    max-width: none !important;
-    width: 100% !important;
-    height: auto !important;
-    min-height: 70vh !important; /* 전체화면에서도 최소 높이 유지 */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 5rem !important;
-    box-shadow: none !important;
-    margin: auto !important;
-    align-self: center !important;
-}
-
-/* Fullscreen UI adjustments */
-.fullscreen #slide-nav {
-    position: fixed !important;
-    top: 20px !important;
-    right: 20px !important;
-    z-index: 10000 !important;
-}
-
-.fullscreen #home-button {
-    position: fixed !important;
-    top: 20px !important;
-    left: 20px !important;
-    z-index: 10000 !important;
-}
-
-.fullscreen #fullscreen-toggle {
-    position: fixed !important;
-    top: 20px !important;
-    left: 68px !important;
-    z-index: 10000 !important;
-}
 
 /* Slide transitions */
 .slide-enter {
-    transform: translateX(100%);
-    opacity: 0;
+    @apply translate-x-full opacity-0;
 }
 
 .slide-enter-active {
-    transform: translateX(0);
-    opacity: 1;
-    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    @apply translate-x-0 opacity-100 transition-all duration-300 ease-out;
 }
 
 .slide-exit {
-    transform: translateX(0);
-    opacity: 1;
+    @apply translate-x-0 opacity-100;
 }
 
 .slide-exit-active {
-    transform: translateX(-100%);
-    opacity: 0;
-    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    @apply -translate-x-full opacity-0 transition-all duration-300 ease-out;
 }
 
 /* mermaid scale 조정 */
@@ -795,13 +579,13 @@ pre[class*=language-] {
 
 /* Hide footer in presentation mode for all devices */
 body:has(#presentation-section:not(.hidden)) .footer-container {
-    display: none !important;
+    display: none;
 }
 
 /* Hide header in presentation mode on mobile only */
 @media (max-width: 768px) {
     #presentation-section header {
-        display: none !important;
+        display: none;
     }
 }
 
@@ -837,75 +621,75 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
 
 /* Bottom navigation always visible in presentation */
 #presentation-section #bottom-nav-container {
-    position: fixed !important;
-    bottom: 20px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    z-index: 10000 !important;
-    display: flex !important;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    display: flex;
 }
 
 /* Force bottom navigation to be visible on mobile in presentation */
 @media (max-width: 768px) {
     #presentation-section #bottom-nav-container {
-        position: fixed !important;
-        bottom: 10px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        z-index: 99999 !important;
-        display: flex !important;
-        opacity: 1 !important;
-        visibility: visible !important;
+        position: fixed;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 99999;
+        display: flex;
+        opacity: 1;
+        visibility: visible;
     }
     
     /* Hide unnecessary buttons on mobile */
     #presentation-section #pdf-export-btn,
     #presentation-section #markdown-export-btn,
     #presentation-section #fullscreen-toggle {
-        display: none !important;
+        display: none;
     }
     
     /* Ensure navigation container is always visible on mobile */
     #bottom-nav-container {
-        position: fixed !important;
-        bottom: 30px !important; /* 기존 10px에서 30px로 변경하여 바닥과의 간격 증가 */
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        z-index: 99999 !important;
-        display: flex !important;
-        opacity: 1 !important;
-        visibility: visible !important;
+        position: fixed;
+        bottom: 30px; /* 기존 10px에서 30px로 변경하여 바닥과의 간격 증가 */
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 99999;
+        display: flex;
+        opacity: 1;
+        visibility: visible;
     }
     
     /* Hide logo on mobile with stronger rules */
     #presentation-logo,
     #presentation-section #presentation-logo {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
+        display: none;
+        visibility: hidden;
+        opacity: 0;
     }
 }
 
 /* Hide elements on mobile */
 @media (max-width: 640px) {
     #local-file-fields {
-        display: none !important;
+        display: none;
     }
     
     .footer-container {
-        display: none !important;
+        display: none;
     }
     
     /* Hide specific buttons on mobile */
     #pdf-export-btn,
     #markdown-export-btn,
     #fullscreen-toggle {
-        display: none !important;
+        display: none;
     }
     
     /* Hide logo on mobile */
     #presentation-logo {
-        display: none !important;
+        display: none;
     }
 }
 
@@ -1525,18 +1309,9 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     opacity: 1;
 }
 
-/* Loading spinner animation */
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
+/* Loading spinner - use Tailwind's animate-spin */
 .animate-spin {
-    animation: spin 1s linear infinite;
+    @apply animate-spin;
 }
 
 /* Repository History Styles */
@@ -1619,62 +1394,51 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
 
 /* Custom text formatting classes */
 .text-center {
-    text-align: center;
-    margin: 1.5rem 0; /* 여백 확대 */
-    font-size: inherit; /* 부모 요소(#slide-content)의 3rem 폰트 크기 상속 */
-    line-height: 1.8; /* 줄간격 개선 */
+    @apply text-center my-6;
+    font-size: inherit;
+    line-height: 1.8;
 }
 
-/* Slide content의 text-center만 상하 중앙정렬 */
 #slide-content .text-center {
-    display: block;
-    text-align: center;
-    margin: 1.5rem auto;
+    @apply block text-center mx-auto my-6;
 }
 
-/* Center class list handling - 더 높은 우선순위로 설정 */
+/* Center class list handling */
 #slide-content .text-center ul,
 #slide-content .text-center ol {
-    display: block;
-    text-align: center; /* 목록 전체를 중앙 정렬 */
-    list-style-position: inside !important; /* 중앙정렬을 위해 inside로 강제 변경 */
-    margin: 1rem auto;
-    width: fit-content;
-    padding-left: 0; /* 기본 패딩 제거 */
+    @apply block text-center my-4 mx-auto w-fit pl-0;
+    list-style-position: inside;
 }
 
 #slide-content .text-center ul {
-    list-style-type: disc;
+    @apply list-disc;
 }
 
 #slide-content .text-center ol {
-    list-style-type: decimal;
+    @apply list-decimal;
 }
 
 #slide-content .text-center li {
-    text-align: center !important; /* 각 목록 항목도 중앙 정렬 강제 적용 */
-    list-style-position: inside !important; /* 중앙정렬을 위해 inside로 강제 변경 */
+    @apply text-center;
+    list-style-position: inside;
 }
 
 .text-large {
-    font-size: 3rem; /* 기본 폰트 크기와 동일 (무시됨) */
-    line-height: 1.6; /* 줄간격 개선 */
-    font-weight: 500;
-    margin: 1.5rem 0; /* 여백 확대 */
+    @apply font-medium my-6;
+    font-size: 3rem;
+    line-height: 1.6;
 }
 
 .text-small {
-    font-size: 2.5rem; /* 이전 기본 폰트 크기 (2.5rem) */
-    line-height: 1.6; /* 줄간격 개선 */
-    font-weight: 400;
-    margin: 1rem 0; /* 여백 */
+    @apply font-normal my-4;
+    font-size: 2.5rem;
+    line-height: 1.6;
 }
 
 .text-xlarge {
-    font-size: 4rem; /* 200% 확대 */
-    line-height: 1.5; /* 줄간격 개선 */
-    font-weight: 600;
-    margin: 2rem 0; /* 여백 확대 */
+    @apply font-semibold my-8;
+    font-size: 4rem;
+    line-height: 1.5;
 }
 
 .text-highlight {
@@ -1723,44 +1487,19 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
 }
 
 .text-bold {
-    font-weight: 700;
-    color: #1f2937;
-    font-size: inherit; /* 부모 요소의 폰트 크기 상속 */
-    line-height: inherit; /* 부모 요소의 줄간격 상속 */
+    @apply font-bold text-gray-800 dark:text-gray-100;
+    font-size: inherit;
+    line-height: inherit;
 }
 
-.dark .text-bold {
-    color: #f9fafb;
-}
-
-/* Font family classes */
-.font-family-default {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
-
-.font-family-bmjua {
-    font-family: 'BMJUA', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-.font-family-bmhanna {
-    font-family: 'BMHANNA', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-.font-family-bmdohyeon {
-    font-family: 'BMDOHYEON', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-.font-family-bmyeonsung {
-    font-family: 'BMYEONSUNG', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-.font-family-bmeuljirot {
-    font-family: 'BMEULJIROT', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-.font-family-maruburi {
-    font-family: 'MaruBuri', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
+/* Font family classes - keep as-is for custom fonts */
+.font-family-default { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+.font-family-bmjua { font-family: 'BMJUA', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+.font-family-bmhanna { font-family: 'BMHANNA', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+.font-family-bmdohyeon { font-family: 'BMDOHYEON', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+.font-family-bmyeonsung { font-family: 'BMYEONSUNG', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+.font-family-bmeuljirot { font-family: 'BMEULJIROT', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+.font-family-maruburi { font-family: 'MaruBuri', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
 /* Select dropdown styling */
 #folder-dropdown {
@@ -1943,23 +1682,6 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     }
 }
 
-/* Update fullscreen styles for new bottom navigation */
-.fullscreen #bottom-nav-container {
-    position: fixed !important;
-    bottom: 20px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    z-index: 10000 !important;
-}
-
-/* Hide old navigation in fullscreen */
-.fullscreen #slide-nav,
-.fullscreen #home-button,
-.fullscreen #fullscreen-toggle,
-.fullscreen #file-nav-toggle,
-.fullscreen #pdf-export-btn {
-    display: none !important;
-}
 
 /* Ensure file navigation sidebar is positioned correctly */
 #file-nav-sidebar {

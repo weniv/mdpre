@@ -2031,7 +2031,10 @@ class GitHubMarkdownPresenter {
             container.msRequestFullscreen();
         } else {
             // Fallback for browsers that don't support fullscreen API
-            container.classList.add('fullscreen');
+            // Add fullscreen classes with proper theme handling
+            container.classList.add('fixed', 'inset-0', 'z-[9999]', 'p-8', 'overflow-auto', 'flex', 'items-center', 'justify-center');
+            // Add specific fullscreen background class
+            container.classList.add('fullscreen-fallback');
             this.isFullscreen = true;
         }
     }
@@ -2045,7 +2048,9 @@ class GitHubMarkdownPresenter {
             document.msExitFullscreen();
         } else {
             // Fallback
-            document.getElementById('slide-container').classList.remove('fullscreen');
+            const container = document.getElementById('slide-container');
+            // Remove all fullscreen classes
+            container.classList.remove('fixed', 'inset-0', 'z-[9999]', 'bg-white', 'bg-gray-900', 'p-8', 'overflow-auto', 'flex', 'items-center', 'justify-center', 'fullscreen-fallback');
             this.isFullscreen = false;
         }
     }
@@ -2057,6 +2062,8 @@ class GitHubMarkdownPresenter {
         } else {
             html.classList.add('dark');
         }
+        
+        // Fullscreen background will be handled automatically by CSS classes
     }
 
     openSettings() {
