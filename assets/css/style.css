@@ -149,17 +149,6 @@
 
 /* Dark mode form elements - now handled by Tailwind classes */
 
-
-#slide-container {
-    /* Custom scrollbar styles */
-    background-color: white !important;
-}
-
-/* dark mode styles */
-.dark #slide-container {
-    background-color: #1e293b !important;
-}
-
 /* Webkit scrollbar styling */
 #slide-container::-webkit-scrollbar {
     width: 6px;
@@ -506,7 +495,12 @@ pre[class*=language-] {
 
 /* Fullscreen mode - use Tailwind classes in JS */
 .fullscreen {
-    /* Fullscreen styles now handled by Tailwind classes added via JavaScript */
+    background-color: white !important;
+}
+
+/* dark mode and fullscreen styles */
+.dark .fullscreen {
+    background-color: #111827 !important; /* Dark mode background */
 }
 
 /* Fullscreen API native mode - very high specificity to override Tailwind */
