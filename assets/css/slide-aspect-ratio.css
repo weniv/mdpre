@@ -1,0 +1,82 @@
+/* 16:9 슬라이드 비율 설정 - 텍스트 양에 따라 높이 확장 */
+#slide-content {
+    min-height: calc(min(80vw, 80vh) * 0.5625) !important; /* 16:9 비율 기반 최소 높이, 크기 축소 */
+    max-width: min(80vw, calc(80vh * 16/9)) !important; /* 슬라이드 크기 축소 */
+    width: min(80vw, calc(80vh * 16/9)) !important;
+    height: auto !important; /* 텍스트가 많을 때 높이 확장 */
+    overflow: visible !important; /* 모든 overflow를 visible로 설정 */
+    max-height: none !important; /* 최대 높이 제한 제거 */
+}
+
+/* 전체화면에서 그림자 제거 */
+.fullscreen #slide-content,
+:fullscreen #slide-content {
+    box-shadow: none !important;
+    overflow: visible !important;
+    max-height: none !important;
+}
+
+/* iOS Safari의 fullscreen 처리 */
+.webkit-fullscreen #slide-content {
+    box-shadow: none !important;
+    overflow: visible !important;
+    max-height: none !important;
+}
+
+/* 폴백 전체화면 처리 */
+.fullscreen-fallback #slide-content {
+    box-shadow: none !important;
+    overflow: visible !important;
+    max-height: none !important;
+}
+
+/* {center} 구문 완전 중앙 정렬 */
+#slide-content .text-center {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    height: 100% !important;
+    margin: auto !important;
+}
+
+#slide-content .text-center p,
+#slide-content .text-center h1,
+#slide-content .text-center h2,
+#slide-content .text-center h3,
+#slide-content .text-center h4,
+#slide-content .text-center h5,
+#slide-content .text-center h6 {
+    text-align: center !important;
+    margin: 0.5rem auto !important;
+}
+
+#slide-content .text-center ul,
+#slide-content .text-center ol {
+    text-align: center !important;
+    list-style-position: inside !important;
+    margin: 0.5rem auto !important;
+    width: fit-content !important;
+}
+
+#slide-content .text-center li {
+    text-align: center !important;
+}
+
+/* 반응형 처리 */
+@media (max-width: 768px) {
+    #slide-content {
+        min-height: calc(90vw * 0.5625) !important; /* 모바일에서는 더 큰 사이즈 */
+        max-width: 90vw !important;
+        width: 90vw !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #slide-content {
+        min-height: calc(90vw * 0.5625) !important; /* 소형 모바일에서도 큰 사이즈 */
+        max-width: 90vw !important;
+        width: 90vw !important;
+    }
+}

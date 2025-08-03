@@ -697,7 +697,9 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         padding: 1.5rem;
         font-size: 1.5rem; /* 150% of base for mobile */
         line-height: 1.7; /* 모바일 줄간격 조정 */
-        min-height: 50vh; /* 모바일에서 최소 높이 조정 */
+        min-height: calc(56.25vw * 0.9) !important; /* 16:9 비율 유지 */
+        aspect-ratio: 16/9 !important;
+        max-width: min(90vw, calc(90vh * 16/9)) !important;
     }
     
     #slide-content h1 {
@@ -765,7 +767,9 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         padding: 1rem;
         font-size: 1.25rem; /* 125% of base for small mobile */
         line-height: 1.6; /* 소형 모바일 줄간격 조정 */
-        min-height: 45vh; /* 소형 모바일에서 최소 높이 조정 */
+        min-height: calc(56.25vw * 0.9) !important; /* 16:9 비율 유지 */
+        aspect-ratio: 16/9 !important;
+        max-width: min(90vw, calc(90vh * 16/9)) !important;
     }
     
     #slide-content h1 {
