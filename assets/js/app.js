@@ -224,6 +224,10 @@ class GitHubMarkdownPresenter {
             if (e.key === 'Enter') {
                 this.goToPageInput(e.target.value);
             }
+            // Prevent backspace from navigating back when input is empty
+            if (e.key === 'Backspace' && e.target.value === '') {
+                e.preventDefault();
+            }
         });
 
         // Theme toggle

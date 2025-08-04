@@ -84,7 +84,7 @@
     <!-- Header -->
     <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 relative overflow-visible">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
+            <div class="flex justify-between items-center h-16 mt-1.5">
                 <div class="flex items-center space-x-4">
                     <h1 class="text-xl font-bold text-gray-900 dark:text-white">
                         <button id="logo-btn" class="hover:opacity-80 transition-opacity">
@@ -252,7 +252,7 @@
                                 <!-- External Links -->
                                 <div class="pt-3 space-y-2">
                                     <a href="https://github.com/weniv/mdpre" target="_blank" rel="noopener noreferrer" 
-                                       class="flex items-center justify-center w-full px-3 py-2 text-sm bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-colors">
+                                       class="flex items-center justify-center w-full px-3 py-2 text-sm bg-gray-800 dark:bg-gray-700 text-white rounded-md hover:bg-gray-900 dark:hover:bg-gray-600 transition-colors">
                                         <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
                                             <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                                         </svg>
@@ -434,8 +434,10 @@
                                             </div>
                                             <div class="flex items-center space-x-2">
                                                 <button type="button" id="save-markdown-toolbar-btn" class="flex items-center justify-center px-3 h-8 text-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors text-xs font-medium" title="마크다운 저장">
-                                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"/>
+                                                    <svg width="28" height="26" viewBox="0 0 28 26" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1">
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M3.6 2.5001C2.93726 2.5001 2.4 3.03736 2.4 3.7001V21.3001C2.4 22.4047 3.29543 23.3001 4.4 23.3001H23.6C24.7046 23.3001 25.6 22.4047 25.6 21.3001V6.9001C25.6 6.23736 25.0627 5.7001 24.4 5.7001H16C14.8669 5.7001 13.7999 5.1666 13.12 4.2601L12.16 2.9801C11.9334 2.67793 11.5777 2.5001 11.2 2.5001H3.6ZM0 3.7001C0 1.71187 1.61178 0.100098 3.6 0.100098H11.2C12.3331 0.100098 13.4001 0.633597 14.08 1.5401L15.04 2.8201C15.2666 3.12226 15.6223 3.3001 16 3.3001H24.4C26.3882 3.3001 28 4.91187 28 6.9001V21.3001C28 23.7302 26.0301 25.7001 23.6 25.7001H4.4C1.96995 25.7001 0 23.7302 0 21.3001V3.7001Z" fill="currentColor"/>
+                                                        <path d="M5.72803 9.50391H7.88803L10.264 15.2639H10.36L12.712 9.50391H14.896V17.9999H13.168V12.4319H13.096L10.888 17.9519H9.71203L7.50403 12.4319H7.43203V17.9999H5.72803V9.50391Z" fill="currentColor"/>
+                                                        <path d="M19.2861 17.9999H16.3101V9.50391H19.3341C21.8781 9.51591 23.4501 11.0999 23.4381 13.7519C23.4501 16.4039 21.8781 17.9999 19.2861 17.9999ZM18.0621 16.4879H19.2141C20.8341 16.4879 21.6861 15.6479 21.6861 13.7519C21.6861 11.8559 20.8341 11.0279 19.2381 11.0159H18.0621V16.4879Z" fill="currentColor"/>
                                                     </svg>
                                                     Save
                                                 </button>
