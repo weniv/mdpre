@@ -511,7 +511,7 @@ class GitHubMarkdownPresenter {
                     <div class="history-item-info">
                         <div class="history-item-url">직접 입력</div>
                         <div class="history-item-folder text-sm text-gray-600">${preview}</div>
-                        <div class="text-xs text-gray-500">마크다운 직접 입력</div>
+                        <div class="text-xs text-gray-500">프레젠테이션 작성</div>
                     </div>
                 `;
             }

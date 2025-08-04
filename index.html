@@ -298,11 +298,11 @@
                         <div class="flex flex-col space-y-2 mb-4">
                             <label class="hidden sm:flex items-center cursor-pointer">
                                 <input type="radio" name="repo-source" value="local" id="local-files" class="mr-2 text-blue-600" checked>
-                                <span class="text-gray-700 dark:text-white">노션 또는 로컬 파일 불러오기</span>
+                                <span class="text-gray-700 dark:text-white">노션 또는 파일 업로드</span>
                             </label>
                             <label class="hidden sm:flex items-center cursor-pointer">
                                 <input type="radio" name="repo-source" value="direct" id="direct-input" class="mr-2 text-blue-600">
-                                <span class="text-gray-700 dark:text-white">마크다운 직접 입력하기</span>
+                                <span class="text-gray-700 dark:text-white">프레젠테이션 작성</span>
                             </label>
                             <label class="flex items-center cursor-pointer">
                                 <input type="radio" name="repo-source" value="current" id="current-repo" class="mr-2 text-blue-600">
@@ -310,7 +310,7 @@
                             </label>
                             <label class="flex items-center cursor-pointer">
                                 <input type="radio" name="repo-source" value="custom" id="custom-repo" class="mr-2 text-blue-600">
-                                <span class="text-gray-700 dark:text-white">다른 URL에서 발표자료 선택</span>
+                                <span class="text-gray-700 dark:text-white">다른 URL에서 불러오기</span>
                             </label>
                         </div>
                     </div>
@@ -442,12 +442,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <textarea id="markdown-textarea" rows="10" placeholder="마크다운 내용을 직접 입력하세요..."
+                                    <textarea id="markdown-textarea" rows="10" placeholder="마크다운을 입력하세요. --- 으로 슬라이드를 구분합니다." 
                                               class="w-full px-3 py-2 focus:outline-none focus:ring-0 dark:bg-gray-700 dark:text-white resize-vertical border-0"></textarea>
                                 </div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                    마크다운 형식으로 프레젠테이션 내용을 입력하세요. --- 으로 슬라이드를 구분합니다.
-                                </p>
                             </div>
                         </div>
                         
@@ -460,19 +457,19 @@
                             </select>
                         </div>
                         
-                        <button type="button" id="search-folders-btn" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                        <button type="button" id="search-folders-btn" class="w-full bg-[#2E6FF2] text-white py-2 px-4 rounded-md hover:bg-[#2563C4] focus:outline-none focus:ring-2 focus:ring-[#2E6FF2] focus:ring-offset-2 transition-colors">
                             폴더 검색하기
                         </button>
                         
-                        <button type="button" id="load-local-files-btn" class="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors hidden">
-                            로컬 파일 로드
+                        <button type="button" id="load-local-files-btn" class="w-full bg-[#2E6FF2] text-white py-2 px-4 rounded-md hover:bg-[#2563C4] focus:outline-none focus:ring-2 focus:ring-[#2E6FF2] focus:ring-offset-2 transition-colors hidden">
+                            프레젠테이션 로드
                         </button>
                         
-                        <button type="button" id="load-direct-input-btn" class="w-full bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors hidden">
-                            입력한 마크다운 로드
+                        <button type="button" id="load-direct-input-btn" class="w-full bg-[#2E6FF2] text-white py-2 px-4 rounded-md hover:bg-[#2563C4] focus:outline-none focus:ring-2 focus:ring-[#2E6FF2] focus:ring-offset-2 transition-colors hidden">
+                            프레젠테이션 로드
                         </button>
                         
-                        <button type="submit" id="load-presentation-btn" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors hidden">
+                        <button type="submit" id="load-presentation-btn" class="w-full bg-[#2E6FF2] text-white py-2 px-4 rounded-md hover:bg-[#2563C4] focus:outline-none focus:ring-2 focus:ring-[#2E6FF2] focus:ring-offset-2 transition-colors hidden">
                             프레젠테이션 로드
                         </button>
                         
@@ -578,23 +575,23 @@
                         <!-- Previous Button -->
                         <button id="prev-slide" class="p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white disabled:opacity-50">
                             <svg width="32" height="33" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect x="0.000488281" y="0.463013" width="32" height="32" rx="10" fill="white"/>
+                                <rect x="0.000488281" y="0.463013" width="32" height="32" rx="10" fill="transparent" class="dark:fill-transparent"/>
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M19.1976 9.46328C19.5099 9.77565 19.5099 10.2821 19.1976 10.5945L13.3642 16.4279L19.1976 22.2613C19.5099 22.5737 19.5099 23.0801 19.1976 23.3925C18.8852 23.7048 18.3788 23.7048 18.0664 23.3925L11.6674 16.9935C11.355 16.6811 11.355 16.1747 11.6674 15.8623L18.0664 9.46328C18.3788 9.15091 18.8852 9.15091 19.1976 9.46328Z" fill="#8D9299"/>
                             </svg>
                         </button>
                         
                         <!-- Page Input -->
-                        <div class="flex items-center space-x-1">
-                            <input type="number" id="page-input" min="1" max="1" value="1" 
-                                       class="w-12 h-4 px-0 py-0 text-sm text-center bg-transparent border-none outline-none text-gray-900 dark:text-white leading-none">
-                            <span class="text-sm font-medium text-gray-700 dark:text-white">/</span>
-                            <span id="total-pages" class="text-sm font-medium text-gray-700 dark:text-white">1</span>
+                            <div class="flex items-center space-x-1">
+                                <input type="text" id="page-input" value="1" 
+                                           class="h-4 w-4 px-0 py-0 text-sm text-center bg-transparent border-none outline-none text-gray-900 dark:text-white leading-none">
+                                <span class="text-sm font-medium text-gray-700 dark:text-white">/</span>
+                                <span id="total-pages" class="text-sm font-medium text-gray-700 dark:text-white">1</span>
                         </div>
                         
                         <!-- Next Button -->
                         <button id="next-slide" class="p-2 rounded-md text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white disabled:opacity-50">
                             <svg width="33" height="33" viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect x="0.613281" y="0.463013" width="32" height="32" rx="10" fill="white"/>
+                                <rect x="0.613281" y="0.463013" width="32" height="32" rx="10" fill="transparent" class="dark:fill-transparent"/>
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M13.3466 23.3926C13.0342 23.0802 13.0342 22.5737 13.3466 22.2614L19.18 16.428L13.3466 10.5946C13.0342 10.2822 13.0342 9.77573 13.3466 9.46336C13.659 9.15099 14.1654 9.15099 14.4778 9.46336L20.8768 15.8624C21.1892 16.1747 21.1892 16.6812 20.8768 16.9936L14.4778 23.3926C14.1654 23.7049 13.659 23.7049 13.3466 23.3926Z" fill="#8D9299"/>
                             </svg>
                         </button>
@@ -692,7 +689,7 @@
                                 <div class="space-y-3 text-sm text-gray-700 dark:text-white">
                                     <h4 class="font-medium text-gray-900 dark:text-white">마크다운 파일 업로드</h4>
                                     <ul class="list-disc pl-5 space-y-1">
-                                        <li>"노션 또는 로컬 파일 불러오기" 선택 후 파일 선택 버튼 클릭</li>
+                                        <li>"노션 또는 파일 업로드" 선택 후 파일 선택 버튼 클릭</li>
                                         <li>.md 파일을 직접 선택하거나 드래그 앤 드롭으로 업로드</li>
                                         <li>여러 개의 마크다운 파일을 동시에 업로드 가능</li>
                                     </ul>
@@ -882,13 +879,14 @@
 
     <!-- Footer -->
     <footer class="footer-container hidden sm:block">
-        <div class="footer-content">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="footer-content">
             <!-- Left Text Section -->
             <div class="footer-text">
                 <!-- Logo and Copyright Section -->
-                <div class="footer-logo-section">
+                <div class="footer-logo-section space-x-4">
                     <div class="footer-logo">
-                        <svg width="280" height="27" viewBox="0 0 280 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="268" height="27" viewBox="0 0 268 27" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <g clip-path="url(#clip0_footer)">
                                 <!-- weniv part -->
                                 <path d="M77.15 7.72998C70.78 7.72998 65.61 12.85 65.61 19.15C65.61 20.13 66.41 20.92 67.4 20.92C68.39 20.92 69.19 20.13 69.19 19.15C69.19 14.81 72.76 11.27 77.15 11.27C81.54 11.27 85.11 14.8 85.11 19.15C85.11 20.13 85.91 20.92 86.9 20.92C87.89 20.92 88.69 20.13 88.69 19.15C88.69 12.85 83.51 7.72998 77.15 7.72998Z" fill="#8D9299"/>
@@ -921,7 +919,7 @@
                 </div>
                 
                 <p class="footer-text-content">
-                    (주)위니브| 대표: 이호준 | 사업자번호: 546-86-01737 | 정보통신업 | 주소: 제주 제주시 구산로 58 2층 | 전화: 070-8656-2949 | 이메일: paul-lab@naver.com
+                    (주)위니브| 대표: 이호준 | 사업자번호: 546-86-01737 | 정보통신업 | 주소: 제주 제주시 구산로 58 2층
                 </p>
             </div>
             
@@ -958,6 +956,7 @@
                     </svg>
                 </a>
             </div>
+        </div>
         </div>
     </footer>
 
