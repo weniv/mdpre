@@ -258,12 +258,12 @@ class GitHubMarkdownPresenter {
         // Page input navigation
         document.getElementById('page-input').addEventListener('change', (e) => this.goToPageInput(e.target.value));
         document.getElementById('page-input').addEventListener('keydown', (e) => {
+            // Stop propagation to prevent global keyboard shortcuts
+            e.stopPropagation();
+            
             if (e.key === 'Enter') {
                 this.goToPageInput(e.target.value);
-            }
-            // Prevent backspace from navigating back when input is empty
-            if (e.key === 'Backspace' && e.target.value === '') {
-                e.preventDefault();
+                e.preventDefault(); // Prevent form submission
             }
         });
 
@@ -1030,6 +1030,19 @@ class GitHubMarkdownPresenter {
         let keyboardIndicator = null;
 
         document.addEventListener('keydown', (e) => {
+            // Skip keyboard navigation if user is typing in an input, textarea, or select
+            const activeElement = document.activeElement;
+            const isInputFocused = activeElement && (
+                activeElement.tagName === 'INPUT' || 
+                activeElement.tagName === 'TEXTAREA' || 
+                activeElement.tagName === 'SELECT' ||
+                activeElement.contentEditable === 'true'
+            );
+            
+            if (isInputFocused) {
+                return; // Don't handle keyboard shortcuts when typing
+            }
+            
             // Debug mode: log all key events when in presentation mode
             if (this.slides.length > 0) {
                 console.log('Key pressed:', {
@@ -4205,6 +4218,19 @@ document.addEventListener('click', (e) => {
 
 // Prevent default behavior for certain keys (except arrows for scrolling in presentation mode)
 document.addEventListener('keydown', (e) => {
+    // Skip if user is typing in an input
+    const activeElement = document.activeElement;
+    const isInputFocused = activeElement && (
+        activeElement.tagName === 'INPUT' || 
+        activeElement.tagName === 'TEXTAREA' || 
+        activeElement.tagName === 'SELECT' ||
+        activeElement.contentEditable === 'true'
+    );
+    
+    if (isInputFocused) {
+        return; // Don't prevent default when typing
+    }
+    
     if (['Space'].includes(e.code)) {
         if (e.target === document.body || e.target.tagName === 'BUTTON') {
             e.preventDefault();
@@ -4268,7 +4294,17 @@ GitHubMarkdownPresenter.prototype.setupHelpAccordion = function() {
 
 // ESC key handler for modals
 document.addEventListener('keydown', (e) => {
+    // Skip if user is typing in an input
+    const activeElement = document.activeElement;
+    const isInputFocused = activeElement && (
+        activeElement.tagName === 'INPUT' || 
+        activeElement.tagName === 'TEXTAREA' || 
+        activeElement.tagName === 'SELECT' ||
+        activeElement.contentEditable === 'true'
+    );
+    
     if (e.key === 'Escape') {
+        // Allow ESC to work even in inputs for closing modals
         const helpModal = document.getElementById('help-modal');
         const settingsDropdown = document.getElementById('settings-dropdown');
         
