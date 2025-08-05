@@ -364,6 +364,41 @@ pre[class*=language-] {
     font-size: 0.7em;
 }
 
+/* Mobile code font size adjustment */
+@media (max-width: 768px) {
+    #slide-content code {
+        font-size: 0.8rem !important; /* 모바일에서 고정 크기 */
+    }
+    
+    #slide-content pre {
+        font-size: 0.75rem !important; /* 모바일에서 고정 크기 */
+    }
+    
+    #slide-content pre code {
+        font-size: inherit !important; /* pre 태그의 크기 상속 */
+    }
+    
+    code[class*=language-], 
+    pre[class*=language-] {
+        font-size: 0.75rem !important; /* Prism 코드 블록도 고정 크기 */
+    }
+}
+
+@media (max-width: 480px) {
+    #slide-content code {
+        font-size: 0.7rem !important; /* 소형 모바일에서 더 작게 */
+    }
+    
+    #slide-content pre {
+        font-size: 0.65rem !important; /* 소형 모바일에서 더 작게 */
+    }
+    
+    code[class*=language-], 
+    pre[class*=language-] {
+        font-size: 0.65rem !important; /* 소형 모바일 Prism 코드 블록 */
+    }
+}
+
 /* Images */
 #slide-content img {
     max-width: 100%;
@@ -613,6 +648,27 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     }
 }
 
+/* Mobile styles - remove box styling from slide-content */
+@media (max-width: 768px) {
+    #slide-content {
+        box-shadow: none !important;
+        border: none !important;
+    }
+    
+    /* Expand content area to full slide-container on mobile */
+    #slide-container {
+        padding: 0 !important;
+        padding-top: 2rem !important; /* 모바일에서 상단 여백 추가 */
+    }
+    
+    #slide-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 2rem !important;
+    }
+}
+
 /* Bottom navigation always visible in presentation */
 #presentation-section #bottom-nav-container {
     position: fixed;
@@ -699,7 +755,10 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         line-height: 1.7; /* 모바일 줄간격 조정 */
         min-height: calc(56.25vw * 0.9) !important; /* 16:9 비율 유지 */
         aspect-ratio: 16/9 !important;
-        max-width: min(90vw, calc(90vh * 16/9)) !important;
+        max-width: 100% !important; /* 전체 너비 사용 */
+        margin: 0 !important; /* 여백 제거 */
+        box-shadow: none !important; /* 그림자 제거 */
+        border: none !important; /* 테두리 제거 */
     }
     
     #slide-content h1 {
@@ -769,7 +828,10 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         line-height: 1.6; /* 소형 모바일 줄간격 조정 */
         min-height: calc(56.25vw * 0.9) !important; /* 16:9 비율 유지 */
         aspect-ratio: 16/9 !important;
-        max-width: min(90vw, calc(90vh * 16/9)) !important;
+        max-width: 100% !important; /* 전체 너비 사용 */
+        margin: 0 !important; /* 여백 제거 */
+        box-shadow: none !important; /* 그림자 제거 */
+        border: none !important; /* 테두리 제거 */
     }
     
     #slide-content h1 {

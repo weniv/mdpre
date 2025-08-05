@@ -30,6 +30,9 @@ class GitHubMarkdownPresenter {
         this.checkKatexLoaded();
         this.checkMermaidLoaded();
         
+        // 모바일에서 items-center 클래스 제거
+        this.adjustMobileLayout();
+        
         // 초기 로딩 후 잠시 기다렸다가 자동으로 폴더 검색
         setTimeout(() => {
             const currentRepoRadio = document.getElementById('current-repo');
@@ -110,6 +113,40 @@ class GitHubMarkdownPresenter {
                 }
             }, 100);
         }
+    }
+
+    adjustMobileLayout() {
+        // 모바일 감지 (768px 이하)
+        const isMobile = window.innerWidth <= 768;
+        const slideContainer = document.getElementById('slide-container');
+        
+        if (slideContainer) {
+            if (isMobile) {
+                // 모바일에서 items-center 클래스 제거
+                slideContainer.classList.remove('items-center');
+            } else {
+                // 데스크톱에서는 items-center 클래스 유지
+                if (!slideContainer.classList.contains('items-center')) {
+                    slideContainer.classList.add('items-center');
+                }
+            }
+        }
+        
+        // 화면 크기 변경 시에도 대응
+        window.addEventListener('resize', () => {
+            const isMobile = window.innerWidth <= 768;
+            const slideContainer = document.getElementById('slide-container');
+            
+            if (slideContainer) {
+                if (isMobile) {
+                    slideContainer.classList.remove('items-center');
+                } else {
+                    if (!slideContainer.classList.contains('items-center')) {
+                        slideContainer.classList.add('items-center');
+                    }
+                }
+            }
+        });
     }
 
     bindEvents() {
