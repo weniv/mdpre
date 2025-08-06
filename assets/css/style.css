@@ -1894,13 +1894,12 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
 .footer-container {
     background-color: #F3F5FA;
     height: auto;
-    min-height: 120px; /* Reduced from 188px */
+    min-height: 140px; /* Increased from 120px */
     display: flex;
     align-items: center;
     justify-content: center;
     border-top: 1px solid #E5E7EB;
     margin-top: auto;
-    padding: 24px 0; /* Reduced from 40px */
 }
 
 .footer-content {
@@ -1908,7 +1907,7 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     width: 100%;
     padding: 0 80px;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
 }
 
@@ -1922,6 +1921,7 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     align-items: center;
     gap: 1px;
     margin-bottom: 18px;
+    margin-top: 24px; /* Add top margin to separate from top edge */
 }
 
 .footer-logo svg {

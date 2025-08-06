@@ -3594,169 +3594,222 @@ class GitHubMarkdownPresenter {
         return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
-    exportToPDF() {
-        if (this.slides.length === 0) {
-            alert('먼저 슬라이드를 로드해주세요.');
+    async exportToPDF() {
+        if (!this.slides || this.slides.length === 0) {
+            alert('PDF로 내보낼 슬라이드가 없습니다.');
             return;
         }
 
-        // 현재 슬라이드 인덱스 저장
+        // Store current state
         const currentSlideIndex = this.currentSlide;
+        const presentationSection = document.getElementById('presentation-section');
         
-        // PDF 생성을 위한 임시 컨테이너 생성
-        const pdfContainer = document.createElement('div');
-        pdfContainer.style.position = 'absolute';
-        pdfContainer.style.left = '-9999px';
-        pdfContainer.style.top = '0';
-        pdfContainer.style.width = '100vw';
-        pdfContainer.style.background = 'white';
-        pdfContainer.style.color = 'black'; // 텍스트 색상 검정으로 강제 설정
-        
-        // 현재 폰트 설정 가져오기
-        const slideContent = document.getElementById('slide-content');
-        
-        // 로고 정보 가져오기
-        const logoContainer = document.getElementById('presentation-logo');
-        const logoImage = document.getElementById('logo-image');
-        const hasLogo = logoContainer && !logoContainer.classList.contains('hidden') && logoImage.src;
-        
-        // 모든 슬라이드를 PDF용 포맷으로 생성 (첫 번째 슬라이드 제외)
-        this.slides.slice(1).forEach((slide, index) => {
-            const slideDiv = document.createElement('div');
-            slideDiv.className = 'pdf-slide';
-            
-            // 실제로는 두 번째 슬라이드부터이지만 첫 번째로 처리
-            if (index === 0) {
-                slideDiv.classList.add('pdf-slide-first');
-            }
-            
-            // Font settings will be applied after HTML insertion
-            
-            // 마크다운 원본에서 직접 HTML 생성 (로고 없는 순수 콘텐츠)
-            let cleanHTML;
-            if (slide.content) {
-                const markedOptions = {
-                    breaks: true,
-                    gfm: true
-                };
-                cleanHTML = marked.parse(slide.content, markedOptions);
-                cleanHTML = this.processCustomSyntax(cleanHTML);
-            } else {
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = slide.html;
+        // Show loading indicator
+        const loadingDiv = document.createElement('div');
+        loadingDiv.innerHTML = `
+            <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">
+                <div style="text-align: center;">
+                    <div>PDF 생성 중...</div>
+                    <div style="margin-top: 10px; font-size: 14px; opacity: 0.7;">잠시만 기다려주세요</div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(loadingDiv);
+
+        try {
+            // Show presentation section
+            presentationSection.classList.remove('hidden');
+
+            // Create PDF-specific container
+            const pdfContainer = document.createElement('div');
+            pdfContainer.id = 'pdf-export-container';
+            pdfContainer.style.position = 'absolute';
+            pdfContainer.style.top = '0';
+            pdfContainer.style.left = '0';
+            pdfContainer.style.width = '100vw';
+            pdfContainer.style.height = '100vh';
+            pdfContainer.style.zIndex = '9998';
+            pdfContainer.style.background = 'white';
+            pdfContainer.style.overflow = 'visible';
+            pdfContainer.style.fontFamily = this.currentFontFamily ? this.currentFontFamily.replace('font-family-', '').replace('-', ' ') : 'Arial, sans-serif';
+
+            // Add to body
+            document.body.appendChild(pdfContainer);
+
+            // Process slides with proper async handling
+            const slidePromises = this.slides.map(async (slide, index) => {
+                const slideDiv = document.createElement('div');
+                slideDiv.className = `pdf-slide ${index === 0 ? 'pdf-slide-first' : ''}`;
+                slideDiv.className += ` ${this.currentFontFamily || 'font-family-default'}`;
                 
-                // 로고 제거
-                const logoSelectors = [
-                    '#presentation-logo',
-                    '.presentation-logo', 
-                    '#logo-image',
-                    '[alt*="logo"]', 
-                    '[alt*="Logo"]',
-                    '[alt*="LOGO"]',
-                    '[src*="logo"]',
-                    '[class*="logo"]',
-                    'img[src*="logo."]'
-                ];
+                // Add logo if available
+                if (this.logoUrl) {
+                    const logoDiv = document.createElement('div');
+                    logoDiv.className = 'pdf-logo';
+                    logoDiv.innerHTML = `<img src="${this.logoUrl}" alt="Logo" class="pdf-logo-image">`;
+                    slideDiv.appendChild(logoDiv);
+                }
                 
-                logoSelectors.forEach(selector => {
-                    const elements = tempDiv.querySelectorAll(selector);
-                    elements.forEach(el => el.remove());
-                });
+                // Process slide content
+                let processedContent;
+                if (slide.content) {
+                    // Use marked to process markdown
+                    processedContent = marked.parse(slide.content);
+                    processedContent = this.processCustomSyntax(processedContent);
+                } else {
+                    // Use existing HTML content
+                    processedContent = slide.html || '';
+                }
                 
-                cleanHTML = tempDiv.innerHTML;
+                // Create content div first
+                const contentDiv = document.createElement('div');
+                contentDiv.innerHTML = processedContent;
+                
+                // Render LaTeX math if available
+                if (typeof this.renderMathInElement === 'function') {
+                    this.renderMathInElement(contentDiv);
+                }
+                slideDiv.appendChild(contentDiv);
+                
+                return slideDiv;
+            });
+
+            // Wait for all slides to be processed
+            const slideElements = await Promise.all(slidePromises);
+            
+            // Add all slides to container
+            slideElements.forEach(slideDiv => {
+                pdfContainer.appendChild(slideDiv);
+            });
+
+            // Process Prism syntax highlighting
+            if (typeof Prism !== 'undefined') {
+                Prism.highlightAllUnder(pdfContainer);
             }
+
+            // Process Mermaid diagrams
+            await this.renderMermaidForPDF(pdfContainer);
+
+            // Wait for fonts and images to load
+            await this.waitForResourcesLoaded(pdfContainer);
             
-            slideDiv.innerHTML = cleanHTML;
-            
-            // PDF용 코드 하이라이팅 적용
-            if (window.Prism) {
-                const codeBlocks = slideDiv.querySelectorAll('pre code, code[class*="language-"]');
-                codeBlocks.forEach(block => {
-                    Prism.highlightElement(block);
-                });
-            }
-            
-            // PDF용 LaTeX 수식 렌더링
-            this.renderMathForPDF(slideDiv);
-            
-            // HTML 삽입 후 폰트 설정 적용
-            this.applyFontsToElement(slideDiv);
-            
-            // 각 슬라이드에 동일한 크기의 로고 추가
-            if (hasLogo) {
-                const logoClone = document.createElement('div');
-                logoClone.className = 'pdf-logo';
-                logoClone.innerHTML = `<img src="${logoImage.src}" alt="Presentation Logo" class="pdf-logo-image">`;
-                slideDiv.appendChild(logoClone);
-            }
-            
-            pdfContainer.appendChild(slideDiv);
-        });
-        
-        // 임시로 body에 추가
-        document.body.appendChild(pdfContainer);
-        
-        // 기존 슬라이드 컨테이너 숨기기
-        const slideContainer = document.getElementById('slide-container');
-        const originalDisplay = slideContainer.style.display;
-        slideContainer.style.display = 'none';
-        
-        // PDF 컨테이너를 메인 위치로 이동
-        pdfContainer.style.position = 'static';
-        pdfContainer.style.left = 'auto';
-        
-        // PDF 전체에서 폰트 재적용 (최종 보장)
-        const pdfSlides = pdfContainer.querySelectorAll('.pdf-slide');
-        pdfSlides.forEach(slide => {
-            this.applyFontsToElement(slide);
-        });
-        
-        // 다크모드 상태 저장 및 임시로 비활성화
-        const isDarkMode = document.documentElement.classList.contains('dark');
-        if (isDarkMode) {
-            document.documentElement.classList.remove('dark');
-        }
-        
-        // 짧은 지연 후 인쇄 다이얼로그 열기
-        setTimeout(() => {
-            const originalTitle = document.title;
-            document.title = `${originalTitle} - 슬라이드 PDF`;
-            
-            // 인쇄 실행
+            // Remove loading indicator
+            document.body.removeChild(loadingDiv);
+
+            // Wait a bit more for final rendering
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Trigger browser print dialog
             window.print();
             
-            // 인쇄 완료 후 정리
-            const cleanup = () => {
-                document.title = originalTitle;
-                slideContainer.style.display = originalDisplay;
-                document.body.removeChild(pdfContainer);
-                
-                // 다크모드 복원
-                if (isDarkMode) {
-                    document.documentElement.classList.add('dark');
+            // Cleanup after print dialog
+            setTimeout(() => {
+                if (pdfContainer && pdfContainer.parentNode) {
+                    pdfContainer.parentNode.removeChild(pdfContainer);
                 }
                 
-                // 원래 슬라이드로 복원
-                this.currentSlide = currentSlideIndex;
-                this.renderSlide();
-                this.updateNavigation();
-            };
+                // Restore original state
+                this.showSlide(currentSlideIndex);
+                presentationSection.classList.add('hidden');
+            }, 2000);
+
+        } catch (error) {
+            console.error('PDF export error:', error);
+            alert('PDF 내보내기 중 오류가 발생했습니다: ' + error.message);
             
-            // 인쇄 다이얼로그가 닫힌 후 정리
-            const checkPrintDialog = () => {
-                if (window.matchMedia('print').matches) {
-                    // 아직 인쇄 중
-                    setTimeout(checkPrintDialog, 100);
+            // Remove loading indicator
+            if (loadingDiv && loadingDiv.parentNode) {
+                document.body.removeChild(loadingDiv);
+            }
+            
+            // Cleanup on error
+            const pdfContainer = document.getElementById('pdf-export-container');
+            if (pdfContainer && pdfContainer.parentNode) {
+                pdfContainer.parentNode.removeChild(pdfContainer);
+            }
+            presentationSection.classList.add('hidden');
+        }
+    }
+
+    // Helper method to render Mermaid diagrams for PDF
+    async renderMermaidForPDF(container) {
+        const mermaidElements = container.querySelectorAll('pre code.language-mermaid, .language-mermaid');
+        
+        if (mermaidElements.length === 0 || typeof mermaid === 'undefined') {
+            return;
+        }
+
+        const mermaidPromises = Array.from(mermaidElements).map((element, index) => {
+            return new Promise((resolve) => {
+                try {
+                    const mermaidCode = element.textContent.trim();
+                    
+                    if (!mermaidCode) {
+                        resolve();
+                        return;
+                    }
+
+                    // Create container for mermaid
+                    const mermaidContainer = document.createElement('div');
+                    mermaidContainer.className = 'mermaid-container';
+                    mermaidContainer.style.textAlign = 'center';
+                    mermaidContainer.style.margin = '2rem 0';
+                    
+                    const mermaidDiv = document.createElement('div');
+                    mermaidDiv.className = 'mermaid';
+                    mermaidDiv.textContent = mermaidCode;
+                    mermaidDiv.id = `pdf-mermaid-${index}`;
+                    
+                    mermaidContainer.appendChild(mermaidDiv);
+                    
+                    // Replace the code block with mermaid container
+                    if (element.parentNode && element.parentNode.tagName === 'PRE') {
+                        element.parentNode.parentNode.replaceChild(mermaidContainer, element.parentNode);
+                    } else {
+                        element.parentNode.replaceChild(mermaidContainer, element);
+                    }
+                    
+                    // Initialize mermaid
+                    mermaid.init(undefined, mermaidDiv);
+                    
+                    // Wait a bit for rendering
+                    setTimeout(resolve, 500);
+                    
+                } catch (error) {
+                    console.error('Mermaid rendering error:', error);
+                    resolve();
+                }
+            });
+        });
+
+        await Promise.all(mermaidPromises);
+    }
+
+    // Helper method to wait for resources to load
+    async waitForResourcesLoaded(container) {
+        const images = container.querySelectorAll('img');
+        const imagePromises = Array.from(images).map(img => {
+            return new Promise((resolve) => {
+                if (img.complete) {
+                    resolve();
                 } else {
-                    // 인쇄 완료
-                    cleanup();
+                    img.onload = img.onerror = resolve;
+                    // Fallback timeout
+                    setTimeout(resolve, 3000);
                 }
-            };
-            
-            // 약간의 지연 후 확인 시작
-            setTimeout(checkPrintDialog, 500);
-            
-        }, 300);
+            });
+        });
+
+        // Wait for fonts to load
+        if (document.fonts && document.fonts.ready) {
+            await document.fonts.ready;
+        }
+
+        // Wait for all images
+        await Promise.all(imagePromises);
+        
+        // Additional wait for KaTeX and other dynamic content
+        await new Promise(resolve => setTimeout(resolve, 500));
     }
 
     exportToMarkdown() {
