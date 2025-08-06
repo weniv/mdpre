@@ -178,7 +178,7 @@
 
 /* Heading font sizes - hierarchical scaling */
 #slide-content h1 {
-    font-size: 5rem; /* 80px - 200% of 40px */
+    font-size: 4rem; /* Reduced from 5rem */
     line-height: 1.3; /* 줄간격 개선 */
     font-weight: 700;
     border-bottom: 2px solid #e5e7eb;
@@ -188,7 +188,7 @@
 }
 
 #slide-content h2 {
-    font-size: 4rem; /* 64px - 200% of 32px */
+    font-size: 3.5rem; /* Reduced from 4rem */
     line-height: 1.35; /* 줄간격 개선 */
     font-weight: 600;
     color: #1f2937;
@@ -197,7 +197,7 @@
 }
 
 #slide-content h3 {
-    font-size: 3.5rem; /* 56px - 200% of 28px */
+    font-size: 3.2rem; /* Reduced from 3.5rem */
     line-height: 1.4; /* 줄간격 개선 */
     font-weight: 600;
     color: #374151;
@@ -206,7 +206,7 @@
 }
 
 #slide-content h4 {
-    font-size: 3rem; /* 48px - 200% of 24px */
+    font-size: 2.9rem; /* Reduced from 3rem */
     line-height: 1.35;
     font-weight: 600;
     color: #4b5563;
@@ -214,9 +214,17 @@
     margin-bottom: 0.5rem;
 }
 
-#slide-content h5,
+#slide-content h5 {
+    font-size: 2.7rem; /* Between h4 and base text */
+    line-height: 1.4;
+    font-weight: 600;
+    color: #6b7280;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
 #slide-content h6 {
-    font-size: 2.5rem; /* 40px - 200% of 20px */
+    font-size: 2.5rem; /* Same as base text */
     line-height: 1.4;
     font-weight: 600;
     color: #6b7280;
@@ -225,9 +233,9 @@
 }
 
 #slide-content p {
-    font-size: 3rem; /* 기본 텍스트 크기를 {large} 수준(3rem)으로 변경 */
+    font-size: 2.5rem; /* Reduced from 3rem */
     line-height: 1.8; /* 줄간격 개선 */
-    margin-bottom: 1.5rem; /* 단락 간격 확대 */
+    margin-bottom: 0.5rem; /* Reduced from 1.5rem */
 }
 
 /* 마지막 p 태그의 하단 여백 제거 */
@@ -308,8 +316,13 @@
     border: 1px solid #e2e8f0;
     border-radius: 0.5rem;
     padding: 1rem;
-    overflow-x: auto;
+    overflow-x: visible; /* Changed from auto to visible */
+    overflow-wrap: break-word; /* Break long words */
+    white-space: pre-wrap; /* Wrap text instead of horizontal scroll */
+    word-break: break-word; /* Break words at any point if needed */
     margin: 1rem 0;
+    font-size: 0.7em; /* Consistent code block size */
+    font-family: 'Courier New', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
 }
 
 .dark #slide-content pre {
@@ -322,8 +335,8 @@
     color: #dc2626;
     padding: 0.125rem 0.25rem;
     border-radius: 0.25rem;
-    font-size: inherit; /* 본문 폰트 크기와 동일 */
-    font-family: inherit; /* 본문 폰트와 동일 */
+    font-size: 0.7em; /* Consistent with Prism code blocks */
+    font-family: 'Courier New', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; /* Use monospace font */
 }
 
 .dark #slide-content code {
@@ -335,6 +348,7 @@
     background-color: transparent;
     color: inherit;
     padding: 0;
+    font-size: 1em; /* Use parent pre font-size */
 }
 
 /* Links/Anchor tags */
@@ -362,6 +376,10 @@
 code[class*=language-], 
 pre[class*=language-] {
     font-size: 0.7em;
+    font-family: 'Courier New', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    overflow-wrap: break-word !important; /* Force word wrap in Prism blocks */
+    white-space: pre-wrap !important; /* Wrap text in Prism blocks */
+    word-break: break-word !important; /* Break words if needed */
 }
 
 /* Mobile code font size adjustment */
@@ -454,7 +472,7 @@ pre[class*=language-] {
     margin: 0.8rem 0; /* 리스트 아이템 간격 확대 */
     display: list-item;
     list-style-position: outside;
-    font-size: 3rem; /* 기본 텍스트 크기를 {large} 수준(3rem)으로 변경 */
+    font-size: 2.5rem; /* Reduced from 3rem */
     line-height: 1.8; /* 줄간격 개선 */
 }
 
@@ -587,14 +605,39 @@ body.dark #slide-container.fullscreen-fallback {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: auto;
-    max-width: 100%;
-    margin: 0 auto;
+    overflow: visible; /* Changed from auto to visible to prevent scrollbars */
+    max-width: 90%; /* Reduced to give breathing room */
+    margin: 2rem auto;
+    font-size: 1.2em; /* Increase mermaid text size */
 }
 
 .mermaid > svg {
-    max-width: 100%;
+    max-width: 85%; /* Reduced to prevent overflow */
     height: auto;
+    transform: scale(1); /* Removed scaling to prevent overflow */
+    transform-origin: center;
+    margin: 1rem 0;
+}
+
+/* Container for mermaid to prevent overflow */
+.mermaid-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 1rem;
+    overflow: hidden; /* Hide any overflow */
+}
+
+.mermaid-container .mermaid {
+    max-width: 100%;
+    overflow: visible;
+}
+
+.mermaid-container svg {
+    max-width: 100% !important;
+    height: auto !important;
+    object-fit: contain;
 }
 
 
@@ -755,6 +798,11 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
 
 /* Responsive design */
 @media (max-width: 768px) {
+    /* Add left margin to header logo on mobile */
+    header .flex.items-center h1 {
+        margin-left: 0.5rem;
+    }
+    
     #slide-container {
         padding: 1rem;
     }
@@ -772,43 +820,47 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     }
     
     #slide-content h1 {
-        font-size: 3rem; /* 150% of original 2rem */
+        font-size: 2.5rem; /* Proportionally reduced */
         line-height: 1.3;
     }
     
     #slide-content h2 {
-        font-size: 2.5rem; /* 150% of original 1.6rem */
+        font-size: 2.2rem; /* Proportionally reduced */
         line-height: 1.35;
     }
     
     #slide-content h3 {
-        font-size: 2rem; /* 150% of original 1.3rem */
+        font-size: 1.9rem; /* Proportionally reduced */
         line-height: 1.4;
     }
     
     #slide-content h4 {
-        font-size: 1.8rem; /* 150% of original 1.2rem */
+        font-size: 1.7rem; /* Proportionally reduced */
         line-height: 1.4;
     }
     
-    #slide-content h5,
+    #slide-content h5 {
+        font-size: 1.5rem; /* Proportionally reduced */
+        line-height: 1.5;
+    }
+    
     #slide-content h6 {
-        font-size: 1.5rem; /* 150% of original 1rem */
+        font-size: 1.3rem; /* Proportionally reduced */
         line-height: 1.5;
     }
     
     #slide-content p {
-        font-size: 1.5rem; /* 150% of original 1rem */
+        font-size: 1.3rem; /* Proportionally reduced */
         line-height: 1.7;
     }
     
     #slide-content li {
-        font-size: 1.5rem; /* 150% of original 1rem */
+        font-size: 1.3rem; /* Proportionally reduced */
         line-height: 1.7;
     }
     
     .text-center {
-        font-size: 1.5rem; /* 모바일 센터 텍스트 조정 */
+        font-size: 1.3rem; /* 모바일 센터 텍스트 조정 - proportionally reduced */
     }
     
     #slide-nav {
@@ -845,43 +897,47 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     }
     
     #slide-content h1 {
-        font-size: 2.5rem; /* 125% of original 2rem */
+        font-size: 2rem; /* Proportionally reduced */
         line-height: 1.3;
     }
     
     #slide-content h2 {
-        font-size: 2rem; /* 125% of original 1.6rem */
+        font-size: 1.75rem; /* Proportionally reduced */
         line-height: 1.35;
     }
     
     #slide-content h3 {
-        font-size: 1.7rem; /* 125% of original 1.35rem */
+        font-size: 1.6rem; /* Proportionally reduced */
         line-height: 1.4;
     }
     
     #slide-content h4 {
-        font-size: 1.5rem; /* 125% of original 1.2rem */
+        font-size: 1.45rem; /* Proportionally reduced */
         line-height: 1.4;
     }
     
-    #slide-content h5,
+    #slide-content h5 {
+        font-size: 1.3rem; /* Proportionally reduced */
+        line-height: 1.5;
+    }
+    
     #slide-content h6 {
-        font-size: 1.25rem; /* 125% of original 1rem */
+        font-size: 1.15rem; /* Proportionally reduced */
         line-height: 1.5;
     }
     
     #slide-content p {
-        font-size: 1.25rem; /* 125% of original 1rem */
+        font-size: 1.1rem; /* Proportionally reduced */
         line-height: 1.6;
     }
     
     #slide-content li {
-        font-size: 1.25rem; /* 125% of original 1rem */
+        font-size: 1.1rem; /* Proportionally reduced */
         line-height: 1.6;
     }
     
     .text-center {
-        font-size: 1.25rem; /* 소형 모바일 센터 텍스트 조정 */
+        font-size: 1.1rem; /* 소형 모바일 센터 텍스트 조정 - proportionally reduced */
     }
 }
 
@@ -1054,9 +1110,9 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
     }
     
-    /* PDF 모드에서 폰트 크기 최적화 (가로 모드용) - 15% 축소 */
+    /* PDF 모드에서 폰트 크기 최적화 (가로 모드용) - adjusted proportionally */
     .pdf-slide h1 {
-        font-size: 4.25rem !important;
+        font-size: 3.4rem !important; /* 85% of 4rem */
         line-height: 1.2 !important;
         margin: 0.8rem 0 !important;
         text-align: center !important;
@@ -1064,7 +1120,7 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     }
     
     .pdf-slide h2 {
-        font-size: 3.8rem !important;
+        font-size: 3rem !important; /* 85% of 3.5rem */
         line-height: 1.3 !important;
         margin: 0.7rem 0 !important;
         text-align: center !important;
@@ -1072,17 +1128,31 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     }
     
     .pdf-slide h3 {
-        font-size: 3.4rem !important;
+        font-size: 2.7rem !important; /* 85% of 3.2rem */
         line-height: 1.4 !important;
         margin: 0.5rem 0 !important;
         text-align: center !important;
         color: black !important;
     }
     
-    .pdf-slide h4,
-    .pdf-slide h5,
+    .pdf-slide h4 {
+        font-size: 2.5rem !important; /* 85% of 2.9rem */
+        line-height: 1.4 !important;
+        margin: 0.4rem 0 !important;
+        text-align: center !important;
+        color: black !important;
+    }
+    
+    .pdf-slide h5 {
+        font-size: 2.3rem !important; /* 85% of 2.7rem */
+        line-height: 1.4 !important;
+        margin: 0.4rem 0 !important;
+        text-align: center !important;
+        color: black !important;
+    }
+    
     .pdf-slide h6 {
-        font-size: 3rem !important;
+        font-size: 2.1rem !important; /* 85% of 2.5rem */
         line-height: 1.4 !important;
         margin: 0.4rem 0 !important;
         text-align: center !important;
@@ -1090,7 +1160,7 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     }
     
     .pdf-slide p {
-        font-size: 2.5rem !important;
+        font-size: 2.1rem !important; /* 85% of 2.5rem */
         line-height: 1.5 !important;
         margin: 0.6rem 0 !important;
         text-align: center !important;
@@ -1098,7 +1168,7 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     }
     
     .pdf-slide li {
-        font-size: 2.5rem !important;
+        font-size: 2.1rem !important; /* 85% of 2.5rem */
         line-height: 1.5 !important;
         margin: 0.3rem 0 !important;
         color: black !important;
@@ -1120,13 +1190,13 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     .pdf-slide .text-center {
         text-align: center !important;
         margin: 0.8rem auto !important;
-        font-size: 2.5rem !important;
+        font-size: 2.1rem !important; /* 85% of 2.5rem */
         line-height: 1.5 !important;
         color: black !important;
     }
     
     .pdf-slide .text-center p {
-        font-size: 2.5rem !important;
+        font-size: 2.1rem !important; /* 85% of 2.5rem */
         line-height: 1.5 !important;
         margin: 0.4rem 0 !important;
         text-align: center !important;
@@ -1134,13 +1204,13 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     }
     
     .pdf-slide .text-large {
-        font-size: 1.9rem !important;
+        font-size: 2.1rem !important; /* Adjusted */
         line-height: 1.4 !important;
         color: black !important;
     }
     
     .pdf-slide .text-xlarge {
-        font-size: 2.4rem !important;
+        font-size: 2.9rem !important; /* Adjusted */
         line-height: 1.3 !important;
         color: black !important;
     }
@@ -1151,13 +1221,16 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         font-size: 1.2rem !important;
         line-height: 1.4 !important;
         font-family: 'Courier New', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important;
+        overflow-wrap: break-word !important;
+        white-space: pre-wrap !important;
+        word-break: break-word !important;
     }
     
-    /* Inline code should inherit from parent (body font) */
+    /* Inline code should use consistent sizing */
     .pdf-slide code {
-        font-size: inherit !important;
+        font-size: 0.7em !important;
         line-height: inherit !important;
-        /* Font-family will be set by JavaScript */
+        font-family: 'Courier New', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important;
     }
     
     /* Links in PDF */
@@ -1172,6 +1245,9 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         background: #f5f2f0 !important;
         color: #000 !important;
         font-family: 'Courier New', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important;
+        overflow-wrap: break-word !important;
+        white-space: pre-wrap !important;
+        word-break: break-word !important;
     }
     
     .pdf-slide .token.comment,
@@ -1284,18 +1360,20 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         margin: 2rem 0;
         padding: 1rem;
         width: 100%;
-        overflow: auto;
+        overflow: visible; /* Changed to visible for PDF */
     }
     
     /* Ensure mermaid div inside container is properly styled */
     .mermaid-container .mermaid {
         margin: 0 auto !important;
+        font-size: 1.2em !important; /* Increase text size in PDF */
     }
 
     .mermaid-container svg {
-        max-width: 100% !important;
+        max-width: 90% !important; /* Reduced to prevent overflow in PDF */
         height: auto !important;
-        
+        transform: scale(1) !important; /* Removed scaling to prevent overflow */
+        transform-origin: center !important;
     }
 
     .mermaid-error {
@@ -1495,19 +1573,19 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
 
 .text-large {
     @apply font-medium my-6;
-    font-size: 3rem;
+    font-size: 2.5rem; /* Same as base text now */
     line-height: 1.6;
 }
 
 .text-small {
     @apply font-normal my-4;
-    font-size: 2.5rem;
+    font-size: 2rem; /* Smaller than base text */
     line-height: 1.6;
 }
 
 .text-xlarge {
     @apply font-semibold my-8;
-    font-size: 4rem;
+    font-size: 3.5rem; /* Reduced from 4rem */
     line-height: 1.5;
 }
 
@@ -1816,13 +1894,13 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
 .footer-container {
     background-color: #F3F5FA;
     height: auto;
-    min-height: 188px;
+    min-height: 120px; /* Reduced from 188px */
     display: flex;
     align-items: center;
     justify-content: center;
     border-top: 1px solid #E5E7EB;
     margin-top: auto;
-    padding: 40px 0;
+    padding: 24px 0; /* Reduced from 40px */
 }
 
 .footer-content {
@@ -1847,7 +1925,7 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
 }
 
 .footer-logo svg {
-    height: 36px;
+    height: 20px; /* Same as header logo size on desktop */
     width: auto;
 }
 
@@ -1931,7 +2009,7 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     .footer-container {
         height: auto;
         min-height: auto;
-        padding: 16px 0;
+        padding: 24px 0;
     }
     
     .footer-content {
@@ -1939,23 +2017,43 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         gap: 20px;
         padding: 0 20px;
         text-align: center;
+        align-items: center;
     }
     
+    .footer-text {
+        width: 100%;
+        text-align: center;
+    }
+    
+    /* Change logo section to column layout on mobile */
     .footer-logo-section {
-        margin-bottom: 12px;
+        flex-direction: column; /* Change from row to column */
+        align-items: center; /* Center align items */
+        justify-content: center;
+        gap: 12px; /* Add gap between logo and copyright */
+        margin-bottom: 16px;
+    }
+    
+    .footer-logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
     
     .footer-logo svg {
-        height: 24px;
+        height: 14px; /* Keep consistent with desktop */
     }
     
     .footer-copyright {
         font-size: 12px;
+        text-align: center;
+        width: 100%;
     }
     
     .footer-text-content {
         font-size: 11px;
         line-height: 1.4;
+        text-align: center;
     }
     
     .footer-icons {
@@ -2292,7 +2390,10 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     border: 1px solid #e2e8f0;
     border-radius: 4px;
     padding: 4px;
-    overflow-x: auto;
+    overflow-x: visible;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    word-break: break-word;
     margin: 4px 0;
     font-size: 0.45rem;
 }

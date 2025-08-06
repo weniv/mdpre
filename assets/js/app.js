@@ -87,7 +87,34 @@ class GitHubMarkdownPresenter {
                         primaryBorderColor: '#0056b3',
                         lineColor: '#333',
                         secondaryColor: '#e9ecef',
-                        tertiaryColor: '#f8f9fa'
+                        tertiaryColor: '#f8f9fa',
+                        fontSize: '18px'
+                    },
+                    flowchart: {
+                        useMaxWidth: true,
+                        htmlLabels: true,
+                        curve: 'basis'
+                    },
+                    sequence: {
+                        useMaxWidth: true
+                    },
+                    gantt: {
+                        useMaxWidth: true
+                    },
+                    er: {
+                        useMaxWidth: true
+                    },
+                    pie: {
+                        useMaxWidth: true
+                    },
+                    journey: {
+                        useMaxWidth: true
+                    },
+                    class: {
+                        useMaxWidth: true
+                    },
+                    state: {
+                        useMaxWidth: true
                     }
                 });
                 return true;
