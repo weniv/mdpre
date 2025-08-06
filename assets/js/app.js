@@ -374,11 +374,23 @@ class GitHubMarkdownPresenter {
         
         // Update UI state
         const container = document.getElementById('slide-container');
+        const slideContent = document.getElementById('slide-content');
         const bottomNavContainer = document.getElementById('bottom-nav-container');
         const logoContainer = document.getElementById('presentation-logo');
         
         if (this.isFullscreen) {
             container.classList.add('fullscreen');
+            
+            // Adjust fullscreen layout based on content size
+            this.adjustFullscreenLayout();
+            
+            // Adjust slide content for fullscreen
+            if (slideContent) {
+                slideContent.style.maxHeight = 'none';
+                slideContent.style.overflow = 'visible';
+                slideContent.style.marginTop = '0';
+            }
+            
             // Ensure bottom navigation is visible in fullscreen
             if (bottomNavContainer) bottomNavContainer.style.display = 'flex';
             
@@ -392,6 +404,23 @@ class GitHubMarkdownPresenter {
             }
         } else {
             container.classList.remove('fullscreen');
+            
+            // Reset container styles
+            container.style.overflow = '';
+            container.style.height = '';
+            container.style.display = '';
+            container.style.flexDirection = '';
+            container.style.justifyContent = '';
+            container.style.alignItems = '';
+            container.style.paddingTop = '';
+            
+            // Reset slide content styles
+            if (slideContent) {
+                slideContent.style.maxHeight = '';
+                slideContent.style.overflow = '';
+                slideContent.style.marginTop = '';
+            }
+            
             // Reset any inline styles that might interfere
             if (bottomNavContainer) bottomNavContainer.style.display = '';
             
@@ -420,6 +449,11 @@ class GitHubMarkdownPresenter {
     }
 
     recalculateLayout() {
+        // Adjust fullscreen layout if in fullscreen mode
+        if (this.isFullscreen) {
+            this.adjustFullscreenLayout();
+        }
+        
         // Force layout recalculation for proper responsive behavior
         const slideContent = document.getElementById('slide-content');
         if (slideContent) {
@@ -429,6 +463,45 @@ class GitHubMarkdownPresenter {
             slideContent.offsetHeight; // Trigger reflow
             slideContent.style.display = display;
         }
+    }
+    
+    adjustFullscreenLayout() {
+        const container = document.getElementById('slide-container');
+        const slideContent = document.getElementById('slide-content');
+        
+        if (!container || !slideContent || !this.isFullscreen) return;
+        
+        // Wait a bit for content to render
+        setTimeout(() => {
+            // Set initial styles for measurement
+            container.style.overflow = 'hidden';
+            container.style.height = '100vh';
+            container.style.display = 'flex';
+            container.style.flexDirection = 'column';
+            container.style.alignItems = 'center';
+            
+            // Check if content overflows
+            const viewportHeight = window.innerHeight;
+            const contentHeight = slideContent.scrollHeight;
+            const bottomNavHeight = 80; // Approximate height of bottom navigation
+            const padding = 64; // Top and bottom padding (2rem * 2)
+            
+            const totalContentHeight = contentHeight + bottomNavHeight + padding;
+            const contentOverflows = totalContentHeight > viewportHeight;
+            
+            if (contentOverflows) {
+                // Content overflows - start from top with scrolling
+                container.style.justifyContent = 'flex-start';
+                container.style.paddingTop = '2rem';
+                container.style.overflow = 'auto';
+                container.scrollTop = 0;
+            } else {
+                // Content fits - center it
+                container.style.justifyContent = 'center';
+                container.style.paddingTop = '0';
+                container.style.overflow = 'hidden';
+            }
+        }, 100);
     }
 
     getCurrentRepoInfo() {
@@ -2104,6 +2177,7 @@ class GitHubMarkdownPresenter {
 
     enterFullscreen() {
         const container = document.getElementById('slide-container');
+        
         if (container.requestFullscreen) {
             container.requestFullscreen();
         } else if (container.webkitRequestFullscreen) {
@@ -2117,6 +2191,7 @@ class GitHubMarkdownPresenter {
             // Add specific fullscreen background class
             container.classList.add('fullscreen-fallback');
             this.isFullscreen = true;
+            this.adjustFullscreenLayout();
         }
     }
 
@@ -3606,6 +3681,7 @@ class GitHubMarkdownPresenter {
         
         // Show loading indicator
         const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'pdf-loading-indicator';
         loadingDiv.innerHTML = `
             <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">
                 <div style="text-align: center;">
@@ -3617,30 +3693,125 @@ class GitHubMarkdownPresenter {
         document.body.appendChild(loadingDiv);
 
         try {
-            // Show presentation section
-            presentationSection.classList.remove('hidden');
+            // Create PDF-specific styles
+            const pdfStyles = document.createElement('style');
+            pdfStyles.id = 'pdf-export-styles';
+            pdfStyles.innerHTML = `
+                @media print {
+                    * {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                        color-adjust: exact !important;
+                    }
+                    
+                    body * {
+                        visibility: hidden !important;
+                    }
+                    
+                    #pdf-export-container,
+                    #pdf-export-container * {
+                        visibility: visible !important;
+                    }
+                    
+                    #pdf-export-container {
+                        position: absolute !important;
+                        left: 0 !important;
+                        top: 0 !important;
+                        width: 100% !important;
+                        background: white !important;
+                    }
+                    
+                    .pdf-loading-indicator {
+                        display: none !important;
+                    }
+                    
+                    .pdf-slide {
+                        page-break-before: always !important;
+                        page-break-inside: auto !important;
+                        break-before: page !important;
+                        break-inside: auto !important;
+                        width: 100% !important;
+                        min-height: 100vh !important;
+                        height: auto !important;
+                        display: flex !important;
+                        flex-direction: column !important;
+                        justify-content: flex-start !important;
+                        align-items: center !important;
+                        padding: 2cm !important;
+                        padding-bottom: 3cm !important;
+                        box-sizing: border-box !important;
+                        position: relative !important;
+                        margin: 0 !important;
+                        background: white !important;
+                        overflow: visible !important;
+                    }
+                    
+                    .pdf-slide:first-child,
+                    .pdf-slide.pdf-slide-first {
+                        page-break-before: auto !important;
+                        break-before: auto !important;
+                    }
+                    
+                    @page {
+                        size: A4 landscape;
+                        margin: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(pdfStyles);
 
             // Create PDF-specific container
             const pdfContainer = document.createElement('div');
             pdfContainer.id = 'pdf-export-container';
-            pdfContainer.style.position = 'absolute';
-            pdfContainer.style.top = '0';
-            pdfContainer.style.left = '0';
-            pdfContainer.style.width = '100vw';
-            pdfContainer.style.height = '100vh';
-            pdfContainer.style.zIndex = '9998';
-            pdfContainer.style.background = 'white';
-            pdfContainer.style.overflow = 'visible';
-            pdfContainer.style.fontFamily = this.currentFontFamily ? this.currentFontFamily.replace('font-family-', '').replace('-', ' ') : 'Arial, sans-serif';
+            pdfContainer.style.cssText = `
+                position: relative;
+                top: 0;
+                left: 0;
+                width: 100%;
+                background: white;
+                z-index: 9999;
+                font-family: ${this.getFontFamily(this.settings.bodyFont)};
+                overflow: visible;
+            `;
+            
+            // Apply font class to container
+            if (this.currentFontFamily) {
+                pdfContainer.className = this.currentFontFamily;
+            }
 
-            // Add to body
-            document.body.appendChild(pdfContainer);
-
-            // Process slides with proper async handling
-            const slidePromises = this.slides.map(async (slide, index) => {
+            // Process slides with improved rendering
+            for (let index = 0; index < this.slides.length; index++) {
+                const slide = this.slides[index];
                 const slideDiv = document.createElement('div');
                 slideDiv.className = `pdf-slide ${index === 0 ? 'pdf-slide-first' : ''}`;
-                slideDiv.className += ` ${this.currentFontFamily || 'font-family-default'}`;
+                
+                // Set explicit styles for page breaking
+                if (index > 0) {
+                    slideDiv.style.pageBreakBefore = 'always';
+                    slideDiv.style.breakBefore = 'page';
+                }
+                slideDiv.style.pageBreakInside = 'auto';
+                slideDiv.style.breakInside = 'auto';
+                slideDiv.style.width = '100%';
+                slideDiv.style.minHeight = '100vh';
+                slideDiv.style.height = 'auto';
+                slideDiv.style.display = 'flex';
+                slideDiv.style.flexDirection = 'column';
+                slideDiv.style.justifyContent = 'flex-start';
+                slideDiv.style.alignItems = 'center';
+                slideDiv.style.padding = '2cm';
+                slideDiv.style.paddingBottom = '3cm';
+                slideDiv.style.boxSizing = 'border-box';
+                slideDiv.style.position = 'relative';
+                slideDiv.style.background = 'white';
+                slideDiv.style.overflow = 'visible';
+                
+                // Apply font family class
+                if (this.currentFontFamily) {
+                    slideDiv.className += ` ${this.currentFontFamily}`;
+                } else {
+                    slideDiv.className += ' font-family-default';
+                }
                 
                 // Add logo if available
                 if (this.logoUrl) {
@@ -3650,62 +3821,84 @@ class GitHubMarkdownPresenter {
                     slideDiv.appendChild(logoDiv);
                 }
                 
-                // Process slide content
-                let processedContent;
+                // Process markdown content properly
+                let processedContent = '';
+                
                 if (slide.content) {
-                    // Use marked to process markdown
+                    // Convert markdown to HTML first
                     processedContent = marked.parse(slide.content);
+                    
+                    // Process custom syntax after markdown conversion
                     processedContent = this.processCustomSyntax(processedContent);
-                } else {
-                    // Use existing HTML content
-                    processedContent = slide.html || '';
+                } else if (slide.html) {
+                    processedContent = slide.html;
                 }
                 
-                // Create content div first
+                // Create content div
                 const contentDiv = document.createElement('div');
+                contentDiv.className = 'pdf-slide-content';
                 contentDiv.innerHTML = processedContent;
                 
-                // Render LaTeX math if available
-                if (typeof this.renderMathInElement === 'function') {
+                // Render math expressions if KaTeX is available
+                if (typeof katex !== 'undefined' && this.renderMathInElement) {
                     this.renderMathInElement(contentDiv);
                 }
-                slideDiv.appendChild(contentDiv);
                 
-                return slideDiv;
-            });
-
-            // Wait for all slides to be processed
-            const slideElements = await Promise.all(slidePromises);
-            
-            // Add all slides to container
-            slideElements.forEach(slideDiv => {
+                // Apply font settings to all elements
+                this.applyFontsToElement(contentDiv);
+                
+                // Apply text alignment only for elements inside .text-center
+                contentDiv.querySelectorAll('.text-center h1, .text-center h2, .text-center h3, .text-center h4, .text-center h5, .text-center h6').forEach(heading => {
+                    heading.style.textAlign = 'center';
+                });
+                
+                contentDiv.querySelectorAll('.text-center p').forEach(p => {
+                    p.style.textAlign = 'center';
+                });
+                
+                slideDiv.appendChild(contentDiv);
                 pdfContainer.appendChild(slideDiv);
-            });
+            }
+
+            // Add container to body
+            document.body.appendChild(pdfContainer);
 
             // Process Prism syntax highlighting
             if (typeof Prism !== 'undefined') {
-                Prism.highlightAllUnder(pdfContainer);
+                await new Promise((resolve) => {
+                    setTimeout(() => {
+                        Prism.highlightAllUnder(pdfContainer);
+                        resolve();
+                    }, 100);
+                });
             }
 
             // Process Mermaid diagrams
             await this.renderMermaidForPDF(pdfContainer);
 
-            // Wait for fonts and images to load
+            // Wait for all resources to load
             await this.waitForResourcesLoaded(pdfContainer);
             
             // Remove loading indicator
             document.body.removeChild(loadingDiv);
 
             // Wait a bit more for final rendering
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 1500));
 
             // Trigger browser print dialog
             window.print();
             
             // Cleanup after print dialog
             setTimeout(() => {
+                // Remove PDF container
                 if (pdfContainer && pdfContainer.parentNode) {
                     pdfContainer.parentNode.removeChild(pdfContainer);
+                }
+                
+                // Remove PDF styles
+                const pdfStyleElement = document.getElementById('pdf-export-styles');
+                if (pdfStyleElement) {
+                    pdfStyleElement.remove();
                 }
                 
                 // Restore original state
@@ -3720,6 +3913,12 @@ class GitHubMarkdownPresenter {
             // Remove loading indicator
             if (loadingDiv && loadingDiv.parentNode) {
                 document.body.removeChild(loadingDiv);
+            }
+            
+            // Remove PDF styles
+            const pdfStyleElement = document.getElementById('pdf-export-styles');
+            if (pdfStyleElement) {
+                pdfStyleElement.remove();
             }
             
             // Cleanup on error
@@ -3787,26 +3986,43 @@ class GitHubMarkdownPresenter {
 
     // Helper method to wait for resources to load
     async waitForResourcesLoaded(container) {
+        // Wait for images
         const images = container.querySelectorAll('img');
         const imagePromises = Array.from(images).map(img => {
             return new Promise((resolve) => {
                 if (img.complete) {
                     resolve();
                 } else {
-                    img.onload = img.onerror = resolve;
+                    img.onload = resolve;
+                    img.onerror = resolve;
                     // Fallback timeout
                     setTimeout(resolve, 3000);
                 }
             });
         });
 
-        // Wait for fonts to load
+        // Wait for all images to load
+        await Promise.all(imagePromises);
+        
+        // Wait for fonts to fully load
         if (document.fonts && document.fonts.ready) {
             await document.fonts.ready;
+            
+            // Force font loading for Korean fonts
+            const fontFamilies = ['BMJUA', 'BMHANNA', 'BMDOHYEON', 'BMYEONSUNG', 'BMEULJIROT', 'MaruBuri'];
+            const testString = '테스트 문자열 Test String 123';
+            
+            for (const font of fontFamilies) {
+                try {
+                    await document.fonts.load(`16px "${font}"`, testString);
+                } catch (e) {
+                    // Font might not be available, continue
+                }
+            }
         }
-
-        // Wait for all images
-        await Promise.all(imagePromises);
+        
+        // Additional delay for complete rendering
+        await new Promise(resolve => setTimeout(resolve, 500));
         
         // Additional wait for KaTeX and other dynamic content
         await new Promise(resolve => setTimeout(resolve, 500));

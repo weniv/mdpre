@@ -811,7 +811,7 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         padding: 1.5rem;
         font-size: 1.5rem; /* 150% of base for mobile */
         line-height: 1.7; /* 모바일 줄간격 조정 */
-        min-height: calc(56.25vw * 0.9) !important; /* 16:9 비율 유지 */
+        /* min-height: calc(56.25vw * 0.9) !important; 16:9 비율 유지 */
         aspect-ratio: 16/9 !important;
         max-width: 100% !important; /* 전체 너비 사용 */
         margin: 0 !important; /* 여백 제거 */
@@ -888,7 +888,7 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         padding: 1rem;
         font-size: 1.25rem; /* 125% of base for small mobile */
         line-height: 1.6; /* 소형 모바일 줄간격 조정 */
-        min-height: calc(56.25vw * 0.9) !important; /* 16:9 비율 유지 */
+        /* min-height: calc(56.25vw * 0.9) !important; 16:9 비율 유지 */
         aspect-ratio: 16/9 !important;
         max-width: 100% !important; /* 전체 너비 사용 */
         margin: 0 !important; /* 여백 제거 */
@@ -945,6 +945,7 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
 @media print {
     * {
         -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
         color-adjust: exact !important;
     }
     
@@ -952,6 +953,8 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     body {
         background-color: white !important;
         color: black !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
     
     .dark {
@@ -959,9 +962,10 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         color: black !important;
     }
     
+    /* Ensure fonts are embedded properly */
     @font-face {
         font-family: 'BMJUA';
-        src: url('../../font/BMJUA_ttf.ttf') format('truetype');
+        src: url('/font/BMJUA_ttf.ttf') format('truetype');
         font-weight: normal;
         font-style: normal;
     }
@@ -1046,20 +1050,23 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     /* PDF용 모든 슬라이드 컨테이너 */
     .pdf-slide {
         page-break-before: always;
-        page-break-inside: avoid;
-        break-inside: avoid;
+        page-break-inside: auto;
+        break-inside: auto;
         width: 100% !important;
-        min-height: 90vh !important;
+        min-height: 100vh !important;
+        height: auto !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: center !important;
         align-items: center !important;
-        padding: 1.5cm !important;
+        padding: 2cm !important;
+        padding-bottom: 3cm !important;
         margin: 0 !important;
         background: white !important;
         color: black !important;
         position: relative !important;
-        font-family: inherit !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
     }
     
     .pdf-slide:first-child,
@@ -1068,10 +1075,21 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         margin-top: 0 !important;
     }
     
+    /* PDF slide content container */
+    .pdf-slide-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        flex-grow: 1 !important;
+        overflow: visible !important;
+    }
+    
     /* PDF 폰트 상속 (코드 블록 제외) */
     .pdf-slide,
     .pdf-slide *:not(code):not(pre):not([class*="language-"]):not(.token) {
-        font-family: inherit !important;
         color: black !important;
     }
     
@@ -1110,29 +1128,35 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
     }
     
-    /* PDF 모드에서 폰트 크기 최적화 (가로 모드용) - adjusted proportionally */
+    /* PDF 모드에서 폰트 크기 최적화 (가로 모드용) */
     .pdf-slide h1 {
-        font-size: 3.4rem !important; /* 85% of 4rem */
+        font-size: 2.8rem !important;
         line-height: 1.2 !important;
-        margin: 0.8rem 0 !important;
+        margin: 1rem 0 !important;
         text-align: center !important;
         color: black !important;
+        font-weight: bold !important;
+        page-break-after: avoid !important;
     }
     
     .pdf-slide h2 {
-        font-size: 3rem !important; /* 85% of 3.5rem */
+        font-size: 2.4rem !important;
         line-height: 1.3 !important;
-        margin: 0.7rem 0 !important;
+        margin: 0.8rem 0 !important;
         text-align: center !important;
         color: black !important;
+        font-weight: bold !important;
+        page-break-after: avoid !important;
     }
     
     .pdf-slide h3 {
-        font-size: 2.7rem !important; /* 85% of 3.2rem */
+        font-size: 2rem !important;
         line-height: 1.4 !important;
-        margin: 0.5rem 0 !important;
+        margin: 0.6rem 0 !important;
         text-align: center !important;
         color: black !important;
+        font-weight: bold !important;
+        page-break-after: avoid !important;
     }
     
     .pdf-slide h4 {
@@ -1160,31 +1184,48 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     }
     
     .pdf-slide p {
-        font-size: 2.1rem !important; /* 85% of 2.5rem */
-        line-height: 1.5 !important;
+        font-size: 1.4rem !important;
+        line-height: 1.6 !important;
         margin: 0.6rem 0 !important;
         text-align: center !important;
         color: black !important;
+        page-break-inside: avoid !important;
     }
     
     .pdf-slide li {
-        font-size: 2.1rem !important; /* 85% of 2.5rem */
-        line-height: 1.5 !important;
+        font-size: 1.3rem !important;
+        line-height: 1.8 !important;
         margin: 0.3rem 0 !important;
         color: black !important;
+        text-align: left !important;
+        page-break-inside: avoid !important;
     }
     
     .pdf-slide ul,
     .pdf-slide ol {
-        margin: 0.8rem auto !important;
-        width: fit-content !important;
+        margin: 0.8rem 0 !important;
+        padding-left: 2rem !important;
+        max-width: 85% !important;
+        text-align: left !important;
+        page-break-inside: auto !important;
+    }
+    
+    .pdf-slide ul {
+        list-style-type: disc !important;
+    }
+    
+    .pdf-slide ol {
+        list-style-type: decimal !important;
     }
     
     .pdf-slide img {
-        max-width: 85% !important;
-        max-height: 70vh !important;
-        margin: 1rem auto !important;
+        max-width: 80% !important;
+        max-height: 60vh !important;
+        margin: 0.8rem auto !important;
         display: block !important;
+        page-break-inside: avoid !important;
+        page-break-before: auto !important;
+        page-break-after: auto !important;
     }
     
     .pdf-slide .text-center {
@@ -1215,22 +1256,37 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         color: black !important;
     }
     
-    /* Code blocks should use code font */
+    /* Code blocks with proper styling */
+    .pdf-slide pre {
+        background-color: #f6f8fa !important;
+        border: 1px solid #d1d5da !important;
+        border-radius: 6px !important;
+        padding: 0.8rem !important;
+        margin: 0.8rem 0 !important;
+        max-width: 90% !important;
+        overflow-x: auto !important;
+        page-break-inside: auto !important;
+    }
+    
     .pdf-slide pre,
     .pdf-slide pre code {
-        font-size: 1.2rem !important;
+        font-size: 0.9rem !important;
         line-height: 1.4 !important;
         font-family: 'Courier New', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important;
-        overflow-wrap: break-word !important;
         white-space: pre-wrap !important;
+        word-wrap: break-word !important;
         word-break: break-word !important;
     }
     
-    /* Inline code should use consistent sizing */
-    .pdf-slide code {
-        font-size: 0.7em !important;
+    /* Inline code with proper styling */
+    .pdf-slide code:not(pre code) {
+        background-color: #f3f4f6 !important;
+        padding: 0.2rem 0.4rem !important;
+        border-radius: 3px !important;
+        font-size: 0.85em !important;
         line-height: inherit !important;
         font-family: 'Courier New', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important;
+        color: #1f2937 !important;
     }
     
     /* Links in PDF */
@@ -1242,12 +1298,10 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     /* PDF에서 코드 하이라이팅 보존 */
     .pdf-slide code[class*="language-"],
     .pdf-slide pre[class*="language-"] {
-        background: #f5f2f0 !important;
-        color: #000 !important;
+        background: #f6f8fa !important;
+        color: #24292e !important;
         font-family: 'Courier New', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important;
-        overflow-wrap: break-word !important;
-        white-space: pre-wrap !important;
-        word-break: break-word !important;
+        text-align: left !important;
     }
     
     .pdf-slide .token.comment,
@@ -1290,7 +1344,6 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     .pdf-slide .language-css .token.string,
     .pdf-slide .style .token.string {
         color: #a67f59 !important;
-        background: hsla(0, 0%, 100%, .5) !important;
     }
     
     .pdf-slide .token.atrule,
@@ -1386,6 +1439,37 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         text-align: center;
     }
 
+    /* Tables in PDF */
+    .pdf-slide table {
+        border-collapse: collapse !important;
+        margin: 0.8rem auto !important;
+        max-width: 90% !important;
+        page-break-inside: auto !important;
+    }
+    
+    .pdf-slide th,
+    .pdf-slide td {
+        border: 1px solid #d1d5da !important;
+        padding: 0.4rem 0.8rem !important;
+        text-align: left !important;
+        font-size: 1.2rem !important;
+        page-break-inside: avoid !important;
+    }
+    
+    .pdf-slide th {
+        background-color: #f6f8fa !important;
+        font-weight: bold !important;
+    }
+    
+    /* Blockquotes in PDF */
+    .pdf-slide blockquote {
+        border-left: 4px solid #d1d5da !important;
+        padding-left: 1rem !important;
+        margin: 1rem 0 !important;
+        color: #586069 !important;
+        font-style: italic !important;
+    }
+    
     /* PDF specific math styling */
     .pdf-slide .math-display {
         font-size: 1.2em !important;
@@ -1422,6 +1506,34 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     /* 페이지 번호 제거 */
     .pdf-slide::after {
         display: none;
+    }
+    
+    /* Horizontal rules in PDF */
+    .pdf-slide hr {
+        border: none !important;
+        border-top: 2px solid #d1d5da !important;
+        margin: 1.5rem 0 !important;
+        width: 80% !important;
+    }
+    
+    /* Text decoration classes */
+    .pdf-slide .text-highlight {
+        background-color: #fff3cd !important;
+        padding: 0.2rem 0.4rem !important;
+        border-radius: 3px !important;
+        color: black !important;
+    }
+    
+    .pdf-slide .text-bold {
+        font-weight: bold !important;
+    }
+    
+    .pdf-slide .text-small {
+        font-size: 0.8em !important;
+    }
+    
+    .pdf-slide .text-xlarge {
+        font-size: 1.5em !important;
     }
     
     @page {

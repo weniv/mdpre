@@ -1,6 +1,6 @@
 /* 16:9 슬라이드 비율 설정 - 텍스트 양에 따라 높이 확장 */
 #slide-content {
-    min-height: calc(min(80vw, 80vh) * 0.5625) !important; /* 16:9 비율 기반 최소 높이, 크기 축소 */
+    /* min-height: calc(min(80vw, 80vh) * 0.5625) !important; 16:9 비율 기반 최소 높이, 크기 축소 */
     max-width: min(80vw, calc(80vh * 16/9)) !important; /* 슬라이드 크기 축소 */
     width: min(80vw, calc(80vh * 16/9)) !important;
     height: auto !important; /* 텍스트가 많을 때 높이 확장 */
