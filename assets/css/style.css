@@ -611,23 +611,23 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     display: none;
 }
 
-/* Hide header in presentation mode on mobile only */
+/* Keep header visible in presentation mode on mobile */
 @media (max-width: 768px) {
     #presentation-section header {
-        display: none;
+        display: flex;
     }
 }
 
-/* Make presentation fullscreen on mobile only */
+/* Adjust presentation layout for mobile with header */
 @media (max-width: 768px) {
     #presentation-section #slide-container {
         position: fixed;
-        top: 0;
+        top: 60px; /* Account for header height */
         left: 0;
         width: 100vw;
-        height: 100vh;
+        height: calc(100vh - 60px); /* Subtract header height */
         padding: 2rem;
-        z-index: 9999;
+        z-index: 999;
         background: white;
     }
 
@@ -726,7 +726,17 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         display: none;
     }
     
-    .footer-container {
+    /* Show mobile info text only on mobile */
+    .mobile-only-info {
+        display: block;
+    }
+    
+    /* Show footer on mobile welcome screen but hide in presentation */
+    body:has(#presentation-section.hidden) .footer-container {
+        display: flex;
+    }
+    
+    body:has(#presentation-section:not(.hidden)) .footer-container {
         display: none;
     }
     
@@ -1609,7 +1619,7 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
 /* Ensure dropdown appears above other elements */
 #folder-selection {
     position: relative;
-    z-index: 100;
+    z-index: 10;
 }
 
 /* Improved select box spacing */
@@ -1672,6 +1682,7 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
 /* Settings Dropdown Styles */
 #settings-dropdown {
     animation: fadeIn 0.2s ease-out;
+    z-index: 9999 !important;
 }
 
 #settings-dropdown.hidden {
@@ -1919,8 +1930,8 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
 @media (max-width: 768px) {
     .footer-container {
         height: auto;
-        min-height: 188px;
-        padding: 20px 0;
+        min-height: auto;
+        padding: 16px 0;
     }
     
     .footer-content {
@@ -1930,8 +1941,36 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         text-align: center;
     }
     
+    .footer-logo-section {
+        margin-bottom: 12px;
+    }
+    
+    .footer-logo svg {
+        height: 24px;
+    }
+    
+    .footer-copyright {
+        font-size: 12px;
+    }
+    
+    .footer-text-content {
+        font-size: 11px;
+        line-height: 1.4;
+    }
+    
     .footer-icons {
         justify-content: center;
+        gap: 8px;
+    }
+    
+    .footer-icon-button {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .footer-icon-button svg {
+        width: 16px;
+        height: 16px;
     }
 }
 
@@ -1940,6 +1979,11 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     .footer-container {
         display: none !important;
     }
+}
+
+/* Hide mobile info text on desktop */
+.mobile-only-info {
+    display: none;
 }
 
 /* Preview styles */
