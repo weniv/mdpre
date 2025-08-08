@@ -1053,8 +1053,7 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         page-break-inside: auto;
         break-inside: auto;
         width: 100% !important;
-        min-height: 100vh !important;
-        height: auto !important;
+        height: 100vh !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: center !important;
@@ -1079,11 +1078,7 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     .pdf-slide-content {
         width: 100% !important;
         max-width: 100% !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: flex-start !important;
-        align-items: center !important;
-        flex-grow: 1 !important;
+        display: block !important;
         overflow: visible !important;
     }
     
@@ -1126,6 +1121,22 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     .pdf-slide.font-family-default,
     .pdf-slide.font-family-default *:not(code):not(pre):not([class*="language-"]):not(.token) {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    }
+    
+    /* PDF slide 내용이 넘치지 않을 때 세로 중앙 정렬 */
+    .pdf-slide-content-wrapper {
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        flex-grow: 1 !important;
+    }
+    
+    /* 내용이 많을 때는 상단 정렬 */
+    .pdf-slide-content-wrapper.content-overflow {
+        justify-content: flex-start !important;
+        align-items: center !important;
     }
     
     /* PDF 모드에서 폰트 크기 최적화 (가로 모드용) */

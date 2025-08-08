@@ -3785,40 +3785,17 @@ class GitHubMarkdownPresenter {
                 const slideDiv = document.createElement('div');
                 slideDiv.className = `pdf-slide ${index === 0 ? 'pdf-slide-first' : ''}`;
                 
-                // Set explicit styles for page breaking
+                // Set explicit styles for page breaking only
                 if (index > 0) {
                     slideDiv.style.pageBreakBefore = 'always';
                     slideDiv.style.breakBefore = 'page';
                 }
-                slideDiv.style.pageBreakInside = 'auto';
-                slideDiv.style.breakInside = 'auto';
-                slideDiv.style.width = '100%';
-                slideDiv.style.minHeight = '100vh';
-                slideDiv.style.height = 'auto';
-                slideDiv.style.display = 'flex';
-                slideDiv.style.flexDirection = 'column';
-                slideDiv.style.justifyContent = 'flex-start';
-                slideDiv.style.alignItems = 'center';
-                slideDiv.style.padding = '2cm';
-                slideDiv.style.paddingBottom = '3cm';
-                slideDiv.style.boxSizing = 'border-box';
-                slideDiv.style.position = 'relative';
-                slideDiv.style.background = 'white';
-                slideDiv.style.overflow = 'visible';
                 
                 // Apply font family class
                 if (this.currentFontFamily) {
                     slideDiv.className += ` ${this.currentFontFamily}`;
                 } else {
                     slideDiv.className += ' font-family-default';
-                }
-                
-                // Add logo if available
-                if (this.logoUrl) {
-                    const logoDiv = document.createElement('div');
-                    logoDiv.className = 'pdf-logo';
-                    logoDiv.innerHTML = `<img src="${this.logoUrl}" alt="Logo" class="pdf-logo-image">`;
-                    slideDiv.appendChild(logoDiv);
                 }
                 
                 // Process markdown content properly
@@ -3833,6 +3810,10 @@ class GitHubMarkdownPresenter {
                 } else if (slide.html) {
                     processedContent = slide.html;
                 }
+                
+                // Create content wrapper for vertical centering
+                const contentWrapper = document.createElement('div');
+                contentWrapper.className = 'pdf-slide-content-wrapper';
                 
                 // Create content div
                 const contentDiv = document.createElement('div');
@@ -3856,7 +3837,20 @@ class GitHubMarkdownPresenter {
                     p.style.textAlign = 'center';
                 });
                 
-                slideDiv.appendChild(contentDiv);
+                // Add content to wrapper
+                contentWrapper.appendChild(contentDiv);
+                
+                // Add wrapper to slide
+                slideDiv.appendChild(contentWrapper);
+                
+                // Add logo if available (absolute positioned, won't affect flex layout)
+                if (this.logoUrl) {
+                    const logoDiv = document.createElement('div');
+                    logoDiv.className = 'pdf-logo';
+                    logoDiv.innerHTML = `<img src="${this.logoUrl}" alt="Logo" class="pdf-logo-image">`;
+                    slideDiv.appendChild(logoDiv);
+                }
+                
                 pdfContainer.appendChild(slideDiv);
             }
 
@@ -3878,6 +3872,32 @@ class GitHubMarkdownPresenter {
 
             // Wait for all resources to load
             await this.waitForResourcesLoaded(pdfContainer);
+            
+            // Temporarily disable overflow check to test centering
+            // Will re-enable after confirming centering works
+            /*
+            pdfContainer.querySelectorAll('.pdf-slide').forEach((slideDiv) => {
+                const contentWrapper = slideDiv.querySelector('.pdf-slide-content-wrapper');
+                const contentDiv = slideDiv.querySelector('.pdf-slide-content');
+                
+                if (contentWrapper && contentDiv) {
+                    // Get actual content height
+                    const contentHeight = contentDiv.offsetHeight;
+                    // Get slide height minus padding (2cm top + 3cm bottom = ~189px)
+                    const slideHeight = slideDiv.offsetHeight;
+                    const availableHeight = slideHeight - 189; // Approximate padding in pixels
+                    
+                    // Check if content overflows
+                    if (contentHeight > availableHeight * 0.85) { // 85% threshold
+                        // Content overflows, align to top
+                        contentWrapper.classList.add('content-overflow');
+                    } else {
+                        // Content fits, center vertically
+                        contentWrapper.classList.remove('content-overflow');
+                    }
+                }
+            });
+            */
             
             // Remove loading indicator
             document.body.removeChild(loadingDiv);
