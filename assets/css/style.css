@@ -669,9 +669,12 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         left: 0;
         width: 100vw;
         height: calc(100vh - 60px); /* Subtract header height */
-        padding: 2rem;
+        padding: 0;
+        padding-bottom: 100px; /* 컨트롤 버튼 공간 확보 */
         z-index: 999;
         background: white;
+        overflow-y: auto !important; /* 세로 스크롤 활성화 */
+        -webkit-overflow-scrolling: touch !important; /* iOS 부드러운 스크롤 */
     }
 
     .dark #presentation-section #slide-container {
@@ -702,6 +705,9 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     #slide-container {
         padding: 0 !important;
         padding-top: 2rem !important; /* 모바일에서 상단 여백 추가 */
+        padding-bottom: 100px !important; /* 컨트롤 버튼 공간 확보 */
+        overflow-y: auto !important; /* 세로 스크롤 활성화 */
+        -webkit-overflow-scrolling: touch !important; /* iOS 부드러운 스크롤 */
     }
     
     #slide-content {
@@ -709,6 +715,8 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         max-width: 100% !important;
         margin: 0 !important;
         padding: 2rem !important;
+        min-height: auto !important; /* 고정 높이 제거 */
+        height: auto !important; /* 컨텐츠에 따라 높이 자동 조정 */
     }
 }
 
@@ -745,13 +753,14 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
     /* Ensure navigation container is always visible on mobile */
     #bottom-nav-container {
         position: fixed;
-        bottom: 30px; /* 기존 10px에서 30px로 변경하여 바닥과의 간격 증가 */
+        bottom: 20px; /* 바닥과의 간격 */
         left: 50%;
         transform: translateX(-50%);
         z-index: 99999;
         display: flex;
         opacity: 1;
         visibility: visible;
+        pointer-events: auto; /* 터치 이벤트 활성화 */
     }
     
     /* Hide logo on mobile with stronger rules */
@@ -811,12 +820,15 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         padding: 1.5rem;
         font-size: 1.5rem; /* 150% of base for mobile */
         line-height: 1.7; /* 모바일 줄간격 조정 */
-        /* min-height: calc(56.25vw * 0.9) !important; 16:9 비율 유지 */
-        aspect-ratio: 16/9 !important;
+        min-height: calc(100vh - 160px) !important; /* 헤더와 버튼 영역 제외한 최소 높이 */
+        height: auto !important; /* 컨텐츠에 따라 높이 자동 조정 */
         max-width: 100% !important; /* 전체 너비 사용 */
         margin: 0 !important; /* 여백 제거 */
         box-shadow: none !important; /* 그림자 제거 */
         border: none !important; /* 테두리 제거 */
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important; /* 상단 정렬로 변경 */
     }
     
     #slide-content h1 {
@@ -888,12 +900,15 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         padding: 1rem;
         font-size: 1.25rem; /* 125% of base for small mobile */
         line-height: 1.6; /* 소형 모바일 줄간격 조정 */
-        /* min-height: calc(56.25vw * 0.9) !important; 16:9 비율 유지 */
-        aspect-ratio: 16/9 !important;
+        min-height: calc(100vh - 160px) !important; /* 헤더와 버튼 영역 제외한 최소 높이 */
+        height: auto !important; /* 컨텐츠에 따라 높이 자동 조정 */
         max-width: 100% !important; /* 전체 너비 사용 */
         margin: 0 !important; /* 여백 제거 */
         box-shadow: none !important; /* 그림자 제거 */
         border: none !important; /* 테두리 제거 */
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important; /* 상단 정렬로 변경 */
     }
     
     #slide-content h1 {
