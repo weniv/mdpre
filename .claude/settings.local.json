@@ -15,7 +15,8 @@
       "Bash(rm:*)",
       "Bash(npm run dev:*)",
       "Bash(find:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(python3:*)"
     ],
     "deny": []
   }

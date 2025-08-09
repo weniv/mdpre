@@ -2076,29 +2076,13 @@ class GitHubMarkdownPresenter {
                         const preElement = block.parentElement;
                         let targetElement = preElement && preElement.tagName === 'PRE' ? preElement : block;
                         
-                        // Check if the parent has text-center class (from {center} syntax)
-                        let parentWithCenter = targetElement.parentElement;
-                        console.log(`Checking for text-center class. Starting from:`, targetElement.parentElement);
-                        
-                        while (parentWithCenter && !parentWithCenter.classList.contains('text-center') && parentWithCenter.id !== 'slide-content') {
-                            console.log(`Checking parent:`, parentWithCenter.tagName, parentWithCenter.className);
-                            parentWithCenter = parentWithCenter.parentElement;
-                        }
-                        
-                        if (parentWithCenter && parentWithCenter.classList.contains('text-center')) {
-                            console.log(`Found text-center class on:`, parentWithCenter.tagName);
-                            // Add inline styles for centering only when inside {center}
-                            container.style.display = 'flex';
-                            container.style.justifyContent = 'center';
-                            container.style.alignItems = 'center';
-                            container.style.width = '100%';
-                            console.log(`Applied center alignment to mermaid container`);
-                        } else {
-                            console.log(`No text-center class found in parent hierarchy`);
-                            // Default styles for non-centered mermaid
-                            container.style.display = 'block';
-                            container.style.width = '100%';
-                        }
+                        // Apply consistent styling to all Mermaid diagrams
+                        // This ensures all diagrams have the same size and centering
+                        container.style.display = 'flex';
+                        container.style.justifyContent = 'center';
+                        container.style.alignItems = 'center';
+                        container.style.width = '100%';
+                        console.log(`Applied consistent styling to mermaid container`);
                         
                         // Replace the code block with the container
                         targetElement.parentNode.replaceChild(container, targetElement);
