@@ -146,6 +146,20 @@ alert("안녕하세요!!");
 
 ---
 
+이렇게 만들어진 정적 페이지는 데스크톱 앱으로도 쉽게 만들 수 있습니다.
+
+프롬프트: 내가 만든 정적 페이지를 일렉트론으로 데스크톱 앱으로 만들어줘.
+
+![데스크톱앱](images/desktop_app.png)
+
+---
+
+결과물은 아래와 같습니다.
+
+![데스크톱앱](images/desktop_app2.png)
+
+---
+
 tailwind css 스타일 보기
 
 * 링크: https://tailwindcss.com/plus/templates?ref=sidebar
