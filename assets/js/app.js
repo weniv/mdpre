@@ -6,7 +6,10 @@ class GitHubMarkdownPresenter {
         this.settings = {
             headingFont: 'bmjua',
             bodyFont: 'bmjua',
-            codeFont: 'd2coding'
+            codeFont: 'd2coding',
+            showFullscreenPageNumber: true,
+            fullscreenPageNumberPosition: 'bottom-right',
+            fullscreenPageNumberFormat: 'current-total'
         };
         this.recentItems = [];
         this.fileSlideMap = [];
@@ -16,7 +19,10 @@ class GitHubMarkdownPresenter {
         // Preview functionality
         this.previewSlides = [];
         this.currentPreviewSlide = 0;
-        
+
+        // Fullscreen page number
+        this.fullscreenPageNumberElement = null;
+
         this.init();
     }
 
@@ -29,10 +35,19 @@ class GitHubMarkdownPresenter {
         this.getCurrentRepoInfo();
         this.checkKatexLoaded();
         this.checkMermaidLoaded();
-        
+
+        // Initialize fullscreen page number element
+        this.fullscreenPageNumberElement = document.getElementById('fullscreen-page-number');
+
+        // Initialize fullscreen page number state
+        this.updateFullscreenPageNumber();
+
+        // Initialize fullscreen page number options visibility
+        this.updateFullscreenPageNumberOptionsVisibility();
+
         // 모바일에서 items-center 클래스 제거
         this.adjustMobileLayout();
-        
+
         // 초기 로딩 후 잠시 기다렸다가 자동으로 폴더 검색
         setTimeout(() => {
             const currentRepoRadio = document.getElementById('current-repo');
@@ -344,6 +359,73 @@ class GitHubMarkdownPresenter {
         document.getElementById('reset-fonts-btn').addEventListener('click', () => {
             this.resetFontSettings();
         });
+
+        // Fullscreen page number toggle
+        document.getElementById('fullscreen-page-number-toggle').addEventListener('change', (e) => {
+            this.settings.showFullscreenPageNumber = e.target.checked;
+            this.updateFullscreenPageNumberOptionsVisibility();
+            this.applySettings();
+            this.saveSettings();
+        });
+
+        // Fullscreen page number position
+        const positionSelect = document.getElementById('fullscreen-page-number-position');
+        positionSelect.addEventListener('change', (e) => {
+            // Only allow change if fullscreen page number is enabled
+            if (this.settings.showFullscreenPageNumber) {
+                this.settings.fullscreenPageNumberPosition = e.target.value;
+                this.applySettings();
+                this.saveSettings();
+            }
+        });
+
+        // Fullscreen page number format
+        const formatSelect = document.getElementById('fullscreen-page-number-format');
+        formatSelect.addEventListener('change', (e) => {
+            // Only allow change if fullscreen page number is enabled
+            if (this.settings.showFullscreenPageNumber) {
+                this.settings.fullscreenPageNumberFormat = e.target.value;
+                this.applySettings();
+                this.saveSettings();
+            }
+        });
+
+        // Initialize fullscreen page number options visibility
+        this.updateFullscreenPageNumberOptionsVisibility();
+    }
+
+    updateFullscreenPageNumberOptionsVisibility() {
+        const options = document.querySelectorAll('.fullscreen-page-number-options');
+        const positionSelect = document.getElementById('fullscreen-page-number-position');
+        const formatSelect = document.getElementById('fullscreen-page-number-format');
+
+        if (this.settings.showFullscreenPageNumber) {
+            // Show options
+            options.forEach(option => {
+                option.style.display = 'block';
+            });
+
+            // Enable selects
+            if (positionSelect) {
+                positionSelect.disabled = false;
+            }
+            if (formatSelect) {
+                formatSelect.disabled = false;
+            }
+        } else {
+            // Hide options
+            options.forEach(option => {
+                option.style.display = 'none';
+            });
+
+            // Disable selects
+            if (positionSelect) {
+                positionSelect.disabled = true;
+            }
+            if (formatSelect) {
+                formatSelect.disabled = true;
+            }
+        }
     }
 
     setupFullscreenHandling() {
@@ -371,29 +453,30 @@ class GitHubMarkdownPresenter {
         );
 
         this.isFullscreen = isCurrentlyFullscreen;
-        
+
         // Update UI state
         const container = document.getElementById('slide-container');
         const slideContent = document.getElementById('slide-content');
         const bottomNavContainer = document.getElementById('bottom-nav-container');
         const logoContainer = document.getElementById('presentation-logo');
-        
+        const fullscreenPageNumber = this.fullscreenPageNumberElement || document.getElementById('fullscreen-page-number');
+
         if (this.isFullscreen) {
             container.classList.add('fullscreen');
-            
+
             // Adjust fullscreen layout based on content size
             this.adjustFullscreenLayout();
-            
+
             // Adjust slide content for fullscreen
             if (slideContent) {
                 slideContent.style.maxHeight = 'none';
                 slideContent.style.overflow = 'visible';
                 slideContent.style.marginTop = '0';
             }
-            
+
             // Ensure bottom navigation is visible in fullscreen
             if (bottomNavContainer) bottomNavContainer.style.display = 'flex';
-            
+
             // Position logo at top-left of screen in fullscreen mode
             if (logoContainer) {
                 logoContainer.style.position = 'fixed';
@@ -402,9 +485,18 @@ class GitHubMarkdownPresenter {
                 logoContainer.style.zIndex = '100';
                 logoContainer.style.transform = 'none';
             }
+
+            // Show fullscreen page number with animation if setting is enabled
+            if (fullscreenPageNumber && this.settings.showFullscreenPageNumber) {
+                this.updateFullscreenPageNumber();
+                setTimeout(() => {
+                    fullscreenPageNumber.style.display = 'block';
+                    fullscreenPageNumber.classList.add('show');
+                }, 300);
+            }
         } else {
             container.classList.remove('fullscreen');
-            
+
             // Reset container styles
             container.style.overflow = '';
             container.style.height = '';
@@ -413,17 +505,17 @@ class GitHubMarkdownPresenter {
             container.style.justifyContent = '';
             container.style.alignItems = '';
             container.style.paddingTop = '';
-            
+
             // Reset slide content styles
             if (slideContent) {
                 slideContent.style.maxHeight = '';
                 slideContent.style.overflow = '';
                 slideContent.style.marginTop = '';
             }
-            
+
             // Reset any inline styles that might interfere
             if (bottomNavContainer) bottomNavContainer.style.display = '';
-            
+
             // Reset logo position to slide-content relative positioning
             if (logoContainer) {
                 logoContainer.style.position = '';
@@ -432,11 +524,20 @@ class GitHubMarkdownPresenter {
                 logoContainer.style.zIndex = '';
                 logoContainer.style.transform = '';
             }
+
+            // Hide fullscreen page number
+            if (fullscreenPageNumber) {
+                fullscreenPageNumber.style.display = 'none';
+                fullscreenPageNumber.classList.remove('show');
+                this.updateFullscreenPageNumber();
+            }
         }
 
         // Trigger layout recalculation after a short delay
         setTimeout(() => {
             this.recalculateLayout();
+            // Force update fullscreen page number after layout changes
+            this.updateFullscreenPageNumber();
         }, 100);
     }
 
@@ -2111,20 +2212,73 @@ class GitHubMarkdownPresenter {
         const totalPages = document.getElementById('total-pages');
         const prevBtn = document.getElementById('prev-slide');
         const nextBtn = document.getElementById('next-slide');
-        
+
         // Update page input and total pages
         pageInput.value = this.currentSlide + 1;
         pageInput.max = this.slides.length;
         totalPages.textContent = this.slides.length;
-        
+
         prevBtn.disabled = this.currentSlide === 0;
         nextBtn.disabled = this.currentSlide === this.slides.length - 1;
-        
+
         prevBtn.classList.toggle('opacity-50', this.currentSlide === 0);
         nextBtn.classList.toggle('opacity-50', this.currentSlide === this.slides.length - 1);
-        
+
         // Update file navigation highlighting
         this.updateFileNavigationHighlight();
+
+        // Update fullscreen page number
+        this.updateFullscreenPageNumber();
+    }
+
+    updateFullscreenPageNumber() {
+        if (!this.fullscreenPageNumberElement) {
+            this.fullscreenPageNumberElement = document.getElementById('fullscreen-page-number');
+        }
+
+        const fullscreenPageNumber = this.fullscreenPageNumberElement;
+        const currentPageNumber = document.getElementById('current-page-number');
+        const totalPageNumber = document.getElementById('total-page-number');
+
+        if (fullscreenPageNumber && currentPageNumber && totalPageNumber) {
+            const currentPage = this.currentSlide + 1;
+            const totalPages = this.slides.length;
+
+            // Update page numbers based on format setting
+            if (this.settings.fullscreenPageNumberFormat === 'current-total') {
+                currentPageNumber.textContent = currentPage;
+                totalPageNumber.textContent = totalPages;
+                // Show the slash separator
+                const slashSeparator = fullscreenPageNumber.querySelector('.mx-1');
+                if (slashSeparator) {
+                    slashSeparator.style.display = 'inline';
+                }
+            } else if (this.settings.fullscreenPageNumberFormat === 'current-only') {
+                currentPageNumber.textContent = currentPage;
+                // Hide the total page number and slash
+                totalPageNumber.style.display = 'none';
+                const slashSeparator = fullscreenPageNumber.querySelector('.mx-1');
+                if (slashSeparator) {
+                    slashSeparator.style.display = 'none';
+                }
+            }
+
+            // Update position class
+            fullscreenPageNumber.className = `fixed bottom-6 right-6 px-4 py-2 font-semibold text-lg z-[10001] ${this.settings.fullscreenPageNumberPosition}`;
+
+            // Show the page number if in fullscreen mode and setting is enabled, hide otherwise
+            if (this.isFullscreen && this.settings.showFullscreenPageNumber) {
+                fullscreenPageNumber.style.display = 'block';
+                fullscreenPageNumber.classList.add('show');
+            } else {
+                fullscreenPageNumber.style.display = 'none';
+                fullscreenPageNumber.classList.remove('show');
+                // Reset display states for next time
+                if (this.settings.fullscreenPageNumberFormat === 'current-only') {
+                    totalPageNumber.style.display = 'none';
+                }
+            }
+        }
     }
 
     previousSlide() {
@@ -2161,13 +2315,31 @@ class GitHubMarkdownPresenter {
 
     enterFullscreen() {
         const container = document.getElementById('slide-container');
-        
+
         if (container.requestFullscreen) {
             container.requestFullscreen();
+            // Update page number immediately after requesting fullscreen
+            setTimeout(() => {
+                if (this.settings.showFullscreenPageNumber) {
+                    this.updateFullscreenPageNumber();
+                }
+            }, 100);
         } else if (container.webkitRequestFullscreen) {
             container.webkitRequestFullscreen();
+            // Update page number immediately after requesting fullscreen
+            setTimeout(() => {
+                if (this.settings.showFullscreenPageNumber) {
+                    this.updateFullscreenPageNumber();
+                }
+            }, 100);
         } else if (container.msRequestFullscreen) {
             container.msRequestFullscreen();
+            // Update page number immediately after requesting fullscreen
+            setTimeout(() => {
+                if (this.settings.showFullscreenPageNumber) {
+                    this.updateFullscreenPageNumber();
+                }
+            }, 100);
         } else {
             // Fallback for browsers that don't support fullscreen API
             // Add fullscreen classes with proper theme handling
@@ -2176,6 +2348,13 @@ class GitHubMarkdownPresenter {
             container.classList.add('fullscreen-fallback');
             this.isFullscreen = true;
             this.adjustFullscreenLayout();
+
+            // Update fullscreen page number for fallback mode
+            setTimeout(() => {
+                if (this.settings.showFullscreenPageNumber) {
+                    this.updateFullscreenPageNumber();
+                }
+            }, 100);
         }
     }
 
@@ -2192,6 +2371,11 @@ class GitHubMarkdownPresenter {
             // Remove all fullscreen classes
             container.classList.remove('fixed', 'inset-0', 'z-[9999]', 'bg-white', 'bg-gray-900', 'p-8', 'overflow-auto', 'flex', 'items-center', 'justify-center', 'fullscreen-fallback');
             this.isFullscreen = false;
+
+            // Update fullscreen page number for fallback mode
+            setTimeout(() => {
+                this.updateFullscreenPageNumber();
+            }, 100);
         }
     }
 
@@ -2227,6 +2411,13 @@ class GitHubMarkdownPresenter {
             document.getElementById('heading-font-dropdown').value = this.settings.headingFont;
             document.getElementById('body-font-dropdown').value = this.settings.bodyFont;
             document.getElementById('code-font-dropdown').value = this.settings.codeFont;
+            document.getElementById('fullscreen-page-number-toggle').checked = this.settings.showFullscreenPageNumber;
+            document.getElementById('fullscreen-page-number-position').value = this.settings.fullscreenPageNumberPosition;
+            document.getElementById('fullscreen-page-number-format').value = this.settings.fullscreenPageNumberFormat;
+
+        // Update fullscreen page number options visibility
+        this.updateFullscreenPageNumberOptionsVisibility();
+
             dropdown.classList.remove('hidden');
         } else {
             dropdown.classList.add('hidden');
@@ -2347,8 +2538,14 @@ class GitHubMarkdownPresenter {
     applySettings() {
         const slideContent = document.getElementById('slide-content');
         if (!slideContent) return;
-        
+
         this.applyFontsToElement(slideContent);
+
+        // Apply fullscreen page number setting
+        this.updateFullscreenPageNumber();
+
+        // Update fullscreen page number options visibility
+        this.updateFullscreenPageNumberOptionsVisibility();
     }
 
     saveSettings() {
@@ -2358,7 +2555,15 @@ class GitHubMarkdownPresenter {
     loadSettings() {
         const saved = localStorage.getItem('github-presenter-settings');
         if (saved) {
-            this.settings = { ...this.settings, ...JSON.parse(saved) };
+            const parsedSettings = JSON.parse(saved);
+            // Set default values if not exists
+            if (!parsedSettings.fullscreenPageNumberPosition) {
+                parsedSettings.fullscreenPageNumberPosition = 'bottom-right';
+            }
+            if (!parsedSettings.fullscreenPageNumberFormat) {
+                parsedSettings.fullscreenPageNumberFormat = 'current-total';
+            }
+            this.settings = { ...this.settings, ...parsedSettings };
         }
         this.applySettings();
     }
@@ -2368,14 +2573,23 @@ class GitHubMarkdownPresenter {
         this.settings.headingFont = 'bmjua';
         this.settings.bodyFont = 'bmjua';
         this.settings.codeFont = 'd2coding';
-        
+        this.settings.showFullscreenPageNumber = true;
+        this.settings.fullscreenPageNumberPosition = 'bottom-right';
+        this.settings.fullscreenPageNumberFormat = 'current-total';
+
         // Update UI
         if (!document.getElementById('settings-dropdown').classList.contains('hidden')) {
             document.getElementById('heading-font-dropdown').value = this.settings.headingFont;
             document.getElementById('body-font-dropdown').value = this.settings.bodyFont;
             document.getElementById('code-font-dropdown').value = this.settings.codeFont;
+            document.getElementById('fullscreen-page-number-toggle').checked = this.settings.showFullscreenPageNumber;
+            document.getElementById('fullscreen-page-number-position').value = this.settings.fullscreenPageNumberPosition;
+            document.getElementById('fullscreen-page-number-format').value = this.settings.fullscreenPageNumberFormat;
         }
-        
+
+        // Update fullscreen page number options visibility
+        this.updateFullscreenPageNumberOptionsVisibility();
+
         // Apply and save settings
         this.applySettings();
         this.saveSettings();
