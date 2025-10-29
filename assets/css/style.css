@@ -2566,3 +2566,177 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
 .dark .slide-thumbnail-content a {
     color: #60a5fa;
 }
+
+#fullscreen-page-number {
+    position: fixed !important;
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+    color: #99999a !important;
+    padding: 8px 12px !important;
+    border-radius: 12px !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    z-index: 10001 !important;
+    opacity: 0 !important;
+    transform: translateY(20px) !important;
+    transition: all 0.3s ease !important;
+    pointer-events: none !important;
+    user-select: none !important;
+    display: none !important;
+}
+
+#fullscreen-page-number.show {
+    display: block !important;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+#fullscreen-page-number.bottom-right {
+    bottom: 24px !important;
+    right: 24px !important;
+    top: auto !important;
+    left: auto !important;
+}
+
+#fullscreen-page-number.top-right {
+    top: 24px !important;
+    right: 24px !important;
+    bottom: auto !important;
+    left: auto !important;
+}
+
+#fullscreen-page-number.top-left {
+    top: 24px !important;
+    left: 24px !important;
+    bottom: auto !important;
+    right: auto !important;
+}
+
+#fullscreen-page-number.bottom-left {
+    bottom: 24px !important;
+    left: 24px !important;
+    top: auto !important;
+    right: auto !important;
+}
+
+#slide-container:fullscreen #fullscreen-page-number,
+#slide-container:-webkit-full-screen #fullscreen-page-number,
+#slide-container:-moz-full-screen #fullscreen-page-number,
+#slide-container:-ms-fullscreen #fullscreen-page-number,
+#slide-container.fullscreen #fullscreen-page-number {
+    display: block !important;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    visibility: visible !important;
+}
+
+#slide-container.fullscreen-fallback #fullscreen-page-number {
+    display: block !important;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    visibility: visible !important;
+}
+
+@media (max-width: 768px) {
+    #fullscreen-page-number {
+        font-size: 16px;
+        padding: 10px 16px;
+    }
+
+    #fullscreen-page-number.bottom-right {
+        bottom: 100px;
+        right: 16px;
+        top: auto !important;
+        left: auto !important;
+    }
+
+    #fullscreen-page-number.top-right {
+        top: 16px;
+        right: 16px;
+        bottom: auto !important;
+        left: auto !important;
+    }
+
+    #fullscreen-page-number.top-left {
+        top: 16px;
+        left: 16px;
+        bottom: auto !important;
+        right: auto !important;
+    }
+
+    #fullscreen-page-number.bottom-left {
+        bottom: 100px;
+        left: 16px;
+        top: auto !important;
+        right: auto !important;
+    }
+
+    /* Mobile fullscreen adjustments */
+    #presentation-section #slide-container #fullscreen-page-number {
+        bottom: 100px;
+        right: 16px;
+    }
+
+    #presentation-section #slide-container #fullscreen-page-number.bottom-right {
+        bottom: 100px;
+        right: 16px;
+        top: auto !important;
+        left: auto !important;
+    }
+
+    #presentation-section #slide-container #fullscreen-page-number.top-right {
+        top: 16px;
+        right: 16px;
+        bottom: auto !important;
+        left: auto !important;
+    }
+
+    #presentation-section #slide-container #fullscreen-page-number.top-left {
+        top: 16px;
+        left: 16px;
+        bottom: auto !important;
+        right: auto !important;
+    }
+
+    #presentation-section #slide-container #fullscreen-page-number.bottom-left {
+        bottom: 100px;
+        left: 16px;
+        top: auto !important;
+        right: auto !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #fullscreen-page-number {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    #fullscreen-page-number.bottom-right {
+        bottom: 90px;
+        right: 12px;
+        top: auto !important;
+        left: auto !important;
+    }
+
+    #fullscreen-page-number.top-right {
+        top: 12px;
+        right: 12px;
+        bottom: auto !important;
+        left: auto !important;
+    }
+
+    #fullscreen-page-number.top-left {
+        top: 12px;
+        left: 12px;
+        bottom: auto !important;
+        right: auto !important;
+    }
+
+    #fullscreen-page-number.bottom-left {
+        bottom: 90px;
+        left: 12px;
+        top: auto !important;
+        right: auto !important;
+    }
+}

@@ -231,14 +231,47 @@
                                     </select>
                                 </div>
 
+                                <hr>
+                                
+                                <!-- 전체화면 페이지 번호 설정 -->
+                                <div>
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="checkbox" id="fullscreen-page-number-toggle" class="mr-2 text-blue-600 rounded focus:ring-blue-500">
+                                        <span class="text-xs font-medium text-gray-700 dark:text-white">전체화면 페이지 번호 표시</span>
+                                    </label>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">전체화면 모드에서 현재 페이지 번호를 표시합니다.</p>
+
+                                    <div class="mt-2 fullscreen-page-number-options" style="display: none;">
+                                        <label for="fullscreen-page-number-position" class="block text-xs font-medium text-gray-700 dark:text-white mb-1">
+                                            페이지 번호 위치
+                                        </label>
+                                        <select id="fullscreen-page-number-position" class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                            <option value="bottom-right">우하단</option>
+                                            <option value="top-right">우상단</option>
+                                            <option value="top-left">좌상단</option>
+                                            <option value="bottom-left">좌하단</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mt-2 fullscreen-page-number-options" style="display: none;">
+                                        <label for="fullscreen-page-number-format" class="block text-xs font-medium text-gray-700 dark:text-white mb-1">
+                                            페이지 번호 형식
+                                        </label>
+                                        <select id="fullscreen-page-number-format" class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                            <option value="current-total">현재/전체 (1/10)</option>
+                                            <option value="current-only">현재 페이지 (1)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <hr />
+
                                 <!-- 설정 초기화 버튼 -->
                                 <div class="pt-2">
                                     <button id="reset-fonts-btn" class="w-full px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors border border-red-200 dark:border-red-800">
-                                        폰트 설정 초기화
+                                        설정 초기화
                                     </button>
                                 </div>
-
-                                <hr>
                                 
                                 <!-- Help Button -->
                                 <div class="pt-4">
@@ -625,13 +658,20 @@
 
 
             <!-- Slide Container -->
-            <div id="slide-container" class="min-h-[calc(100vh-64px)] overflow-y-auto overflow-x-hidden flex items-start md:items-center justify-center px-4 md:px-4 py-8 md:py-8 scroll-smooth -webkit-overflow-scrolling-touch scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-400/50 hover:scrollbar-thumb-gray-400/80 dark:scrollbar-thumb-gray-500/50 dark:hover:scrollbar-thumb-gray-500/80 bg-white dark:bg-gray-900" style="scrollbar-width: thin; scrollbar-color: rgba(156, 163, 175, 0.5) transparent;">
+            <div id="slide-container" class="min-h-[calc(100vh-64px)] overflow-y-auto overflow-x-hidden flex items-start md:items-center justify-center px-4 md:px-4 py-8 md:py-8 scroll-smooth -webkit-overflow-scrolling-touch scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-400/50 hover:scrollbar-thumb-gray-400/80 dark:scrollbar-thumb-gray-500/50 dark:hover:scrollbar-thumb-gray-500/80 bg-white dark:bg-gray-900 relative" style="scrollbar-width: thin; scrollbar-color: rgba(156, 163, 175, 0.5) transparent;">
                 <div id="slide-content" class="max-w-[90vw] w-full bg-white dark:bg-gray-800 dark:text-gray-100 rounded-lg shadow-lg p-32 prose prose-lg dark:prose-invert max-w-none relative transition-all duration-300 break-words flex flex-col gap-6" style="font-size: 3rem; line-height: 1.8;"
                     <!-- Presentation Logo -->
                     <div id="presentation-logo" class="absolute top-10 left-10 cursor-pointer hidden z-20">
                         <img id="logo-image" class="max-w-8 max-h-8 object-contain" alt="Presentation Logo">
                     </div>
                     <!-- Slide content will be rendered here -->
+                </div>
+
+                <!-- Fullscreen Page Number -->
+                <div id="fullscreen-page-number" class="fixed bottom-6 right-6 px-4 py-2 font-semibold text-lg z-[10001]">
+                    <span id="current-page-number">1</span>
+                    <span class="mx-1">/</span>
+                    <span id="total-page-number">1</span>
                 </div>
             </div>
         </section>
