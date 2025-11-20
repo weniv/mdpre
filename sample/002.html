@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>태양계 3D 시뮬레이션</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', Arial, sans-serif;
+            overflow: hidden;
+            background: #000;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #4a90e2;
+            min-width: 280px;
+            backdrop-filter: blur(10px);
+        }
+
+        #info-panel h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #4a90e2;
+            border-bottom: 2px solid #4a90e2;
+            padding-bottom: 8px;
+        }
+
+        .planet-info {
+            margin: 12px 0;
+            padding: 10px;
+            background: rgba(74, 144, 226, 0.1);
+            border-radius: 5px;
+            border-left: 3px solid #4a90e2;
+        }
+
+        .planet-info strong {
+            color: #ffd700;
+            font-size: 16px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .planet-info span {
+            color: #ccc;
+            font-size: 13px;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 2px solid #4a90e2;
+            backdrop-filter: blur(10px);
+        }
+
+        #controls h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #4a90e2;
+        }
+
+        #controls p {
+            font-size: 13px;
+            margin: 5px 0;
+            color: #ccc;
+        }
+
+        .key {
+            display: inline-block;
+            background: #4a90e2;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+
+    <div id="info-panel">
+        <h2>🌌 태양계 행성 정보</h2>
+        <div class="planet-info">
+            <strong>수성 (Mercury)</strong>
+            <span>공전 주기: 88일</span>
+        </div>
+        <div class="planet-info">
+            <strong>금성 (Venus)</strong>
+            <span>공전 주기: 225일</span>
+        </div>
+        <div class="planet-info">
+            <strong>지구 (Earth)</strong>
+            <span>공전 주기: 365일</span>
+        </div>
+        <div class="planet-info">
+            <strong>화성 (Mars)</strong>
+            <span>공전 주기: 687일</span>
+        </div>
+    </div>
+
+    <div id="controls">
+        <h3>⌨️ 조작법</h3>
+        <p><span class="key">마우스 드래그</span> 시점 회전</p>
+        <p><span class="key">1</span> 수성 포커스</p>
+        <p><span class="key">2</span> 금성 포커스</p>
+        <p><span class="key">3</span> 지구 포커스</p>
+        <p><span class="key">4</span> 화성 포커스</p>
+        <p><span class="key">0</span> 전체 보기</p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // 씬, 카메라, 렌더러 설정
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // 배경 - 별이 빛나는 우주
+        const starGeometry = new THREE.BufferGeometry();
+        const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.7 });
+        const starVertices = [];
+        for (let i = 0; i < 10000; i++) {
+            const x = (Math.random() - 0.5) * 2000;
+            const y = (Math.random() - 0.5) * 2000;
+            const z = (Math.random() - 0.5) * 2000;
+            starVertices.push(x, y, z);
+        }
+        starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+        const stars = new THREE.Points(starGeometry, starMaterial);
+        scene.add(stars);
+
+        // 태양 생성 (빛을 발하는 효과)
+        const sunGeometry = new THREE.SphereGeometry(5, 32, 32);
+        const sunMaterial = new THREE.MeshBasicMaterial({
+            color: 0xfdb813,
+            emissive: 0xfdb813,
+            emissiveIntensity: 1
+        });
+        const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+        scene.add(sun);
+
+        // 태양 빛 효과
+        const sunLight = new THREE.PointLight(0xffffff, 2, 300);
+        sunLight.position.set(0, 0, 0);
+        scene.add(sunLight);
+
+        const ambientLight = new THREE.AmbientLight(0x333333);
+        scene.add(ambientLight);
+
+        // 행성 데이터 (크기, 거리, 색상, 공전주기, 자전속도)
+        const planetsData = [
+            { name: '수성', radius: 0.8, distance: 12, color: 0x8c7853, orbitPeriod: 88, rotationSpeed: 0.01 },
+            { name: '금성', radius: 1.2, distance: 18, color: 0xffc649, orbitPeriod: 225, rotationSpeed: 0.008 },
+            { name: '지구', radius: 1.3, distance: 25, color: 0x4a90e2, orbitPeriod: 365, rotationSpeed: 0.02 },
+            { name: '화성', radius: 1.0, distance: 32, color: 0xdc4c3e, orbitPeriod: 687, rotationSpeed: 0.018 }
+        ];
+
+        const planets = [];
+        const orbits = [];
+
+        // 행성 및 궤도 생성
+        planetsData.forEach((data, index) => {
+            // 궤도선
+            const orbitGeometry = new THREE.RingGeometry(data.distance - 0.1, data.distance + 0.1, 128);
+            const orbitMaterial = new THREE.MeshBasicMaterial({
+                color: 0x444444,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.3
+            });
+            const orbit = new THREE.Mesh(orbitGeometry, orbitMaterial);
+            orbit.rotation.x = Math.PI / 2;
+            scene.add(orbit);
+            orbits.push(orbit);
+
+            // 행성
+            const planetGeometry = new THREE.SphereGeometry(data.radius, 32, 32);
+            const planetMaterial = new THREE.MeshPhongMaterial({
+                color: data.color,
+                shininess: 30
+            });
+            const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+            planet.castShadow = true;
+            planet.receiveShadow = true;
+
+            // 행성 그룹 (공전을 위해)
+            const planetGroup = new THREE.Group();
+            planet.position.x = data.distance;
+            planetGroup.add(planet);
+            scene.add(planetGroup);
+
+            planets.push({
+                group: planetGroup,
+                mesh: planet,
+                data: data,
+                angle: Math.random() * Math.PI * 2
+            });
+
+            // 지구에 달 추가
+            if (data.name === '지구') {
+                const moonGeometry = new THREE.SphereGeometry(0.4, 16, 16);
+                const moonMaterial = new THREE.MeshPhongMaterial({ color: 0xaaaaaa });
+                const moon = new THREE.Mesh(moonGeometry, moonMaterial);
+                moon.position.x = 3;
+                planet.add(moon);
+
+                planets[index].moon = moon;
+            }
+        });
+
+        // 카메라 초기 위치
+        camera.position.set(0, 40, 50);
+        camera.lookAt(0, 0, 0);
+
+        // 마우스 컨트롤
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let cameraAngle = { theta: 0, phi: Math.PI / 6 };
+        let cameraDistance = 60;
+        let focusedPlanet = null;
+
+        renderer.domElement.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        renderer.domElement.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const deltaX = e.clientX - previousMousePosition.x;
+                const deltaY = e.clientY - previousMousePosition.y;
+
+                cameraAngle.theta -= deltaX * 0.005;
+                cameraAngle.phi += deltaY * 0.005;
+
+                // 상하 각도 제한
+                cameraAngle.phi = Math.max(0.1, Math.min(Math.PI - 0.1, cameraAngle.phi));
+
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            }
+        });
+
+        renderer.domElement.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        renderer.domElement.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            cameraDistance += e.deltaY * 0.05;
+            cameraDistance = Math.max(15, Math.min(150, cameraDistance));
+        });
+
+        // 키보드 컨트롤 - 행성 포커스
+        document.addEventListener('keydown', (e) => {
+            const key = parseInt(e.key);
+            if (key >= 1 && key <= 4) {
+                focusedPlanet = planets[key - 1];
+                cameraDistance = 15;
+            } else if (key === 0) {
+                focusedPlanet = null;
+                cameraDistance = 60;
+            }
+        });
+
+        // 애니메이션
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // 태양 자전
+            sun.rotation.y += 0.001;
+
+            // 행성들 공전 및 자전
+            planets.forEach((planet) => {
+                // 공전 (실제 주기 비율 반영)
+                const orbitSpeed = (365 / planet.data.orbitPeriod) * 0.001;
+                planet.angle += orbitSpeed;
+                planet.group.rotation.y = planet.angle;
+
+                // 자전
+                planet.mesh.rotation.y += planet.data.rotationSpeed;
+
+                // 달 공전 (지구만)
+                if (planet.moon) {
+                    planet.moon.rotation.y += 0.05;
+                    const moonOrbitAngle = Date.now() * 0.001;
+                    planet.moon.position.x = Math.cos(moonOrbitAngle) * 3;
+                    planet.moon.position.z = Math.sin(moonOrbitAngle) * 3;
+                }
+            });
+
+            // 카메라 위치 업데이트
+            let targetPosition = { x: 0, y: 0, z: 0 };
+
+            if (focusedPlanet) {
+                const planetWorldPos = new THREE.Vector3();
+                focusedPlanet.mesh.getWorldPosition(planetWorldPos);
+                targetPosition = planetWorldPos;
+            }
+
+            camera.position.x = targetPosition.x + cameraDistance * Math.sin(cameraAngle.phi) * Math.cos(cameraAngle.theta);
+            camera.position.y = targetPosition.y + cameraDistance * Math.cos(cameraAngle.phi);
+            camera.position.z = targetPosition.z + cameraDistance * Math.sin(cameraAngle.phi) * Math.sin(cameraAngle.theta);
+            camera.lookAt(targetPosition.x, targetPosition.y, targetPosition.z);
+
+            renderer.render(scene, camera);
+        }
+
+        // 윈도우 리사이즈 처리
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_70f5abb724c49ac6665f596ca8450bb2 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_70f5abb724c49ac6665f596ca8450bb2" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_70f5abb724c49ac6665f596ca8450bb2 = L.map(
+                "map_70f5abb724c49ac6665f596ca8450bb2",
+                {
+                    center: [33.3617, 126.5292],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_8286aa5132b4adc04c6995e7aade42a3 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_8286aa5132b4adc04c6995e7aade42a3.addTo(map_70f5abb724c49ac6665f596ca8450bb2);
+        
+    
+            var marker_68b1b959083bb0af4cdce54e5fdcfe46 = L.marker(
+                [33.4583, 126.9422],
+                {
+}
+            ).addTo(map_70f5abb724c49ac6665f596ca8450bb2);
+        
+    
+            var icon_5d2c55f325042d674b3c0ebb87330057 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "mountain",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8910b710e34ae4a7f11995f8f010c3ec = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_69affdd173e3ad2add4b79bba9eb0a3c = $(`<div id="html_69affdd173e3ad2add4b79bba9eb0a3c" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial, sans-serif; width: 250px;">         <h3 style="color: #2c5f2d; margin-bottom: 10px; border-bottom: 2px solid #2c5f2d; padding-bottom: 5px;">             성산일출봉         </h3>         <p style="margin: 8px 0;">             <strong>높이:</strong> 182m         </p>         <p style="margin: 8px 0; line-height: 1.5;">             <strong>특징:</strong><br>             세계자연유산으로 지정된 화산 분화구. 일출 명소로 유명하며, 해안가에 위치한 응회구(tuff cone)입니다.         </p>     </div>     </div>`)[0];
+                popup_8910b710e34ae4a7f11995f8f010c3ec.setContent(html_69affdd173e3ad2add4b79bba9eb0a3c);
+            
+        
+
+        marker_68b1b959083bb0af4cdce54e5fdcfe46.bindPopup(popup_8910b710e34ae4a7f11995f8f010c3ec)
+        ;
+
+        
+    
+    
+            marker_68b1b959083bb0af4cdce54e5fdcfe46.bindTooltip(
+                `<div>
+                     성산일출봉
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_68b1b959083bb0af4cdce54e5fdcfe46.setIcon(icon_5d2c55f325042d674b3c0ebb87330057);
+            
+    
+            var marker_01f3f373be8ba42298642948b8e6ef70 = L.marker(
+                [33.3867, 126.7689],
+                {
+}
+            ).addTo(map_70f5abb724c49ac6665f596ca8450bb2);
+        
+    
+            var icon_c2c496cdfd446285d9c50a2803b2401e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "mountain",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_768a3b0e8044530727e58aae56dcdab2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f7f151d6496ac67dbe59c9a1ac2f78d3 = $(`<div id="html_f7f151d6496ac67dbe59c9a1ac2f78d3" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial, sans-serif; width: 250px;">         <h3 style="color: #2c5f2d; margin-bottom: 10px; border-bottom: 2px solid #2c5f2d; padding-bottom: 5px;">             다랑쉬오름         </h3>         <p style="margin: 8px 0;">             <strong>높이:</strong> 382m         </p>         <p style="margin: 8px 0; line-height: 1.5;">             <strong>특징:</strong><br>             제주시 애월읍에 위치한 오름. 정상에서 한라산과 제주 서부 해안을 조망할 수 있으며, 완만한 경사로 등산하기 좋습니다.         </p>     </div>     </div>`)[0];
+                popup_768a3b0e8044530727e58aae56dcdab2.setContent(html_f7f151d6496ac67dbe59c9a1ac2f78d3);
+            
+        
+
+        marker_01f3f373be8ba42298642948b8e6ef70.bindPopup(popup_768a3b0e8044530727e58aae56dcdab2)
+        ;
+
+        
+    
+    
+            marker_01f3f373be8ba42298642948b8e6ef70.bindTooltip(
+                `<div>
+                     다랑쉬오름
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_01f3f373be8ba42298642948b8e6ef70.setIcon(icon_c2c496cdfd446285d9c50a2803b2401e);
+            
+    
+            var marker_3cacfc4e615e71a88014130fafab1e1a = L.marker(
+                [33.4447, 126.6797],
+                {
+}
+            ).addTo(map_70f5abb724c49ac6665f596ca8450bb2);
+        
+    
+            var icon_aa4367bc18cd5a270d184049022f2ed1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "mountain",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_da63c90d105a93489e78434ae4d3afeb = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5b94681ac2baf8757b2a8caa68517c17 = $(`<div id="html_5b94681ac2baf8757b2a8caa68517c17" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial, sans-serif; width: 250px;">         <h3 style="color: #2c5f2d; margin-bottom: 10px; border-bottom: 2px solid #2c5f2d; padding-bottom: 5px;">             용눈이오름         </h3>         <p style="margin: 8px 0;">             <strong>높이:</strong> 247m         </p>         <p style="margin: 8px 0; line-height: 1.5;">             <strong>특징:</strong><br>             제주시 구좌읍에 위치한 오름. 정상 분화구에 물이 고여 있어 "용의 눈"이라는 이름이 붙었으며, 습지 생태계가 발달했습니다.         </p>     </div>     </div>`)[0];
+                popup_da63c90d105a93489e78434ae4d3afeb.setContent(html_5b94681ac2baf8757b2a8caa68517c17);
+            
+        
+
+        marker_3cacfc4e615e71a88014130fafab1e1a.bindPopup(popup_da63c90d105a93489e78434ae4d3afeb)
+        ;
+
+        
+    
+    
+            marker_3cacfc4e615e71a88014130fafab1e1a.bindTooltip(
+                `<div>
+                     용눈이오름
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3cacfc4e615e71a88014130fafab1e1a.setIcon(icon_aa4367bc18cd5a270d184049022f2ed1);
+            
+</script>
+</html>

@@ -16,7 +16,10 @@
       "Bash(npm run dev:*)",
       "Bash(find:*)",
       "Bash(ls:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(pip show:*)",
+      "Bash(pip install:*)",
+      "Bash(python create_jeju_map.py:*)"
     ],
     "deny": []
   }

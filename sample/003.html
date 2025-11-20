@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이차함수 시각화 도구</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .controls {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .controls h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .input-group input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .input-group input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-group input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #dee2e6;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .input-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .input-group input[type="range"]::-webkit-slider-thumb:hover {
+            background: #764ba2;
+            transform: scale(1.2);
+        }
+
+        .input-group input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-value {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .function-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            word-wrap: break-word;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-box h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .info-box p {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+            margin: 5px 0;
+        }
+
+        .info-box .value {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .chart-container {
+            position: relative;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .presets {
+            margin-top: 20px;
+        }
+
+        .presets h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .preset-btn {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .preset-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .reset-btn {
+            width: 100%;
+            padding: 14px;
+            margin-top: 15px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+        }
+
+        @media (max-width: 968px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 이차함수 시각화 도구</h1>
+            <p>계수를 조절하여 이차함수의 그래프가 어떻게 변하는지 관찰해보세요</p>
+        </div>
+
+        <div class="content">
+            <div class="controls">
+                <h2>함수 계수 설정</h2>
+
+                <div class="function-display" id="functionDisplay">
+                    y = x²
+                </div>
+
+                <div class="input-group">
+                    <label for="aValue">계수 a (이차항 계수)</label>
+                    <input type="range" id="aSlider" min="-5" max="5" step="0.1" value="1">
+                    <div class="slider-value">
+                        <span>-5</span>
+                        <span>a = <strong id="aValue">1</strong></span>
+                        <span>5</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="bValue">계수 b (일차항 계수)</label>
+                    <input type="range" id="bSlider" min="-10" max="10" step="0.1" value="0">
+                    <div class="slider-value">
+                        <span>-10</span>
+                        <span>b = <strong id="bValue">0</strong></span>
+                        <span>10</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="cValue">계수 c (상수항)</label>
+                    <input type="range" id="cSlider" min="-10" max="10" step="0.1" value="0">
+                    <div class="slider-value">
+                        <span>-10</span>
+                        <span>c = <strong id="cValue">0</strong></span>
+                        <span>10</span>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3>📐 그래프 정보</h3>
+                    <p>꼭짓점: <span class="value" id="vertex">(0, 0)</span></p>
+                    <p>y절편: <span class="value" id="yIntercept">0</span></p>
+                    <p>판별식 (D): <span class="value" id="discriminant">0</span></p>
+                    <p>개형: <span class="value" id="shape">위로 볼록</span></p>
+                </div>
+
+                <div class="presets">
+                    <h3>🎯 예제 함수</h3>
+                    <button class="preset-btn" onclick="setPreset(1, 0, 0)">y = x²</button>
+                    <button class="preset-btn" onclick="setPreset(-1, 0, 0)">y = -x²</button>
+                    <button class="preset-btn" onclick="setPreset(1, -2, -3)">y = x² - 2x - 3</button>
+                    <button class="preset-btn" onclick="setPreset(2, 4, 2)">y = 2x² + 4x + 2</button>
+                    <button class="preset-btn" onclick="setPreset(-0.5, 2, 3)">y = -0.5x² + 2x + 3</button>
+                </div>
+
+                <button class="reset-btn" onclick="resetFunction()">🔄 초기화</button>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="quadraticChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 전역 변수
+        let chart;
+        let a = 1, b = 0, c = 0;
+
+        // Chart.js 설정
+        const ctx = document.getElementById('quadraticChart').getContext('2d');
+
+        function initChart() {
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'y = ax² + bx + c',
+                        data: [],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 3,
+                        pointRadius: 0,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: {
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            enabled: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return `y = ${context.parsed.y.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'center',
+                            title: {
+                                display: true,
+                                text: 'x',
+                                font: {
+                                    size: 16,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: '#e9ecef'
+                            },
+                            ticks: {
+                                stepSize: 1
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            position: 'center',
+                            title: {
+                                display: true,
+                                text: 'y',
+                                font: {
+                                    size: 16,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: '#e9ecef'
+                            },
+                            ticks: {
+                                stepSize: 2
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        }
+
+        // 이차함수 계산
+        function calculateQuadratic(x) {
+            return a * x * x + b * x + c;
+        }
+
+        // 꼭짓점 계산
+        function getVertex() {
+            if (a === 0) return { x: 0, y: c };
+            const x = -b / (2 * a);
+            const y = calculateQuadratic(x);
+            return { x, y };
+        }
+
+        // 판별식 계산
+        function getDiscriminant() {
+            return b * b - 4 * a * c;
+        }
+
+        // 그래프 업데이트
+        function updateGraph() {
+            const points = [];
+            const xMin = -10;
+            const xMax = 10;
+            const step = 0.1;
+
+            for (let x = xMin; x <= xMax; x += step) {
+                points.push({
+                    x: parseFloat(x.toFixed(2)),
+                    y: parseFloat(calculateQuadratic(x).toFixed(2))
+                });
+            }
+
+            chart.data.datasets[0].data = points;
+            chart.data.datasets[0].label = `y = ${formatFunction()}`;
+
+            // y축 범위 자동 조정
+            const yValues = points.map(p => p.y);
+            const yMin = Math.min(...yValues);
+            const yMax = Math.max(...yValues);
+            const yRange = yMax - yMin;
+
+            chart.options.scales.y.min = yMin - yRange * 0.1;
+            chart.options.scales.y.max = yMax + yRange * 0.1;
+
+            chart.update();
+            updateInfo();
+        }
+
+        // 함수 표시 형식
+        function formatFunction() {
+            let func = 'y = ';
+
+            if (a === 0) {
+                func += b !== 0 ? `${b}x` : '';
+                func += c !== 0 ? (c > 0 && b !== 0 ? ' + ' : '') + c : (b === 0 ? '0' : '');
+            } else {
+                func += a === 1 ? 'x²' : a === -1 ? '-x²' : `${a}x²`;
+                if (b !== 0) {
+                    func += b > 0 ? ' + ' : ' - ';
+                    func += Math.abs(b) === 1 ? 'x' : `${Math.abs(b)}x`;
+                }
+                if (c !== 0) {
+                    func += c > 0 ? ' + ' : ' - ';
+                    func += Math.abs(c);
+                }
+            }
+
+            return func;
+        }
+
+        // 정보 업데이트
+        function updateInfo() {
+            // 함수 표시
+            document.getElementById('functionDisplay').textContent = formatFunction();
+
+            // 꼭짓점
+            const vertex = getVertex();
+            document.getElementById('vertex').textContent =
+                `(${vertex.x.toFixed(2)}, ${vertex.y.toFixed(2)})`;
+
+            // y절편
+            document.getElementById('yIntercept').textContent = c.toFixed(2);
+
+            // 판별식
+            const D = getDiscriminant();
+            document.getElementById('discriminant').textContent = D.toFixed(2);
+
+            // 개형
+            let shape = '';
+            if (a > 0) {
+                shape = '아래로 볼록 (∪)';
+            } else if (a < 0) {
+                shape = '위로 볼록 (∩)';
+            } else {
+                shape = '직선';
+            }
+            document.getElementById('shape').textContent = shape;
+        }
+
+        // 슬라이더 이벤트
+        document.getElementById('aSlider').addEventListener('input', function(e) {
+            a = parseFloat(e.target.value);
+            document.getElementById('aValue').textContent = a.toFixed(1);
+            updateGraph();
+        });
+
+        document.getElementById('bSlider').addEventListener('input', function(e) {
+            b = parseFloat(e.target.value);
+            document.getElementById('bValue').textContent = b.toFixed(1);
+            updateGraph();
+        });
+
+        document.getElementById('cSlider').addEventListener('input', function(e) {
+            c = parseFloat(e.target.value);
+            document.getElementById('cValue').textContent = c.toFixed(1);
+            updateGraph();
+        });
+
+        // 프리셋 설정
+        function setPreset(newA, newB, newC) {
+            a = newA;
+            b = newB;
+            c = newC;
+
+            document.getElementById('aSlider').value = a;
+            document.getElementById('bSlider').value = b;
+            document.getElementById('cSlider').value = c;
+
+            document.getElementById('aValue').textContent = a.toFixed(1);
+            document.getElementById('bValue').textContent = b.toFixed(1);
+            document.getElementById('cValue').textContent = c.toFixed(1);
+
+            updateGraph();
+        }
+
+        // 초기화
+        function resetFunction() {
+            setPreset(1, 0, 0);
+        }
+
+        // 초기 실행
+        initChart();
+        updateGraph();
+    </script>
+</body>
+</html>
