@@ -2,9 +2,17 @@
 
 [WENIV](http://www.weniv.co.kr/)에서 개발한 GitHub Pages, Notion 기반의 마크다운 프레젠테이션 웹 서비스입니다. 해당 서비스는 Claude Code와 함께 개발되었습니다.
 
+> **🆕 업데이트 안내 (2026-04)**: GitHub API rate limit으로 다수 동시 접속 시 발표자료가 로드되지 않던 문제를 해결하기 위해 정적 `manifest.json` 방식으로 전환했습니다.
+>
+> - 새 발표자료 폴더/파일을 추가하면 `npm run build:manifest`로 manifest를 갱신하세요.
+> - 깜빡하고 push해도 GitHub Actions가 자동으로 재빌드·커밋합니다.
+> - 호스팅 도메인은 루트 `config.json`의 `baseUrl`만 수정하면 변경 가능합니다.
+>
+> 자세한 내용은 아래 [발표자료 추가하기](#발표자료-추가하기) 섹션을 참고하세요.
+
 ## 배포
 
-URL: https://weniv.github.io/mdpre/
+URL: https://mdpre.weniv.co.kr/
 
 ## 주요 기능
 
@@ -43,6 +51,46 @@ python -m http.server 8080
 # 3. Node.js가 설치된 경우
 npm run dev
 ```
+
+> **참고**: `index.html`을 더블클릭해서 `file://`로 여는 방식은 동작하지 않습니다. 브라우저가 보안상 `file://`에서 `manifest.json` fetch를 차단합니다. 위 세 가지 방법 중 하나로 로컬 서버를 띄워주세요.
+
+### 발표자료 추가하기
+
+루트의 `manifest.json`이 발표자료 폴더 인덱스 역할을 합니다. 이전에는 GitHub API로 폴더를 매번 탐색했지만, API rate limit(IP당 시간당 60회) 때문에 다수 동시 접속 시 막히는 문제가 있어 정적 manifest 방식으로 전환했습니다.
+
+#### 워크플로
+
+| 작업 | 명령 | 비고 |
+|------|------|------|
+| 기존 `.md` 내용 수정 | 없음 | 새로고침만 하면 반영 |
+| 새 폴더/파일 추가, 이름 변경, 삭제 | `npm run build:manifest` | manifest.json 갱신 |
+| 푸시 | `git push` | GitHub Actions가 자동으로 재빌드·커밋 |
+
+#### 로컬 미리보기
+
+```bash
+# 새 폴더/파일을 추가했을 때만 manifest 갱신
+npm run build:manifest
+
+# 로컬 서버 띄우고 localhost:8080 새로고침
+npm run dev
+```
+
+#### 자동 빌드 워크플로
+
+`.github/workflows/build-manifest.yml`이 `main` 브랜치에 `.md` 또는 `logo.*` 변경이 푸시되면 자동으로 `manifest.json`을 재생성하고 커밋합니다. 수동으로 `npm run build:manifest` 실행을 깜빡해도 push만 하면 알아서 동기화됩니다.
+
+> **첫 사용 시 1회 설정**: Settings → Actions → General → *Workflow permissions*에서 **Read and write permissions** 활성화 필요. 비활성화 상태면 Actions가 push 단계에서 403을 반환합니다.
+
+#### 호스팅 도메인 변경
+
+루트 `config.json`의 `baseUrl`만 수정합니다.
+
+```json
+{ "baseUrl": "https://mdpre.weniv.co.kr" }
+```
+
+빈 문자열(`""`)이면 현재 페이지 기준 상대경로로 동작하므로, 콘텐츠와 앱이 같은 도메인에 있다면 굳이 채울 필요는 없습니다.
 
 ### GitHub Pages 배포
 

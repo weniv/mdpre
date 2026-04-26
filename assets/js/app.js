@@ -15,6 +15,11 @@ class GitHubMarkdownPresenter {
         this.fileSlideMap = [];
         this.originalMarkdownContent = '';
         this.currentFileName = '';
+
+        // Manifest-based content config (replaces GitHub API for the primary site)
+        this.config = { baseUrl: '' };
+        this.manifest = null;
+        this.manifestReady = null; // Promise resolved once config + manifest loaded
         
         // Preview functionality
         this.previewSlides = [];
@@ -27,6 +32,9 @@ class GitHubMarkdownPresenter {
     }
 
     init() {
+        // manifest 로드는 가능한 한 빨리 시작 (searchFolders가 await)
+        this.manifestReady = this.loadManifestConfig();
+
         this.bindEvents();
         this.loadSettings();
         this.loadRecentItems();
@@ -48,13 +56,49 @@ class GitHubMarkdownPresenter {
         // 모바일에서 items-center 클래스 제거
         this.adjustMobileLayout();
 
-        // 초기 로딩 후 잠시 기다렸다가 자동으로 폴더 검색
-        setTimeout(() => {
+        // 초기 로딩 후 manifest 준비되면 자동으로 폴더 검색
+        (async () => {
+            try { await this.manifestReady; } catch (_) {}
             const currentRepoRadio = document.getElementById('current-repo');
             if (currentRepoRadio && currentRepoRadio.checked) {
                 this.searchFolders();
             }
-        }, 1000);
+        })();
+    }
+
+    async loadManifestConfig() {
+        // Load optional config.json (for baseUrl) and manifest.json (folder index).
+        // Both are static files served from the same origin — no GitHub API hits.
+        try {
+            const configRes = await fetch('config.json', { cache: 'no-cache' });
+            if (configRes.ok) {
+                const cfg = await configRes.json();
+                if (cfg && typeof cfg === 'object') {
+                    this.config = { baseUrl: '', ...cfg };
+                }
+            }
+        } catch (e) {
+            console.warn('config.json 로드 실패, 기본값 사용:', e);
+        }
+
+        try {
+            const manifestUrl = this.resolveContentUrl('manifest.json');
+            const res = await fetch(manifestUrl, { cache: 'no-cache' });
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status}`);
+            }
+            this.manifest = await res.json();
+            this.updateCurrentRepoDisplay();
+        } catch (e) {
+            console.warn('manifest.json 로드 실패:', e);
+            this.manifest = null;
+        }
+    }
+
+    resolveContentUrl(relativePath) {
+        const cleaned = String(relativePath || '').replace(/^\/+/, '');
+        const base = (this.config && this.config.baseUrl) ? String(this.config.baseUrl).replace(/\/+$/, '') : '';
+        return base ? `${base}/${cleaned}` : cleaned;
     }
 
     checkKatexLoaded() {
@@ -638,9 +682,16 @@ class GitHubMarkdownPresenter {
     }
 
     updateCurrentRepoDisplay() {
-        if (this.currentRepo) {
-            const currentRepoRadio = document.getElementById('current-repo');
-            const label = currentRepoRadio.nextElementSibling;
+        const currentRepoRadio = document.getElementById('current-repo');
+        if (!currentRepoRadio) return;
+        const label = currentRepoRadio.nextElementSibling;
+        if (!label) return;
+
+        // Prefer manifest-based site label; fall back to detected GitHub repo.
+        if (this.manifest) {
+            const count = Array.isArray(this.manifest.folders) ? this.manifest.folders.length : 0;
+            label.innerHTML = `발표자료 선택 <span class="text-sm text-gray-500">(${count}개 폴더)</span>`;
+        } else if (this.currentRepo) {
             label.innerHTML = `발표자료 선택 <span class="text-sm text-gray-500">(${this.currentRepo.owner}/${this.currentRepo.repo})</span>`;
         }
     }
@@ -732,7 +783,14 @@ class GitHubMarkdownPresenter {
             itemElement.className = 'history-item';
             
             let itemInfo = '';
-            if (item.type === 'repo') {
+            if (item.type === 'manifest') {
+                itemInfo = `
+                    <div class="history-item-info">
+                        <div class="history-item-url">${item.folder || '폴더 지정 없음'}</div>
+                        <div class="text-xs text-gray-500">발표자료</div>
+                    </div>
+                `;
+            } else if (item.type === 'repo') {
                 itemInfo = `
                     <div class="history-item-info">
                         <div class="history-item-url">${item.owner}/${item.repo}</div>
@@ -786,19 +844,41 @@ class GitHubMarkdownPresenter {
     }
 
     async loadFromRecentItem(item) {
+        // manifest 모드: 현재 사이트의 manifest.json에서 폴더 선택
+        const isManifestEntry =
+            item.type === 'manifest' ||
+            (item.type === 'repo' && this.manifest && this.manifest.folders.some(f => f.path === item.folder));
+
+        if (isManifestEntry) {
+            const currentRepoRadio = document.getElementById('current-repo');
+            currentRepoRadio.checked = true;
+            this.handleRepoSourceChange();
+            await this.searchFolders();
+
+            setTimeout(() => {
+                if (item.folder) {
+                    const folderDropdown = document.getElementById('folder-dropdown');
+                    for (let i = 0; i < folderDropdown.options.length; i++) {
+                        if (folderDropdown.options[i].value === item.folder) {
+                            folderDropdown.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+                const loadBtn = document.getElementById('load-presentation-btn');
+                if (loadBtn) loadBtn.classList.remove('hidden');
+            }, 100);
+            return;
+        }
+
         if (item.type === 'repo') {
-            // Set the radio button to correct source
-            const sourceRadio = item.owner === 'weniv' && item.repo === 'weniv_presentation' 
-                ? document.getElementById('current-repo')
-                : document.getElementById('custom-repo');
+            // Legacy: arbitrary GitHub repo via custom URL (kept as fallback for outside repos)
+            const sourceRadio = document.getElementById('custom-repo');
             sourceRadio.checked = true;
             this.handleRepoSourceChange();
-            
-            // Set repo URL if custom
-            if (item.owner !== 'weniv' || item.repo !== 'weniv_presentation') {
-                document.getElementById('repo-url').value = `https://github.com/${item.owner}/${item.repo}`;
-            }
-            
+
+            document.getElementById('repo-url').value = `https://github.com/${item.owner}/${item.repo}`;
+
             // Search for folders first
             await this.searchFolders();
             
@@ -1076,13 +1156,16 @@ class GitHubMarkdownPresenter {
         
         // Remove if already exists (based on type and identifying properties)
         this.recentItems = this.recentItems.filter(existingItem => {
-            if (item.type === 'repo') {
-                return !(existingItem.type === 'repo' && 
-                        existingItem.owner === item.owner && 
-                        existingItem.repo === item.repo && 
+            if (item.type === 'manifest') {
+                return !(existingItem.type === 'manifest' &&
+                        existingItem.folder === item.folder);
+            } else if (item.type === 'repo') {
+                return !(existingItem.type === 'repo' &&
+                        existingItem.owner === item.owner &&
+                        existingItem.repo === item.repo &&
                         existingItem.folder === item.folder);
             } else if (item.type === 'local') {
-                return !(existingItem.type === 'local' && 
+                return !(existingItem.type === 'local' &&
                         existingItem.fileName === item.fileName);
             } else if (item.type === 'direct') {
                 return !(existingItem.type === 'direct' && 
@@ -1133,14 +1216,31 @@ class GitHubMarkdownPresenter {
     async searchFolders() {
         const selectedSource = document.querySelector('input[name="repo-source"]:checked').value;
         let owner, repo;
-        
+
         if (selectedSource === 'current') {
-            if (!this.currentRepo) {
-                alert('현재 GitHub Pages 리포지토리를 감지할 수 없습니다.');
-                return;
+            // manifest.json 기반 — GitHub API 호출 없음
+            try {
+                this.showLoading(true);
+                if (!this.manifest) {
+                    await this.manifestReady;
+                }
+                if (!this.manifest || !Array.isArray(this.manifest.folders) || this.manifest.folders.length === 0) {
+                    alert('manifest.json을 불러올 수 없거나 폴더가 비어 있습니다.');
+                    return;
+                }
+                this.populateFolderDropdown(
+                    this.manifest.folders.map(f => ({ name: f.name, path: f.path }))
+                );
+                document.getElementById('folder-selection').classList.remove('hidden');
+                document.getElementById('load-presentation-btn').classList.remove('hidden');
+                document.getElementById('search-folders-btn').classList.add('hidden');
+            } catch (error) {
+                console.error('폴더 목록 로드 실패:', error);
+                alert(`폴더 목록을 불러올 수 없습니다: ${error.message}`);
+            } finally {
+                this.showLoading(false);
             }
-            owner = this.currentRepo.owner;
-            repo = this.currentRepo.repo;
+            return;
         } else {
             const repoUrl = document.getElementById('repo-url').value.trim();
             if (!repoUrl) {
@@ -1598,14 +1698,10 @@ class GitHubMarkdownPresenter {
         }
         
         let owner, repo;
-        
+
         if (selectedSource === 'current') {
-            if (!this.currentRepo) {
-                alert('현재 GitHub Pages 리포지토리를 감지할 수 없습니다.');
-                return;
-            }
-            owner = this.currentRepo.owner;
-            repo = this.currentRepo.repo;
+            await this.loadPresentationFromManifest(folderPath);
+            return;
         } else if (selectedSource === 'custom') {
             const repoUrl = document.getElementById('repo-url').value.trim();
             if (!repoUrl) {
@@ -1626,6 +1722,107 @@ class GitHubMarkdownPresenter {
         }
 
         await this.loadPresentationFromRepo(owner, repo, folderPath);
+    }
+
+    async loadPresentationFromManifest(folderPath) {
+        try {
+            this.showLoading(true);
+
+            if (!this.manifest) {
+                await this.manifestReady;
+            }
+            if (!this.manifest) {
+                throw new Error('manifest.json을 불러올 수 없습니다.');
+            }
+
+            const folder = this.manifest.folders.find(f => f.path === folderPath);
+            if (!folder) {
+                throw new Error(`manifest에서 폴더를 찾을 수 없습니다: ${folderPath}`);
+            }
+
+            await this.loadMarkdownFilesFromManifest(folder);
+
+            if (this.slides.length === 0) {
+                throw new Error('마크다운 파일을 찾을 수 없습니다.');
+            }
+
+            await this.loadManifestLogo(folder);
+
+            this.addToRecentItems({
+                type: 'manifest',
+                folder: folder.path
+            });
+
+            this.showPresentation();
+        } catch (error) {
+            console.error('프레젠테이션 로드 실패:', error);
+            alert(`프레젠테이션을 로드할 수 없습니다: ${error.message}`);
+        } finally {
+            this.showLoading(false);
+        }
+    }
+
+    async loadMarkdownFilesFromManifest(folder) {
+        this.slides = [];
+        this.fileSlideMap = [];
+        this.originalMarkdownContent = '';
+        this.currentFileName = '';
+
+        for (const fileName of folder.files) {
+            const relPath = `${folder.path}/${fileName}`;
+            const url = this.resolveContentUrl(relPath);
+            try {
+                const response = await fetch(url, { cache: 'no-cache' });
+                if (!response.ok) {
+                    console.warn(`파일 로드 실패 (${response.status}): ${url}`);
+                    continue;
+                }
+                const content = await response.text();
+
+                if (this.originalMarkdownContent.length > 0) {
+                    this.originalMarkdownContent += '\n\n---\n\n';
+                }
+                this.originalMarkdownContent += content;
+
+                if (!this.currentFileName) {
+                    this.currentFileName = fileName;
+                }
+
+                const slides = this.parseMarkdownToSlides(content, null, null, folder.path);
+
+                this.fileSlideMap.push({
+                    name: fileName,
+                    path: relPath,
+                    startSlide: this.slides.length,
+                    slideCount: slides.length
+                });
+                this.slides.push(...slides);
+            } catch (error) {
+                console.warn(`파일 로드 실패: ${fileName}`, error);
+            }
+        }
+    }
+
+    async loadManifestLogo(folder) {
+        const logoContainer = document.getElementById('presentation-logo');
+        const logoImage = document.getElementById('logo-image');
+
+        logoContainer.classList.add('hidden');
+        logoImage.src = '';
+
+        if (!folder.logo) return;
+
+        const logoUrl = this.resolveContentUrl(`${folder.path}/${folder.logo}`);
+        const img = new Image();
+        img.onload = () => {
+            logoImage.src = logoUrl;
+            logoContainer.classList.remove('hidden');
+            logoContainer.style.display = 'block';
+        };
+        img.onerror = () => {
+            console.warn(`로고 로드 실패: ${logoUrl}`);
+        };
+        img.src = logoUrl;
     }
 
     async loadPresentationFromRepo(owner, repo, folderName) {
@@ -1808,24 +2005,26 @@ class GitHubMarkdownPresenter {
             return placeholder;
         });
         
-        // Convert relative image paths to GitHub raw URLs for markdown images
+        const buildImageUrl = (imagePath) => {
+            const fullPath = folderPath ? `${folderPath}/${imagePath}` : imagePath;
+            // Manifest mode (owner/repo null): resolve against config.baseUrl / current origin
+            if (!owner || !repo) {
+                return this.resolveContentUrl(fullPath);
+            }
+            return `https://raw.githubusercontent.com/${owner}/${repo}/refs/heads/main/${fullPath}`;
+        };
+
+        // Convert relative image paths in markdown image syntax
         content = content.replace(
             /!\[([^\]]*)\]\((?!https?:\/\/)([^)]+)\)/g,
-            (match, alt, imagePath) => {
-                // If folderPath exists, prepend it to the image path
-                const fullPath = folderPath ? `${folderPath}/${imagePath}` : imagePath;
-                return `![${alt}](https://raw.githubusercontent.com/${owner}/${repo}/refs/heads/main/${fullPath})`;
-            }
+            (match, alt, imagePath) => `![${alt}](${buildImageUrl(imagePath)})`
         );
-        
-        // Convert relative image paths to GitHub raw URLs for HTML img tags
+
+        // Convert relative image paths in HTML <img> tags
         content = content.replace(
             /<img([^>]*)\ssrc=["'](?!https?:\/\/)([^"']+)["']([^>]*)>/g,
             (match, beforeSrc, imagePath, afterSrc) => {
-                // If folderPath exists, prepend it to the image path
-                const fullPath = folderPath ? `${folderPath}/${imagePath}` : imagePath;
-                const newSrc = `https://raw.githubusercontent.com/${owner}/${repo}/refs/heads/main/${fullPath}`;
-                return `<img${beforeSrc} src="${newSrc}"${afterSrc}>`;
+                return `<img${beforeSrc} src="${buildImageUrl(imagePath)}"${afterSrc}>`;
             }
         );
         

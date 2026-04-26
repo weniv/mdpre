@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "python -m http.server 8080 --bind localhost",
     "start": "python -m http.server 8080 --bind localhost",
-    "build": "echo 'Static site - no build process required'",
+    "build": "node scripts/build-manifest.js",
+    "build:manifest": "node scripts/build-manifest.js",
     "deploy": "gh-pages -d ."
   },
   "repository": {

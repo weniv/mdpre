@@ -1,0 +1,51 @@
+name: Build manifest
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.md'
+      - '**/logo.png'
+      - '**/logo.jpg'
+      - '**/logo.jpeg'
+      - '**/logo.svg'
+      - '**/logo.gif'
+      - 'scripts/build-manifest.js'
+      - '.github/workflows/build-manifest.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-manifest-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build manifest.json
+        run: node scripts/build-manifest.js
+
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- manifest.json; then
+            echo "manifest.json 변경 없음"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manifest.json
+          git commit -m "chore: update manifest.json [skip ci]"
+          git push
