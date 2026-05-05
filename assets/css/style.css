@@ -1528,7 +1528,53 @@ body:has(#presentation-section:not(.hidden)) .footer-container {
         box-shadow: none !important;
         border-radius: 4px !important;
     }
-    
+
+    /* YouTube 썸네일 (PDF에서 iframe 대체) */
+    .pdf-youtube-thumbnail {
+        position: relative !important;
+        width: 80% !important;
+        max-width: 800px !important;
+        aspect-ratio: 16 / 9 !important;
+        margin: 1rem auto !important;
+        overflow: hidden !important;
+        background: #000 !important;
+        border-radius: 8px !important;
+        page-break-inside: avoid !important;
+    }
+
+    .pdf-youtube-thumbnail img {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: none !important;
+        max-height: none !important;
+        margin: 0 !important;
+        object-fit: cover !important;
+        display: block !important;
+        border-radius: 0 !important;
+    }
+
+    .pdf-youtube-play {
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 68px !important;
+        height: 48px !important;
+        background: rgba(0, 0, 0, 0.75) !important;
+        border-radius: 12px !important;
+    }
+
+    .pdf-youtube-play::after {
+        content: '' !important;
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-40%, -50%) !important;
+        border-style: solid !important;
+        border-width: 10px 0 10px 16px !important;
+        border-color: transparent transparent transparent #fff !important;
+    }
+
     /* 페이지 번호 제거 */
     .pdf-slide::after {
         display: none;

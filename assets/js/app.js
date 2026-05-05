@@ -4216,7 +4216,10 @@ class GitHubMarkdownPresenter {
                 const contentDiv = document.createElement('div');
                 contentDiv.className = 'pdf-slide-content';
                 contentDiv.innerHTML = processedContent;
-                
+
+                // iframe은 PDF에서 렌더링되지 않으므로 YouTube 임베드를 썸네일로 치환
+                this.replaceYouTubeIframesForPDF(contentDiv);
+
                 // Render math expressions if KaTeX is available
                 if (typeof katex !== 'undefined' && this.renderMathInElement) {
                     this.renderMathInElement(contentDiv);
@@ -4240,11 +4243,13 @@ class GitHubMarkdownPresenter {
                 // Add wrapper to slide
                 slideDiv.appendChild(contentWrapper);
                 
-                // Add logo if available (absolute positioned, won't affect flex layout)
-                if (this.logoUrl) {
+                // 로고는 화면용 #logo-image의 src를 그대로 재사용 (manifest/GitHub/로컬 경로 통합)
+                const visibleLogo = document.getElementById('logo-image');
+                const logoSrc = visibleLogo ? visibleLogo.getAttribute('src') : '';
+                if (logoSrc) {
                     const logoDiv = document.createElement('div');
                     logoDiv.className = 'pdf-logo';
-                    logoDiv.innerHTML = `<img src="${this.logoUrl}" alt="Logo" class="pdf-logo-image">`;
+                    logoDiv.innerHTML = `<img src="${logoSrc}" alt="Logo" class="pdf-logo-image">`;
                     slideDiv.appendChild(logoDiv);
                 }
                 
@@ -4399,6 +4404,26 @@ class GitHubMarkdownPresenter {
         });
 
         await Promise.all(mermaidPromises);
+    }
+
+    replaceYouTubeIframesForPDF(container) {
+        const iframes = container.querySelectorAll('iframe');
+        iframes.forEach(iframe => {
+            const src = iframe.getAttribute('src') || '';
+            const match = src.match(/(?:youtube\.com\/embed\/|youtu\.be\/|youtube\.com\/watch\?v=)([A-Za-z0-9_-]{11})/);
+            if (!match) return;
+
+            const videoId = match[1];
+            const title = iframe.getAttribute('title') || 'YouTube video';
+            const wrapper = document.createElement('div');
+            wrapper.className = 'pdf-youtube-thumbnail';
+            // hqdefault.jpg는 모든 영상에 항상 존재 (4:3에 검은 띠 포함). object-fit:cover로 띠를 잘라 16:9로 표시
+            wrapper.innerHTML = `
+                <img src="https://img.youtube.com/vi/${videoId}/hqdefault.jpg" alt="${title.replace(/"/g, '&quot;')}">
+                <div class="pdf-youtube-play"></div>
+            `;
+            iframe.replaceWith(wrapper);
+        });
     }
 
     // Helper method to wait for resources to load
